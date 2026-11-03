@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="common.bad_request" xml:space="preserve"><value>Sorag nädogry.</value></data>
+  <data name="common.validation" xml:space="preserve"><value>Iberilen maglumatlaryň käbiri nädogry.</value></data>
+  <data name="common.invalid_sort" xml:space="preserve"><value>Bu meýdan boýunça tertipläp bolmaýar.</value></data>
+  <data name="common.unauthorized" xml:space="preserve"><value>Ulgama giriň.</value></data>
+  <data name="common.forbidden" xml:space="preserve"><value>Muny etmäge ygtyýaryňyz ýok.</value></data>
+  <data name="common.not_found" xml:space="preserve"><value>Tapylmady.</value></data>
+  <data name="common.method_not_allowed" xml:space="preserve"><value>Bu usul bu ýerde rugsat berilmeýär.</value></data>
+  <data name="common.conflict" xml:space="preserve"><value>Bu bar bolan maglumat bilen çaknyşýar.</value></data>
+  <data name="common.concurrency_conflict" xml:space="preserve"><value>Muny ýaňy başga biri üýtgetdi. Täzeden ýükläp, gaýtadan synanyşyň.</value></data>
+  <data name="common.payload_too_large" xml:space="preserve"><value>Sorag aşa uly.</value></data>
+  <data name="common.unsupported_media_type" xml:space="preserve"><value>Bu mazmun görnüşi goldanylmaýar.</value></data>
+  <data name="common.too_many_requests" xml:space="preserve"><value>Soraglar aşa köp. Biraz soňrak synanyşyň.</value></data>
+  <data name="common.unexpected" xml:space="preserve"><value>Garaşylmadyk ýalňyşlyk ýüze çykdy.</value></data>
+  <data name="common.timeout" xml:space="preserve"><value>Sorag aşa uzak dowam etdi. Gaýtadan synanyşyň.</value></data>
+  <data name="auth.invalid_credentials" xml:space="preserve"><value>Login ýa-da açar sözi nädogry.</value></data>
+  <data name="auth.email_not_confirmed" xml:space="preserve"><value>Ilki e-poçtaňyzy tassyklaň.</value></data>
+  <data name="auth.invalid_token" xml:space="preserve"><value>Bu salgy nädogry ýa-da möhleti geçen.</value></data>
+  <data name="auth.invalid_two_factor_code" xml:space="preserve"><value>Tassyklama kody nädogry.</value></data>
+  <data name="auth.refresh_invalid" xml:space="preserve"><value>Sessiýaňyz gutardy. Täzeden ulgama giriň.</value></data>
+  <data name="auth.refresh_conflict" xml:space="preserve"><value>Sessiýaňyz ýaňy täzelendi. Gaýtadan synanyşyň.</value></data>
+  <data name="auth.csrf_rejected" xml:space="preserve"><value>Bu sorag howpsuzlyk sebäpli ret edildi.</value></data>
+  <data name="auth.mfa_required" xml:space="preserve"><value>Bu hereket üçin iki basgançakly giriş hökmany.</value></data>
+  <data name="auth.weak_password" xml:space="preserve"><value>Bu açar sözüni ulanyp bolmaýar.</value></data>
+  <data name="auth.current_password_invalid" xml:space="preserve"><value>Häzirki açar sözi nädogry.</value></data>
+  <data name="auth.session_not_found" xml:space="preserve"><value>Sessiýa tapylmady.</value></data>
+  <data name="auth.two_factor_already_enabled" xml:space="preserve"><value>Iki basgançakly giriş eýýäm işjeň.</value></data>
+  <data name="auth.two_factor_not_enabled" xml:space="preserve"><value>Iki basgançakly giriş işjeň däl.</value></data>
+  <data name="auth.two_factor_required_for_staff" xml:space="preserve"><value>Işgär hasaplarynda iki basgançakly girişi öçürip bolmaýar.</value></data>
+  <data name="auth.phone_code_invalid" xml:space="preserve"><value>Kod nädogry ýa-da möhleti geçen.</value></data>
+  <data name="auth.phone_taken" xml:space="preserve"><value>Bu belgini ulanyp bolmaýar.</value></data>
+  <data name="auth.phone_rate_limited" xml:space="preserve"><value>Täze kod soramazdan öň biraz garaşyň.</value></data>
+  <data name="auth.sms_unavailable" xml:space="preserve"><value>SMS iberip bolmady. Biraz soňrak synanyşyň.</value></data>
+  <data name="password.too_short" xml:space="preserve"><value>Azyndan 12 simwol ulanyň.</value></data>
+  <data name="password.too_common" xml:space="preserve"><value>Bu açar sözi aşa giňden ýaýran.</value></data>
+  <data name="password.breached" xml:space="preserve"><value>Bu açar sözi maglumat syzmalarynda ýüze çykypdyr. Başgasyny saýlaň.</value></data>
+  <data name="password.contains_identity" xml:space="preserve"><value>Açar sözünde e-poçtaňyzyň ady bolmaly däl.</value></data>
+  <data name="password.rejected" xml:space="preserve"><value>Bu açar sözüni ulanyp bolmaýar.</value></data>
+  <data name="tenant.not_found" xml:space="preserve"><value>Dükan tapylmady.</value></data>
+  <data name="tenant.suspended" xml:space="preserve"><value>Bu dükan häzir wagtlaýyn togtadylan.</value></data>
+  <data name="tenant.mismatch" xml:space="preserve"><value>Siz başga dükana girensiňiz.</value></data>
+  <data name="tenant.required" xml:space="preserve"><value>Bu hereket dükanyň içinde edilmeli.</value></data>
+  <data name="tenant.slug_taken" xml:space="preserve"><value>Bu dükan salgysy eýýäm ulanylýar.</value></data>
+  <data name="tenant.slug_reserved" xml:space="preserve"><value>Bu dükan salgysy ätiýaçlandyrylan.</value></data>
+  <data name="tenant.staff_limit_reached" xml:space="preserve"><value>Tarifiňiziň işgär çägine ýetildi.</value></data>
+  <data name="tenant.not_a_member" xml:space="preserve"><value>Siz bu dükanyň agzasy däl.</value></data>
+  <data name="tenant.member_not_found" xml:space="preserve"><value>Işgär tapylmady.</value></data>
+  <data name="tenant.already_a_member" xml:space="preserve"><value>Siz eýýäm bu dükanyň agzasy.</value></data>
+  <data name="tenant.owner_cannot_be_changed" xml:space="preserve"><value>Dükan eýesini bu görnüşde üýtgedip bolmaýar.</value></data>
+  <data name="tenant.cannot_change_self" xml:space="preserve"><value>Öz girişiňizi üýtgedip bilmeýärsiňiz.</value></data>
+  <data name="tenant.invitation_invalid" xml:space="preserve"><value>Bu çakylyk nädogry ýa-da möhleti geçen.</value></data>
+  <data name="tenant.invitation_not_found" xml:space="preserve"><value>Çakylyk tapylmady.</value></data>
+  <data name="catalog.category_not_found" xml:space="preserve"><value>Kategoriýa tapylmady.</value></data>
+  <data name="catalog.brand_not_found" xml:space="preserve"><value>Marka tapylmady.</value></data>
+  <data name="catalog.attribute_not_found" xml:space="preserve"><value>Häsiýet tapylmady.</value></data>
+  <data name="catalog.product_not_found" xml:space="preserve"><value>Haryt tapylmady.</value></data>
+  <data name="catalog.slug_taken" xml:space="preserve"><value>Bu web salgy eýýäm ulanylýar.</value></data>
+  <data name="catalog.sku_taken" xml:space="preserve"><value>Bu SKU eýýäm ulanylýar.</value></data>
+  <data name="catalog.code_taken" xml:space="preserve"><value>Bu kod eýýäm ulanylýar.</value></data>
+  <data name="catalog.category_cycle" xml:space="preserve"><value>Kategoriýany öz içine goýup bolmaýar.</value></data>
+  <data name="catalog.category_has_children" xml:space="preserve"><value>Ilki içki kategoriýalary aýryň.</value></data>
+  <data name="catalog.product_limit_reached" xml:space="preserve"><value>Tarifiňiziň haryt çägine ýetildi.</value></data>
+  <data name="catalog.not_ready_to_publish" xml:space="preserve"><value>Çap etmek üçin harydyň ady we işjeň warianty bolmaly.</value></data>
+  <data name="catalog.invalid_attribute_value" xml:space="preserve"><value>Häsiýetiň bahasy nädogry.</value></data>
+  <data name="catalog.required_attribute_missing" xml:space="preserve"><value>Hökmany häsiýet ýok.</value></data>
+</root>

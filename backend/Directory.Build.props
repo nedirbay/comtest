@@ -1,0 +1,25 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode Condition="'$(CI)' == 'true'">true</RestoreLockedMode>
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
+  </PropertyGroup>
+
+  <!--
+    Required by the Ubuntu source-built SDK when its targeting and apphost packs are missing
+    (errors NETSDK1226 and NU1101). Set explicitly so restore and lock files stay the same
+    on every SDK. The app runs as "dotnet ComTest.Api.dll", so no native host is needed.
+  -->
+  <PropertyGroup>
+    <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
+    <UseAppHost>false</UseAppHost>
+  </PropertyGroup>
+</Project>

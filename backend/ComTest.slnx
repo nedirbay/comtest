@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ComTest.Api/ComTest.Api.csproj" />
+    <Project Path="src/ComTest.Application/ComTest.Application.csproj" />
+    <Project Path="src/ComTest.Domain/ComTest.Domain.csproj" />
+    <Project Path="src/ComTest.Infrastructure/ComTest.Infrastructure.csproj" />
+    <Project Path="src/ComTest.Shared/ComTest.Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ComTest.IntegrationTests/ComTest.IntegrationTests.csproj" />
+    <Project Path="tests/ComTest.UnitTests/ComTest.UnitTests.csproj" />
+  </Folder>
+</Solution>

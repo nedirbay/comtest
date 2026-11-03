@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="common.bad_request" xml:space="preserve"><value>The request is not valid.</value></data>
+  <data name="common.validation" xml:space="preserve"><value>Some of the submitted values are not valid.</value></data>
+  <data name="common.invalid_sort" xml:space="preserve"><value>This sort field is not supported.</value></data>
+  <data name="common.unauthorized" xml:space="preserve"><value>Please sign in.</value></data>
+  <data name="common.forbidden" xml:space="preserve"><value>You do not have permission to do this.</value></data>
+  <data name="common.not_found" xml:space="preserve"><value>Not found.</value></data>
+  <data name="common.method_not_allowed" xml:space="preserve"><value>This method is not allowed here.</value></data>
+  <data name="common.conflict" xml:space="preserve"><value>This conflicts with existing data.</value></data>
+  <data name="common.concurrency_conflict" xml:space="preserve"><value>Someone else has just changed this. Reload it and try again.</value></data>
+  <data name="common.payload_too_large" xml:space="preserve"><value>The request is too large.</value></data>
+  <data name="common.unsupported_media_type" xml:space="preserve"><value>This content type is not supported.</value></data>
+  <data name="common.too_many_requests" xml:space="preserve"><value>Too many requests. Please try again later.</value></data>
+  <data name="common.unexpected" xml:space="preserve"><value>An unexpected error occurred.</value></data>
+  <data name="common.timeout" xml:space="preserve"><value>The request took too long. Please try again.</value></data>
+  <data name="auth.invalid_credentials" xml:space="preserve"><value>Incorrect login or password.</value></data>
+  <data name="auth.email_not_confirmed" xml:space="preserve"><value>Please confirm your email first.</value></data>
+  <data name="auth.invalid_token" xml:space="preserve"><value>This link is invalid or has expired.</value></data>
+  <data name="auth.invalid_two_factor_code" xml:space="preserve"><value>The verification code is incorrect.</value></data>
+  <data name="auth.refresh_invalid" xml:space="preserve"><value>Your session has ended. Please sign in again.</value></data>
+  <data name="auth.refresh_conflict" xml:space="preserve"><value>Your session was just refreshed. Please try again.</value></data>
+  <data name="auth.csrf_rejected" xml:space="preserve"><value>This request was rejected for security reasons.</value></data>
+  <data name="auth.mfa_required" xml:space="preserve"><value>Two-factor sign-in is required for this action.</value></data>
+  <data name="auth.weak_password" xml:space="preserve"><value>This password cannot be used.</value></data>
+  <data name="auth.current_password_invalid" xml:space="preserve"><value>The current password is incorrect.</value></data>
+  <data name="auth.session_not_found" xml:space="preserve"><value>Session not found.</value></data>
+  <data name="auth.two_factor_already_enabled" xml:space="preserve"><value>Two-factor sign-in is already on.</value></data>
+  <data name="auth.two_factor_not_enabled" xml:space="preserve"><value>Two-factor sign-in is not on.</value></data>
+  <data name="auth.two_factor_required_for_staff" xml:space="preserve"><value>Staff accounts cannot turn off two-factor sign-in.</value></data>
+  <data name="auth.phone_code_invalid" xml:space="preserve"><value>The code is incorrect or has expired.</value></data>
+  <data name="auth.phone_taken" xml:space="preserve"><value>This number cannot be used.</value></data>
+  <data name="auth.phone_rate_limited" xml:space="preserve"><value>Please wait before requesting another code.</value></data>
+  <data name="auth.sms_unavailable" xml:space="preserve"><value>SMS could not be sent. Please try again later.</value></data>
+  <data name="password.too_short" xml:space="preserve"><value>Use at least 12 characters.</value></data>
+  <data name="password.too_common" xml:space="preserve"><value>This password is too common.</value></data>
+  <data name="password.breached" xml:space="preserve"><value>This password has appeared in a data breach. Choose another.</value></data>
+  <data name="password.contains_identity" xml:space="preserve"><value>The password must not contain your email name.</value></data>
+  <data name="password.rejected" xml:space="preserve"><value>This password cannot be used.</value></data>
+  <data name="tenant.not_found" xml:space="preserve"><value>Store not found.</value></data>
+  <data name="tenant.suspended" xml:space="preserve"><value>This store is currently suspended.</value></data>
+  <data name="tenant.mismatch" xml:space="preserve"><value>You are signed in to a different store.</value></data>
+  <data name="tenant.required" xml:space="preserve"><value>This action must be done within a store.</value></data>
+  <data name="tenant.slug_taken" xml:space="preserve"><value>This store address is already in use.</value></data>
+  <data name="tenant.slug_reserved" xml:space="preserve"><value>This store address is reserved.</value></data>
+  <data name="tenant.staff_limit_reached" xml:space="preserve"><value>Your plan's staff limit has been reached.</value></data>
+  <data name="tenant.not_a_member" xml:space="preserve"><value>You are not a member of this store.</value></data>
+  <data name="tenant.member_not_found" xml:space="preserve"><value>Staff member not found.</value></data>
+  <data name="tenant.already_a_member" xml:space="preserve"><value>You are already a member of this store.</value></data>
+  <data name="tenant.owner_cannot_be_changed" xml:space="preserve"><value>The store owner cannot be changed this way.</value></data>
+  <data name="tenant.cannot_change_self" xml:space="preserve"><value>You cannot change your own access.</value></data>
+  <data name="tenant.invitation_invalid" xml:space="preserve"><value>This invitation is invalid or has expired.</value></data>
+  <data name="tenant.invitation_not_found" xml:space="preserve"><value>Invitation not found.</value></data>
+  <data name="catalog.category_not_found" xml:space="preserve"><value>Category not found.</value></data>
+  <data name="catalog.brand_not_found" xml:space="preserve"><value>Brand not found.</value></data>
+  <data name="catalog.attribute_not_found" xml:space="preserve"><value>Attribute not found.</value></data>
+  <data name="catalog.product_not_found" xml:space="preserve"><value>Product not found.</value></data>
+  <data name="catalog.slug_taken" xml:space="preserve"><value>This web address is already in use.</value></data>
+  <data name="catalog.sku_taken" xml:space="preserve"><value>This SKU is already in use.</value></data>
+  <data name="catalog.code_taken" xml:space="preserve"><value>This code is already in use.</value></data>
+  <data name="catalog.category_cycle" xml:space="preserve"><value>A category cannot be placed inside itself.</value></data>
+  <data name="catalog.category_has_children" xml:space="preserve"><value>Remove the subcategories first.</value></data>
+  <data name="catalog.product_limit_reached" xml:space="preserve"><value>Your plan's product limit has been reached.</value></data>
+  <data name="catalog.not_ready_to_publish" xml:space="preserve"><value>A product needs a name and an active variant to be published.</value></data>
+  <data name="catalog.invalid_attribute_value" xml:space="preserve"><value>An attribute value is not valid.</value></data>
+  <data name="catalog.required_attribute_missing" xml:space="preserve"><value>A required attribute is missing.</value></data>
+</root>

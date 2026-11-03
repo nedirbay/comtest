@@ -1,0 +1,13 @@
+[*.cs]
+# Test names use the Method_Scenario_Result convention.
+dotnet_diagnostic.CA1707.severity = none
+# Tests own short-lived objects and use plain string URLs.
+dotnet_diagnostic.CA2000.severity = none
+dotnet_diagnostic.CA1054.severity = none
+dotnet_diagnostic.CA1056.severity = none
+dotnet_diagnostic.CA2234.severity = none
+dotnet_diagnostic.CA1861.severity = none
+dotnet_diagnostic.CA1062.severity = none
+# Test controllers need instance actions, and xUnit collection definitions end in "Collection".
+dotnet_diagnostic.CA1822.severity = none
+dotnet_diagnostic.CA1711.severity = none

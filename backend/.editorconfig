@@ -1,0 +1,3 @@
+[*.cs]
+# Reserved words in other .NET languages do not matter here: this code is C# only.
+dotnet_diagnostic.CA1716.severity = none
