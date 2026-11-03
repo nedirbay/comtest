@@ -1,0 +1,69 @@
+/* Makes Element Plus speak our tokens, so that both libraries change together. */
+@layer element-bridge {
+  :root {
+    --el-font-family: var(--font-sans);
+    --el-border-radius-base: var(--radius-control);
+    --el-border-radius-small: 0.5rem;
+    --el-border-radius-round: 999px;
+    --el-font-size-base: 0.9375rem;
+
+    --el-color-primary: var(--color-brand-700);
+    --el-color-primary-dark-2: var(--color-brand-800);
+    --el-color-primary-light-3: var(--color-brand-500);
+    --el-color-primary-light-5: var(--color-brand-300);
+    --el-color-primary-light-7: var(--color-brand-200);
+    --el-color-primary-light-8: var(--color-brand-100);
+    --el-color-primary-light-9: var(--color-brand-50);
+
+    --el-color-danger: var(--theme-danger);
+    --el-color-success: var(--theme-success);
+    --el-color-warning: var(--theme-warning);
+
+    --el-text-color-primary: var(--theme-ink);
+    --el-text-color-regular: var(--theme-ink);
+    --el-text-color-secondary: var(--theme-ink-muted);
+    --el-text-color-placeholder: var(--theme-ink-subtle);
+
+    --el-bg-color: var(--theme-surface);
+    --el-bg-color-overlay: var(--theme-surface-raised);
+    --el-bg-color-page: var(--theme-canvas);
+    --el-fill-color-blank: var(--theme-surface);
+
+    --el-border-color: var(--theme-line-strong);
+    --el-border-color-light: var(--theme-line);
+    --el-border-color-lighter: var(--theme-line);
+    --el-border-color-extra-light: var(--theme-line);
+    --el-box-shadow-light: var(--shadow-raised);
+
+    --el-component-size: 2.5rem;
+    --el-component-size-large: 2.875rem;
+    --el-component-size-small: 2rem;
+  }
+
+  :root.dark {
+    --el-color-primary: var(--color-brand-300);
+    --el-color-primary-dark-2: var(--color-brand-200);
+    --el-color-primary-light-3: var(--color-brand-400);
+    --el-color-primary-light-5: var(--color-brand-600);
+    --el-color-primary-light-7: var(--color-brand-800);
+    --el-color-primary-light-8: var(--color-brand-900);
+    --el-color-primary-light-9: #16302a;
+    --el-color-white: var(--color-brand-950);
+  }
+
+  /* The label is the white of a primary button, so keep it readable in both themes. */
+  .el-button--primary {
+    --el-button-text-color: var(--theme-on-primary);
+    --el-button-hover-text-color: var(--theme-on-primary);
+    --el-button-active-text-color: var(--theme-on-primary);
+    --el-button-disabled-text-color: var(--theme-on-primary);
+  }
+
+  .el-button {
+    font-weight: 600;
+  }
+
+  .el-form-item__label {
+    font-weight: 600;
+  }
+}

@@ -78,6 +78,78 @@ public static class ErrorCodes
         public const string RequiredAttributeMissing = "catalog.required_attribute_missing";
     }
 
+    public static class Inventory
+    {
+        public const string WarehouseNotFound = "inventory.warehouse_not_found";
+        public const string WarehouseCodeTaken = "inventory.warehouse_code_taken";
+        public const string WarehouseNotEmpty = "inventory.warehouse_not_empty";
+        public const string VariantNotFound = "inventory.variant_not_found";
+        public const string StockItemNotFound = "inventory.stock_item_not_found";
+        public const string InsufficientStock = "inventory.insufficient_stock";
+    }
+
+    public static class Shipping
+    {
+        public const string ZoneNotFound = "shipping.zone_not_found";
+        public const string MethodNotFound = "shipping.method_not_found";
+        public const string MethodUnavailable = "shipping.method_unavailable";
+        public const string AddressRequired = "shipping.address_required";
+    }
+
+    public static class Customer
+    {
+        public const string AddressNotFound = "customer.address_not_found";
+        public const string AddressLimitReached = "customer.address_limit_reached";
+    }
+
+    public static class Cart
+    {
+        public const string Empty = "cart.empty";
+        public const string ItemUnavailable = "cart.item_unavailable";
+        public const string LineNotFound = "cart.line_not_found";
+        public const string CurrencyMismatch = "cart.currency_mismatch";
+        public const string TooManyLines = "cart.too_many_lines";
+    }
+
+    public static class Checkout
+    {
+        public const string IdempotencyKeyRequired = "checkout.idempotency_key_required";
+        public const string ContactRequired = "checkout.contact_required";
+        public const string TotalChanged = "checkout.total_changed";
+        public const string TooManyOpenOrders = "checkout.too_many_open_orders";
+    }
+
+    public static class Order
+    {
+        public const string NotFound = "order.not_found";
+        public const string InvalidTransition = "order.invalid_transition";
+        public const string TrackingTokenInvalid = "order.tracking_token_invalid";
+    }
+
+    public static class Payment
+    {
+        public const string NotFound = "payment.not_found";
+        public const string MethodUnavailable = "payment.method_unavailable";
+        public const string InvalidState = "payment.invalid_state";
+        public const string RefundExceedsPaid = "payment.refund_exceeds_paid";
+        public const string RefundNotFound = "payment.refund_not_found";
+        public const string SameApprover = "payment.same_approver";
+    }
+
+    public static class Media
+    {
+        public const string NotFound = "media.not_found";
+        public const string UnsupportedType = "media.unsupported_type";
+        public const string TooLarge = "media.too_large";
+        public const string QuotaExceeded = "media.quota_exceeded";
+        public const string InvalidImage = "media.invalid_image";
+        public const string UploadMissing = "media.upload_missing";
+        public const string NotReady = "media.not_ready";
+        public const string InUse = "media.in_use";
+        public const string InvalidState = "media.invalid_state";
+        public const string StorageUnavailable = "media.storage_unavailable";
+    }
+
     public static class Password
     {
         public const string TooShort = "password.too_short";

@@ -24,7 +24,16 @@ public static class Permissions
     public const string InventoryWrite = "inventory.write";
     public const string OrdersRead = "orders.read";
     public const string OrdersWrite = "orders.write";
+
+    /// <summary>Cancelling and returning orders, which undo sales.</summary>
+    public const string OrdersManage = "orders.manage";
+
+    /// <summary>Recording that money has been received.</summary>
+    public const string PaymentsConfirm = "payments.confirm";
     public const string PaymentsRefund = "payments.refund";
+
+    /// <summary>Second approval of large refunds. Deliberately separate from requesting one.</summary>
+    public const string PaymentsRefundApprove = "payments.refund.approve";
     public const string CustomersRead = "customers.read";
     public const string ReportsRead = "reports.read";
     public const string ReportsFinancial = "reports.financial";
@@ -34,7 +43,7 @@ public static class Permissions
 
     private static readonly string[] ManagerPermissions =
     [
-        CatalogRead, CatalogWrite, InventoryRead, InventoryWrite, OrdersRead, OrdersWrite, CustomersRead, ReportsRead,
+        CatalogRead, CatalogWrite, InventoryRead, InventoryWrite, OrdersRead, OrdersWrite, OrdersManage, PaymentsConfirm, PaymentsRefundApprove, CustomersRead, ReportsRead,
     ];
 
     private static readonly string[] StaffPermissions =

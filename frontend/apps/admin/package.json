@@ -1,0 +1,41 @@
+{
+  "name": "@comtest/admin",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@comtest/api-client": "workspace:*",
+    "@comtest/auth": "workspace:*",
+    "@comtest/ui": "workspace:*",
+    "@element-plus/icons-vue": "catalog:",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@sentry/vue": "^11.0.0",
+    "@tanstack/vue-query": "catalog:",
+    "element-plus": "catalog:",
+    "pinia": "catalog:",
+    "vue": "catalog:",
+    "vue-i18n": "catalog:",
+    "vue-router": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@comtest/config": "workspace:*",
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/node": "catalog:",
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "jsdom": "^30.0.0",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "unplugin-vue-components": "^32.0.0",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "vue-tsc": "catalog:"
+  }
+}

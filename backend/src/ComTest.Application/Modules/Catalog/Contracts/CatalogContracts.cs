@@ -24,6 +24,8 @@ public sealed record VariantAdminDto(
 
 public sealed record AttributeValueDto(Guid AttributeId, string Value);
 
+public sealed record ProductImageDto(Guid MediaAssetId, string? AltText, Uri? Thumbnail, Uri? Medium, Uri? Large);
+
 public sealed record ProductAdminDto(
     Guid Id,
     string Slug,
@@ -34,6 +36,7 @@ public sealed record ProductAdminDto(
     IReadOnlyList<ProductTranslationDto> Translations,
     IReadOnlyList<VariantAdminDto> Variants,
     IReadOnlyList<AttributeValueDto> Attributes,
+    IReadOnlyList<ProductImageDto> Images,
     uint Version);
 
 public sealed record ProductAdminListItemDto(Guid Id, string Slug, string Status, string? Name, int VariantCount, DateTimeOffset CreatedAt);
@@ -43,9 +46,9 @@ public sealed record PriceChangeDto(Guid VariantId, decimal OldAmount, decimal N
 // Storefront read models: only what a visitor may see, in one language.
 public sealed record StoreCategoryDto(Guid Id, string Slug, string Name, string? Description, IReadOnlyList<StoreCategoryDto> Children);
 
-public sealed record StoreProductListItemDto(Guid Id, string Slug, string Name, decimal? MinPrice, string? Currency, decimal? CompareAtAmount);
+public sealed record StoreProductListItemDto(Guid Id, string Slug, string Name, decimal? MinPrice, string? Currency, decimal? CompareAtAmount, bool InStock, Uri? ImageUrl);
 
-public sealed record StoreVariantDto(Guid Id, string Sku, decimal Price, string Currency, decimal? CompareAtAmount, IReadOnlyDictionary<string, string> Options);
+public sealed record StoreVariantDto(Guid Id, string Sku, decimal Price, string Currency, decimal? CompareAtAmount, IReadOnlyDictionary<string, string> Options, bool InStock);
 
 public sealed record StoreAttributeDto(string Code, string Name, string Value);
 
@@ -61,4 +64,26 @@ public sealed record StoreProductDto(
     Guid? BrandId,
     string? BrandName,
     IReadOnlyList<StoreVariantDto> Variants,
-    IReadOnlyList<StoreAttributeDto> Attributes);
+    IReadOnlyList<StoreAttributeDto> Attributes,
+    IReadOnlyList<ProductImageDto> Images);
+
+/// <summary>A variant as other modules need it for selling. The price here is the only price that counts.</summary>
+public sealed record PurchasableVariant(
+    Guid VariantId,
+    Guid ProductId,
+    string Sku,
+    string ProductName,
+    string ProductSlug,
+    IReadOnlyDictionary<string, string> Options,
+    decimal Price,
+    string Currency,
+    string? TaxGroup,
+    bool IsPurchasable);
+
+public interface ICatalogReader
+{
+    Task<bool> IsMediaInUseAsync(Guid mediaAssetId, CancellationToken cancellationToken);
+
+    /// <summary>Finds variants in the current store. Others are simply absent from the result.</summary>
+    Task<IReadOnlyDictionary<Guid, PurchasableVariant>> GetVariantsAsync(IReadOnlyCollection<Guid> variantIds, CancellationToken cancellationToken);
+}

@@ -116,6 +116,19 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.HasMany(item => item.Variants).WithOne().HasForeignKey(item => item.ProductId).OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(item => item.AttributeValues).WithOne().HasForeignKey(item => item.ProductId).OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(item => item.PriceChanges).WithOne().HasForeignKey(item => item.ProductId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(item => item.Images).WithOne().HasForeignKey(item => item.ProductId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+internal sealed class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage>
+{
+    public void Configure(EntityTypeBuilder<ProductImage> builder)
+    {
+        builder.ToTable("product_images");
+        builder.Property(item => item.AltText).HasMaxLength(300);
+        builder.HasIndex(item => new { item.ProductId, item.MediaAssetId }).IsUnique();
+        builder.HasIndex(item => item.MediaAssetId);
+        builder.HasOne<Domain.Modules.Media.MediaAsset>().WithMany().HasForeignKey(item => item.MediaAssetId).OnDelete(DeleteBehavior.Restrict);
     }
 }
 

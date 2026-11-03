@@ -1,0 +1,6 @@
+# Runs for the whole repository, so it stays silent when only the backend changed.
+root="$(git rev-parse --show-toplevel)"
+
+if git diff --cached --name-only | grep -q '^frontend/'; then
+  cd "$root/frontend" && pnpm exec lint-staged
+fi

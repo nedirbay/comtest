@@ -249,6 +249,78 @@ public sealed class SetTenantStatusHandler(IApplicationDbContext db, ITenantDire
     }
 }
 
+public sealed class TenantSettingsReader(IApplicationDbContext db, ITenantContext tenantContext) : ITenantSettings
+{
+    public async Task<TenantSettingsSnapshot?> GetCurrentAsync(CancellationToken cancellationToken)
+    {
+        if (tenantContext.TenantId is not { } tenantId)
+        {
+            return null;
+        }
+
+        return await db.Tenants
+            .AsNoTracking()
+            .Where(tenant => tenant.Id == tenantId)
+            .Select(tenant => new TenantSettingsSnapshot(
+                tenant.Id,
+                tenant.Name,
+                tenant.DefaultCurrency,
+                tenant.DefaultLanguage,
+                tenant.MaxProducts,
+                tenant.AcceptsCashOnDelivery,
+                tenant.AcceptsBankTransfer,
+                tenant.BankTransferInstructions,
+                tenant.RefundApprovalThreshold,
+                tenant.StorageQuotaMegabytes))
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+}
+
+public sealed record UpdatePaymentSettingsRequest(
+    bool AcceptsCashOnDelivery,
+    bool AcceptsBankTransfer,
+    string? BankTransferInstructions,
+    decimal? RefundApprovalThreshold);
+
+internal sealed class UpdatePaymentSettingsRequestValidator : AbstractValidator<UpdatePaymentSettingsRequest>
+{
+    public UpdatePaymentSettingsRequestValidator()
+    {
+        RuleFor(x => x.BankTransferInstructions).MaximumLength(2000);
+        RuleFor(x => x.BankTransferInstructions).NotEmpty().When(x => x.AcceptsBankTransfer);
+        RuleFor(x => x.RefundApprovalThreshold).GreaterThan(0m).When(x => x.RefundApprovalThreshold is not null);
+    }
+}
+
+public sealed record UpdatePaymentSettingsCommand(Guid TenantId, UpdatePaymentSettingsRequest Settings) : ICommand<bool>;
+
+public sealed class UpdatePaymentSettingsHandler(IApplicationDbContext db) : ICommandHandler<UpdatePaymentSettingsCommand, bool>
+{
+    public async Task<Result<bool>> HandleAsync(UpdatePaymentSettingsCommand command, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        var tenant = await db.Tenants.FirstOrDefaultAsync(item => item.Id == command.TenantId, cancellationToken);
+
+        if (tenant is null)
+        {
+            return Error.NotFound(ErrorCodes.Tenant.NotFound);
+        }
+
+        var settings = command.Settings;
+
+        tenant.UpdatePaymentSettings(
+            settings.AcceptsCashOnDelivery,
+            settings.AcceptsBankTransfer,
+            settings.BankTransferInstructions,
+            settings.RefundApprovalThreshold);
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+}
+
 internal static class TenantMappings
 {
     public static StoreSettingsDto ToSettingsDto(this Tenant tenant) => new(

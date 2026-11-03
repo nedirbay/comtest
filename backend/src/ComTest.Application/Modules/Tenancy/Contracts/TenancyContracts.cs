@@ -16,6 +16,25 @@ public interface ITenantDirectory
     void Invalidate(TenantInfo tenant);
 }
 
+public sealed record TenantSettingsSnapshot(
+    Guid TenantId,
+    string Name,
+    string DefaultCurrency,
+    string DefaultLanguage,
+    int MaxProducts,
+    bool AcceptsCashOnDelivery,
+    bool AcceptsBankTransfer,
+    string? BankTransferInstructions,
+    decimal? RefundApprovalThreshold,
+    int StorageQuotaMegabytes);
+
+/// <summary>How other modules read the current store's settings.</summary>
+public interface ITenantSettings
+{
+    /// <returns>The settings, or null when the request is not inside a store.</returns>
+    Task<TenantSettingsSnapshot?> GetCurrentAsync(CancellationToken cancellationToken);
+}
+
 public sealed record MembershipDto(Guid TenantId, string TenantName, string TenantSlug, string Role);
 
 public sealed record TenantDto(Guid Id, string Name, string Slug, string Status, string Plan);

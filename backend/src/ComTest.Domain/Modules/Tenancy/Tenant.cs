@@ -52,6 +52,15 @@ public sealed class Tenant : AuditableEntity, IVersioned
 
     public string? WorkingHours { get; private set; }
 
+    public bool AcceptsCashOnDelivery { get; private set; } = true;
+
+    public bool AcceptsBankTransfer { get; private set; }
+
+    public string? BankTransferInstructions { get; private set; }
+
+    /// <summary>Refunds at or above this amount need a second person's approval. Null means never.</summary>
+    public decimal? RefundApprovalThreshold { get; private set; }
+
     public uint Version { get; private set; }
 
     public static Tenant Create(string name, string slug, string defaultCurrency, string defaultLanguage, DateTimeOffset now)
@@ -89,6 +98,18 @@ public sealed class Tenant : AuditableEntity, IVersioned
         ContactPhone = contactPhone;
         Address = address;
         WorkingHours = workingHours;
+    }
+
+    public void UpdatePaymentSettings(
+        bool acceptsCashOnDelivery,
+        bool acceptsBankTransfer,
+        string? bankTransferInstructions,
+        decimal? refundApprovalThreshold)
+    {
+        AcceptsCashOnDelivery = acceptsCashOnDelivery;
+        AcceptsBankTransfer = acceptsBankTransfer;
+        BankTransferInstructions = bankTransferInstructions;
+        RefundApprovalThreshold = refundApprovalThreshold;
     }
 
     public void ChangePlan(TenantPlan plan)

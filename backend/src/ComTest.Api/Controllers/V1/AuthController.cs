@@ -28,8 +28,11 @@ public sealed class AuthController(
     IAccountService accounts,
     RefreshCookie refreshCookie) : ApiControllerBase
 {
+    private const string SignedInDescription = "Signed in. The refresh token is set in an HttpOnly cookie.";
+
     [HttpPost("register")]
     [EnableRateLimiting(RateLimitPolicies.AccountAction)]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> Register(RegisterRequest request, CancellationToken cancellationToken)
     {
         var result = await accounts.RegisterAsync(request, Client, cancellationToken);
@@ -39,11 +42,13 @@ public sealed class AuthController(
 
     [HttpPost("confirm-email")]
     [EnableRateLimiting(RateLimitPolicies.AccountAction)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ConfirmEmail(ConfirmEmailRequest request, CancellationToken cancellationToken) =>
         FromResult(await accounts.ConfirmEmailAsync(request, Client, cancellationToken));
 
     [HttpPost("resend-confirmation")]
     [EnableRateLimiting(RateLimitPolicies.AccountAction)]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> ResendConfirmation(EmailRequest request, CancellationToken cancellationToken)
     {
         await accounts.ResendConfirmationAsync(request, cancellationToken);
@@ -53,6 +58,7 @@ public sealed class AuthController(
 
     [HttpPost("login")]
     [EnableRateLimiting(RateLimitPolicies.Login)]
+    [ProducesResponseType<LoginResponse>(StatusCodes.Status200OK, Description = "Signed in: accessToken is set and the refresh token is in an HttpOnly cookie. If twoFactorRequired is true, only challengeToken is set, no cookie is written, and sign-in continues at login/two-factor.")]
     public async Task<IActionResult> Login(LoginRequest request, CancellationToken cancellationToken)
     {
         var result = await signIn.LoginAsync(request, Client, cancellationToken);
@@ -69,6 +75,7 @@ public sealed class AuthController(
 
     [HttpPost("login/two-factor")]
     [EnableRateLimiting(RateLimitPolicies.Login)]
+    [ProducesResponseType<LoginResponse>(StatusCodes.Status200OK, Description = SignedInDescription)]
     public async Task<IActionResult> LoginTwoFactor(TwoFactorLoginRequest request, CancellationToken cancellationToken)
     {
         var result = await signIn.CompleteTwoFactorAsync(request, Client, cancellationToken);
@@ -79,6 +86,7 @@ public sealed class AuthController(
     [HttpPost("refresh")]
     [RequireCsrfHeader]
     [EnableRateLimiting(RateLimitPolicies.Refresh)]
+    [ProducesResponseType<LoginResponse>(StatusCodes.Status200OK, Description = SignedInDescription)]
     public async Task<IActionResult> Refresh(CancellationToken cancellationToken)
     {
         var token = refreshCookie.Read(Request);
@@ -107,6 +115,7 @@ public sealed class AuthController(
     [HttpPost("logout")]
     [RequireCsrfHeader]
     [EnableRateLimiting(RateLimitPolicies.Refresh)]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Description = "Signed out. The refresh cookie is cleared.")]
     public async Task<IActionResult> Logout(CancellationToken cancellationToken)
     {
         await signIn.LogoutAsync(refreshCookie.Read(Request), Client, cancellationToken);
@@ -117,6 +126,7 @@ public sealed class AuthController(
 
     [HttpPost("forgot-password")]
     [EnableRateLimiting(RateLimitPolicies.AccountAction)]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> ForgotPassword(EmailRequest request, CancellationToken cancellationToken)
     {
         await accounts.ForgotPasswordAsync(request, Client, cancellationToken);
@@ -126,6 +136,7 @@ public sealed class AuthController(
 
     [HttpPost("reset-password")]
     [EnableRateLimiting(RateLimitPolicies.AccountAction)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ResetPassword(ResetPasswordRequest request, CancellationToken cancellationToken) =>
         FromResult(await accounts.ResetPasswordAsync(request, Client, cancellationToken));
 

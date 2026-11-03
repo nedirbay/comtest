@@ -20,6 +20,8 @@ internal sealed class TenantConfiguration : IEntityTypeConfiguration<Tenant>
         builder.Property(tenant => tenant.ContactPhone).HasMaxLength(32);
         builder.Property(tenant => tenant.Address).HasMaxLength(500);
         builder.Property(tenant => tenant.WorkingHours).HasMaxLength(200);
+        builder.Property(tenant => tenant.BankTransferInstructions).HasMaxLength(2000);
+        builder.Property(tenant => tenant.RefundApprovalThreshold).HasPrecision(18, 2);
         builder.HasIndex(tenant => tenant.Slug).IsUnique();
     }
 }

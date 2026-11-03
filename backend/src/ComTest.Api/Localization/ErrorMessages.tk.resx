@@ -68,4 +68,44 @@
   <data name="catalog.not_ready_to_publish" xml:space="preserve"><value>Çap etmek üçin harydyň ady we işjeň warianty bolmaly.</value></data>
   <data name="catalog.invalid_attribute_value" xml:space="preserve"><value>Häsiýetiň bahasy nädogry.</value></data>
   <data name="catalog.required_attribute_missing" xml:space="preserve"><value>Hökmany häsiýet ýok.</value></data>
+  <data name="inventory.warehouse_not_found" xml:space="preserve"><value>Ammar tapylmady.</value></data>
+  <data name="inventory.warehouse_code_taken" xml:space="preserve"><value>Bu ammar kody eýýäm ulanylýar.</value></data>
+  <data name="inventory.warehouse_not_empty" xml:space="preserve"><value>Bu ammarda heniz haryt bar.</value></data>
+  <data name="inventory.variant_not_found" xml:space="preserve"><value>Haryt warianty tapylmady.</value></data>
+  <data name="inventory.stock_item_not_found" xml:space="preserve"><value>Galyndy ýazgysy tapylmady.</value></data>
+  <data name="inventory.insufficient_stock" xml:space="preserve"><value>Ammarda ýeterlik haryt ýok.</value></data>
+  <data name="shipping.zone_not_found" xml:space="preserve"><value>Eltip bermek zolagy tapylmady.</value></data>
+  <data name="shipping.method_not_found" xml:space="preserve"><value>Eltip bermek görnüşi tapylmady.</value></data>
+  <data name="shipping.method_unavailable" xml:space="preserve"><value>Bu eltip bermek görnüşi şu salga elýeterli däl.</value></data>
+  <data name="shipping.address_required" xml:space="preserve"><value>Eltip bermek salgysy hökmany.</value></data>
+  <data name="customer.address_not_found" xml:space="preserve"><value>Salgy tapylmady.</value></data>
+  <data name="customer.address_limit_reached" xml:space="preserve"><value>Salgy çägine ýetdiňiz.</value></data>
+  <data name="cart.empty" xml:space="preserve"><value>Sebediňiz boş.</value></data>
+  <data name="cart.item_unavailable" xml:space="preserve"><value>Bu haryt elýeterli däl.</value></data>
+  <data name="cart.line_not_found" xml:space="preserve"><value>Bu haryt sebediňizde ýok.</value></data>
+  <data name="cart.currency_mismatch" xml:space="preserve"><value>Bu haryt başga pul birliginde satylýar.</value></data>
+  <data name="cart.too_many_lines" xml:space="preserve"><value>Sebediňizde aşa köp dürli haryt bar.</value></data>
+  <data name="checkout.idempotency_key_required" xml:space="preserve"><value>Soragda Idempotency-Key sözbaşysy bolmaly.</value></data>
+  <data name="checkout.contact_required" xml:space="preserve"><value>Aragatnaşyk ady we telefony hökmany.</value></data>
+  <data name="checkout.total_changed" xml:space="preserve"><value>Jemi baha üýtgedi. Sargydyňyzy gözden geçiriň.</value></data>
+  <data name="checkout.too_many_open_orders" xml:space="preserve"><value>Bu belgide aşa köp açyk sargyt bar.</value></data>
+  <data name="order.not_found" xml:space="preserve"><value>Sargyt tapylmady.</value></data>
+  <data name="order.invalid_transition" xml:space="preserve"><value>Sargydy bu ýagdaýa geçirip bolmaýar.</value></data>
+  <data name="order.tracking_token_invalid" xml:space="preserve"><value>Bu yzarlaýyş salgysy nädogry ýa-da möhleti geçen.</value></data>
+  <data name="payment.not_found" xml:space="preserve"><value>Töleg tapylmady.</value></data>
+  <data name="payment.method_unavailable" xml:space="preserve"><value>Bu töleg görnüşi elýeterli däl.</value></data>
+  <data name="payment.invalid_state" xml:space="preserve"><value>Tölegiň häzirki ýagdaýynda muny edip bolmaýar.</value></data>
+  <data name="payment.refund_exceeds_paid" xml:space="preserve"><value>Pul gaýtarma galan mukdardan köp.</value></data>
+  <data name="payment.refund_not_found" xml:space="preserve"><value>Pul gaýtarma haýyşy tapylmady.</value></data>
+  <data name="payment.same_approver" xml:space="preserve"><value>Bu pul gaýtarmany başga adam tassyklamaly.</value></data>
+  <data name="media.not_found" xml:space="preserve"><value>Faýl tapylmady.</value></data>
+  <data name="media.unsupported_type" xml:space="preserve"><value>Diňe JPEG, PNG we WebP suratlary ýükläp bolýar.</value></data>
+  <data name="media.too_large" xml:space="preserve"><value>Faýl aşa uly.</value></data>
+  <data name="media.quota_exceeded" xml:space="preserve"><value>Tarifiňiziň saklaýyş çägine ýetildi.</value></data>
+  <data name="media.invalid_image" xml:space="preserve"><value>Faýl dogry surat däl.</value></data>
+  <data name="media.upload_missing" xml:space="preserve"><value>Faýl entek ýüklenmedi.</value></data>
+  <data name="media.not_ready" xml:space="preserve"><value>Bu surat ulanmaga taýýar däl.</value></data>
+  <data name="media.in_use" xml:space="preserve"><value>Bu surat heniz harytda ulanylýar.</value></data>
+  <data name="media.invalid_state" xml:space="preserve"><value>Faýlyň häzirki ýagdaýynda muny edip bolmaýar.</value></data>
+  <data name="media.storage_unavailable" xml:space="preserve"><value>Faýl saklaýyşy elýeterli däl.</value></data>
 </root>

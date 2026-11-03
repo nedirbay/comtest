@@ -1,0 +1,124 @@
+/*
+ * Design tokens, the one place where colours, type and shape are decided.
+ * Tailwind reads them through @theme and Element Plus through element-bridge.css.
+ *
+ * Pine green carries the brand, and madder red, from Turkmen carpets, marks what is on sale.
+ * Warm greys keep the pages from feeling clinical next to product photos.
+ */
+@theme {
+  --font-sans: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --color-brand-50: #eef8f4;
+  --color-brand-100: #d5eee3;
+  --color-brand-200: #aeddc9;
+  --color-brand-300: #7cc5a9;
+  --color-brand-400: #4aa886;
+  --color-brand-500: #2a8c6b;
+  --color-brand-600: #1b7255;
+  --color-brand-700: #145b45;
+  --color-brand-800: #114938;
+  --color-brand-900: #0e3c2f;
+  --color-brand-950: #07211a;
+
+  --color-accent-50: #fdf3f0;
+  --color-accent-100: #fae3dd;
+  --color-accent-500: #c8452f;
+  --color-accent-600: #b23723;
+  --color-accent-700: #8f2c1c;
+
+  --color-stone-50: #faf9f7;
+  --color-stone-100: #f3f1ed;
+  --color-stone-200: #e6e3dc;
+  --color-stone-300: #d3cfc6;
+  --color-stone-400: #a8a399;
+  --color-stone-500: #7c776d;
+  --color-stone-600: #5d5951;
+  --color-stone-700: #47443e;
+  --color-stone-800: #2e2c28;
+  --color-stone-900: #1e1c19;
+  --color-stone-950: #131210;
+
+  /* Meaning rather than hue. Components use these, so dark mode only has to redefine them. */
+  --color-canvas: var(--theme-canvas);
+  --color-surface: var(--theme-surface);
+  --color-surface-raised: var(--theme-surface-raised);
+  --color-line: var(--theme-line);
+  --color-line-strong: var(--theme-line-strong);
+  --color-ink: var(--theme-ink);
+  --color-ink-muted: var(--theme-ink-muted);
+  --color-ink-subtle: var(--theme-ink-subtle);
+  --color-primary: var(--theme-primary);
+  --color-primary-hover: var(--theme-primary-hover);
+  --color-primary-soft: var(--theme-primary-soft);
+  --color-on-primary: var(--theme-on-primary);
+  --color-sale: var(--theme-sale);
+  --color-sale-soft: var(--theme-sale-soft);
+  --color-success: var(--theme-success);
+  --color-warning: var(--theme-warning);
+  --color-danger: var(--theme-danger);
+
+  --radius-control: 0.625rem;
+  --radius-card: 0.875rem;
+  --radius-panel: 1.25rem;
+
+  --shadow-card: 0 1px 2px rgb(30 28 25 / 6%), 0 1px 1px rgb(30 28 25 / 4%);
+  --shadow-raised: 0 8px 24px -8px rgb(30 28 25 / 16%), 0 2px 6px rgb(30 28 25 / 6%);
+  --shadow-overlay: 0 24px 48px -12px rgb(30 28 25 / 28%);
+
+  --text-display: 2.25rem;
+  --text-display--line-height: 1.15;
+  --text-display--letter-spacing: -0.02em;
+  --text-display--font-weight: 700;
+
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+
+  @keyframes shimmer {
+    50% {
+      opacity: 0.5;
+    }
+  }
+}
+
+:root {
+  color-scheme: light;
+
+  --theme-canvas: var(--color-stone-50);
+  --theme-surface: #fff;
+  --theme-surface-raised: #fff;
+  --theme-line: var(--color-stone-200);
+  --theme-line-strong: var(--color-stone-300);
+  --theme-ink: var(--color-stone-900);
+  --theme-ink-muted: var(--color-stone-600);
+  --theme-ink-subtle: var(--color-stone-500);
+  --theme-primary: var(--color-brand-700);
+  --theme-primary-hover: var(--color-brand-800);
+  --theme-primary-soft: var(--color-brand-50);
+  --theme-on-primary: #fff;
+  --theme-sale: var(--color-accent-600);
+  --theme-sale-soft: var(--color-accent-50);
+  --theme-success: #15803d;
+  --theme-warning: #b45309;
+  --theme-danger: #b91c1c;
+}
+
+:root.dark {
+  color-scheme: dark;
+
+  --theme-canvas: var(--color-stone-950);
+  --theme-surface: var(--color-stone-900);
+  --theme-surface-raised: var(--color-stone-800);
+  --theme-line: #38352f;
+  --theme-line-strong: #4b4740;
+  --theme-ink: #f4f2ee;
+  --theme-ink-muted: #bdb8ae;
+  --theme-ink-subtle: #98938a;
+  --theme-primary: var(--color-brand-300);
+  --theme-primary-hover: var(--color-brand-200);
+  --theme-primary-soft: #16302a;
+  --theme-on-primary: var(--color-brand-950);
+  --theme-sale: #f0836f;
+  --theme-sale-soft: #3a1f1a;
+  --theme-success: #4ade80;
+  --theme-warning: #fbbf24;
+  --theme-danger: #f87171;
+}

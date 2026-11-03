@@ -13,6 +13,8 @@ public static class RateLimitPolicies
     public const string AccountAction = "account-action";
     public const string Refresh = "refresh";
     public const string Sms = "sms";
+    public const string Checkout = "checkout";
+    public const string Tracking = "tracking";
 
     private const int WindowSegments = 6;
 
@@ -61,6 +63,10 @@ public static class RateLimitPolicies
                     SlidingWindow(IpKey(context), settings.RefreshPerMinute, TimeSpan.FromMinutes(1)));
                 options.AddPolicy(Sms, context =>
                     SlidingWindow(CallerKey(context), settings.SmsPerHour, TimeSpan.FromHours(1)));
+                options.AddPolicy(Checkout, context =>
+                    SlidingWindow(CallerKey(context), settings.CheckoutPerMinute, TimeSpan.FromMinutes(1)));
+                options.AddPolicy(Tracking, context =>
+                    SlidingWindow(IpKey(context), settings.TrackingPerMinute, TimeSpan.FromMinutes(1)));
             });
 
         return services;

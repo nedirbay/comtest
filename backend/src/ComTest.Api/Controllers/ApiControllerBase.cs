@@ -22,6 +22,9 @@ public abstract class ApiControllerBase : ControllerBase
 
     protected Guid? SessionId => CurrentUser.SessionId;
 
+    /// <summary>For actions open to guests too: the signed-in user, or null for a guest.</summary>
+    protected Guid? CurrentUserId => CurrentUser.UserId;
+
     protected IActionResult FromResult(Result result)
     {
         ArgumentNullException.ThrowIfNull(result);

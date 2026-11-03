@@ -1,6 +1,14 @@
 using ComTest.Domain.Modules.Catalog;
+using ComTest.Domain.Modules.Customers;
+using ComTest.Domain.Modules.Inventory;
+using ComTest.Domain.Modules.Media;
+using ComTest.Domain.Modules.Ordering;
+using ComTest.Domain.Modules.Payments;
+using ComTest.Domain.Modules.Shipping;
 using ComTest.Domain.Modules.Tenancy;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ComTest.Application.Abstractions;
 
@@ -25,6 +33,35 @@ public interface IApplicationDbContext
     DbSet<Product> Products { get; }
 
     DbSet<ProductVariant> ProductVariants { get; }
+
+    DbSet<Warehouse> Warehouses { get; }
+
+    DbSet<StockItem> StockItems { get; }
+
+    DbSet<StockMovement> StockMovements { get; }
+
+    DbSet<StockReservation> StockReservations { get; }
+
+    DbSet<CustomerAddress> CustomerAddresses { get; }
+
+    DbSet<ShippingZone> ShippingZones { get; }
+
+    DbSet<ShippingMethod> ShippingMethods { get; }
+
+    DbSet<Payment> Payments { get; }
+
+    DbSet<Refund> Refunds { get; }
+
+    DbSet<Cart> Carts { get; }
+
+    DbSet<Order> Orders { get; }
+
+    DbSet<MediaAsset> MediaAssets { get; }
+
+    DatabaseFacade Database { get; }
+
+    EntityEntry<TEntity> Entry<TEntity>(TEntity entity)
+        where TEntity : class;
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

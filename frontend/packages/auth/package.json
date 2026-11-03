@@ -1,0 +1,42 @@
+{
+  "name": "@comtest/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./i18n": "./src/i18n.ts"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@comtest/api-client": "workspace:*",
+    "@comtest/ui": "workspace:*",
+    "@tanstack/vue-query": "catalog:",
+    "qrcode": "^1.5.4",
+    "zod": "catalog:"
+  },
+  "peerDependencies": {
+    "element-plus": "catalog:",
+    "pinia": "catalog:",
+    "vue": "catalog:",
+    "vue-i18n": "catalog:"
+  },
+  "devDependencies": {
+    "@comtest/config": "workspace:*",
+    "@types/qrcode": "^1.5.5",
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "element-plus": "catalog:",
+    "jsdom": "^30.0.0",
+    "pinia": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:",
+    "vue-i18n": "catalog:",
+    "vue-tsc": "catalog:"
+  }
+}

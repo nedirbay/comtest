@@ -50,6 +50,12 @@ public sealed class RateLimitSettings
 
     [Range(1, int.MaxValue)]
     public int SmsPerHour { get; set; } = 10;
+
+    [Range(1, int.MaxValue)]
+    public int CheckoutPerMinute { get; set; } = 10;
+
+    [Range(1, int.MaxValue)]
+    public int TrackingPerMinute { get; set; } = 30;
 }
 
 /// <summary>Reverse proxies whose X-Forwarded-* headers may be believed. Empty means none.</summary>

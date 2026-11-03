@@ -1,0 +1,4 @@
+{
+  "extends": "@comtest/config/tsconfig/vue.json",
+  "include": ["src", "test"]
+}

@@ -1,5 +1,8 @@
 using ComTest.Application.Abstractions;
 using ComTest.Application.Modules.Catalog.Contracts;
+using ComTest.Application.Modules.Inventory.Contracts;
+using ComTest.Application.Modules.Media.Contracts;
+using ComTest.Application.Modules.Tenancy.Contracts;
 using ComTest.Domain.Modules.Catalog;
 using ComTest.Shared.Messaging;
 using ComTest.Shared.Querying;
@@ -22,7 +25,13 @@ public sealed record ListStoreProductsQuery(
     string? Search) : IQuery<PagedResult<StoreProductListItemDto>>;
 
 /// <summary>What visitors see: published products only, in their language, without staff-only fields.</summary>
-public sealed class StorefrontQueries(IApplicationDbContext db, ITenantContext tenantContext, CatalogCache cache) :
+public sealed class StorefrontQueries(
+    IApplicationDbContext db,
+    ITenantContext tenantContext,
+    ITenantSettings tenantSettings,
+    IStockService stock,
+    IMediaLibrary media,
+    CatalogCache cache) :
     IQueryHandler<GetStoreCategoriesQuery, IReadOnlyList<StoreCategoryDto>>,
     IQueryHandler<GetStoreProductQuery, StoreProductDto>,
     IQueryHandler<ListStoreProductsQuery, PagedResult<StoreProductListItemDto>>
@@ -37,7 +46,7 @@ public sealed class StorefrontQueries(IApplicationDbContext db, ITenantContext t
         }
 
         var language = CatalogRules.CurrentLanguage();
-        var fallback = await GetStoreLanguageAsync(tenantId, cancellationToken);
+        var fallback = await GetStoreLanguageAsync(cancellationToken);
 
         var tree = await cache.GetOrCreateAsync(
             tenantId,
@@ -69,7 +78,7 @@ public sealed class StorefrontQueries(IApplicationDbContext db, ITenantContext t
         }
 
         var language = CatalogRules.CurrentLanguage();
-        var fallback = await GetStoreLanguageAsync(tenantId, cancellationToken);
+        var fallback = await GetStoreLanguageAsync(cancellationToken);
 
         var product = await cache.GetOrCreateAsync(
             tenantId,
@@ -77,7 +86,20 @@ public sealed class StorefrontQueries(IApplicationDbContext db, ITenantContext t
             token => new ValueTask<StoreProductDto?>(LoadProductAsync(query.Slug, language, fallback, token)),
             cancellationToken);
 
-        return product is null ? Error.NotFound(ErrorCodes.Catalog.ProductNotFound) : product;
+        if (product is null)
+        {
+            return Error.NotFound(ErrorCodes.Catalog.ProductNotFound);
+        }
+
+        // Stock changes too often to cache. Visitors see only whether a variant can be bought, not how many are left.
+        var available = await stock.GetAvailableAsync(product.Variants.Select(item => item.Id).ToList(), cancellationToken);
+
+        return product with
+        {
+            Variants = product.Variants
+                .Select(item => item with { InStock = available.GetValueOrDefault(item.Id) > 0 })
+                .ToList(),
+        };
     }
 
     public async Task<Result<PagedResult<StoreProductListItemDto>>> HandleAsync(ListStoreProductsQuery query, CancellationToken cancellationToken)
@@ -90,7 +112,7 @@ public sealed class StorefrontQueries(IApplicationDbContext db, ITenantContext t
         }
 
         var language = CatalogRules.CurrentLanguage();
-        var fallback = await GetStoreLanguageAsync(tenantId, cancellationToken);
+        var fallback = await GetStoreLanguageAsync(cancellationToken);
         var products = db.Products.AsNoTracking().Where(product => product.Status == ProductStatus.Published);
 
         if (query.CategoryId is { } categoryId)
@@ -149,7 +171,7 @@ public sealed class StorefrontQueries(IApplicationDbContext db, ITenantContext t
         var items = await sorted.Value
             .Skip(query.Page.Skip)
             .Take(query.Page.PageSize)
-            .Select(product => new StoreProductListItemDto(
+            .Select(product => new ProductRow(
                 product.Id,
                 product.Slug,
                 product.Translations.Where(item => item.Language == language).Select(item => item.Name).FirstOrDefault()
@@ -158,14 +180,33 @@ public sealed class StorefrontQueries(IApplicationDbContext db, ITenantContext t
                     ?? string.Empty,
                 product.Variants.Where(variant => variant.IsActive).Min(variant => (decimal?)variant.Price.Amount),
                 product.Variants.Where(variant => variant.IsActive).OrderBy(variant => variant.Price.Amount).Select(variant => variant.Price.Currency).FirstOrDefault(),
-                product.Variants.Where(variant => variant.IsActive).OrderBy(variant => variant.Price.Amount).Select(variant => variant.CompareAtAmount).FirstOrDefault()))
+                product.Variants.Where(variant => variant.IsActive).OrderBy(variant => variant.Price.Amount).Select(variant => variant.CompareAtAmount).FirstOrDefault(),
+                product.Variants.Where(variant => variant.IsActive).Select(variant => variant.Id).ToList(),
+                product.Images.OrderBy(image => image.SortOrder).Select(image => (Guid?)image.MediaAssetId).FirstOrDefault()))
             .ToListAsync(cancellationToken);
 
-        return new PagedResult<StoreProductListItemDto>(items, query.Page.Page, query.Page.PageSize, total);
+        var available = await stock.GetAvailableAsync(items.SelectMany(item => item.VariantIds).ToList(), cancellationToken);
+        var images = await media.GetReadyAsync(items.Where(item => item.ImageId is not null).Select(item => item.ImageId!.Value).ToList(), cancellationToken);
+
+        var result = items
+            .Select(item => new StoreProductListItemDto(
+                item.Id,
+                item.Slug,
+                item.Name,
+                item.MinPrice,
+                item.Currency,
+                item.CompareAtAmount,
+                item.VariantIds.Exists(id => available.GetValueOrDefault(id) > 0),
+                item.ImageId is { } imageId ? images.GetValueOrDefault(imageId)?.Thumbnail : null))
+            .ToList();
+
+        return new PagedResult<StoreProductListItemDto>(result, query.Page.Page, query.Page.PageSize, total);
     }
 
-    private Task<string> GetStoreLanguageAsync(Guid tenantId, CancellationToken cancellationToken) =>
-        db.Tenants.AsNoTracking().Where(tenant => tenant.Id == tenantId).Select(tenant => tenant.DefaultLanguage).FirstAsync(cancellationToken);
+    private sealed record ProductRow(Guid Id, string Slug, string Name, decimal? MinPrice, string? Currency, decimal? CompareAtAmount, List<Guid> VariantIds, Guid? ImageId);
+
+    private async Task<string> GetStoreLanguageAsync(CancellationToken cancellationToken) =>
+        (await tenantSettings.GetCurrentAsync(cancellationToken))?.DefaultLanguage ?? CatalogRules.CurrentLanguage();
 
     private static List<StoreCategoryDto> BuildTree(List<Category> categories, Guid? parentId, string language, string fallback) =>
         categories
@@ -185,6 +226,7 @@ public sealed class StorefrontQueries(IApplicationDbContext db, ITenantContext t
             .Include(item => item.Translations)
             .Include(item => item.Variants)
             .Include(item => item.AttributeValues)
+            .Include(item => item.Images)
             .FirstOrDefaultAsync(item => item.Slug == slug && item.Status == ProductStatus.Published, cancellationToken);
 
         if (product is null)
@@ -204,6 +246,7 @@ public sealed class StorefrontQueries(IApplicationDbContext db, ITenantContext t
             .ToDictionaryAsync(item => item.Id, cancellationToken);
 
         var translation = CatalogRules.PickTranslation(product.Translations, language, fallback);
+        var imageUrls = await media.GetReadyAsync(product.Images.Select(item => item.MediaAssetId).ToList(), cancellationToken);
 
         return new StoreProductDto(
             product.Id,
@@ -219,7 +262,7 @@ public sealed class StorefrontQueries(IApplicationDbContext db, ITenantContext t
             product.Variants
                 .Where(item => item.IsActive)
                 .OrderBy(item => item.Price.Amount)
-                .Select(item => new StoreVariantDto(item.Id, item.Sku, item.Price.Amount, item.Price.Currency, item.CompareAtAmount, item.Options))
+                .Select(item => new StoreVariantDto(item.Id, item.Sku, item.Price.Amount, item.Price.Currency, item.CompareAtAmount, item.Options, false))
                 .ToList(),
             product.AttributeValues
                 .Where(item => definitions.ContainsKey(item.AttributeDefinitionId))
@@ -232,6 +275,7 @@ public sealed class StorefrontQueries(IApplicationDbContext db, ITenantContext t
                         CatalogRules.PickTranslation(definition.Translations, language, fallback)?.Name ?? definition.Code,
                         item.Value);
                 })
-                .ToList());
+                .ToList(),
+            CatalogImages.ToDtos(product.Images, imageUrls));
     }
 }

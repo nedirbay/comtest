@@ -1,0 +1,10 @@
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@import './tokens.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@source '../';
+@source '../../../auth/src';

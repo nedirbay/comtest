@@ -357,6 +357,8 @@ public sealed class RolesAndPermissionsTests
         Assert.DoesNotContain(Permissions.PaymentsRefund, Permissions.ByRole[Roles.Staff]);
         Assert.DoesNotContain(Permissions.ReportsFinancial, Permissions.ByRole[Roles.Staff]);
         Assert.DoesNotContain(Permissions.PaymentsRefund, Permissions.ByRole[Roles.Manager]);
+        Assert.DoesNotContain(Permissions.OrdersManage, Permissions.ByRole[Roles.Staff]);
+        Assert.DoesNotContain(Permissions.PaymentsConfirm, Permissions.ByRole[Roles.Staff]);
     }
 
     [Fact]

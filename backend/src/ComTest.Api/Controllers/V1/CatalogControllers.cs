@@ -18,12 +18,14 @@ namespace ComTest.Api.Controllers.V1;
 public sealed class CatalogController : TenantControllerBase
 {
     [HttpGet("categories")]
+    [ProducesResponseType<IReadOnlyList<StoreCategoryDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Categories(
         [FromServices] IQueryHandler<GetStoreCategoriesQuery, IReadOnlyList<StoreCategoryDto>> handler,
         CancellationToken cancellationToken) =>
         FromResult(await handler.HandleAsync(new GetStoreCategoriesQuery(), cancellationToken));
 
     [HttpGet("products")]
+    [ProducesResponseType<PagedResult<StoreProductListItemDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Products(
         [FromQuery] int page,
         [FromQuery] int pageSize,
@@ -40,6 +42,7 @@ public sealed class CatalogController : TenantControllerBase
             cancellationToken));
 
     [HttpGet("products/{slug}")]
+    [ProducesResponseType<StoreProductDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Product(
         string slug,
         [FromServices] IQueryHandler<GetStoreProductQuery, StoreProductDto> handler,
@@ -53,6 +56,7 @@ public sealed class AdminCategoriesController : TenantControllerBase
 {
     [HttpGet]
     [HasPermission(Permissions.CatalogRead)]
+    [ProducesResponseType<IReadOnlyList<CategoryDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> List(
         [FromServices] IQueryHandler<ListCategoriesQuery, IReadOnlyList<CategoryDto>> handler,
         CancellationToken cancellationToken) =>
@@ -60,6 +64,7 @@ public sealed class AdminCategoriesController : TenantControllerBase
 
     [HttpPost]
     [HasPermission(Permissions.CatalogWrite)]
+    [ProducesResponseType<CategoryDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Create(
         SaveCategoryRequest request,
         [FromServices] ICommandHandler<CreateCategoryCommand, CategoryDto> handler,
@@ -68,6 +73,7 @@ public sealed class AdminCategoriesController : TenantControllerBase
 
     [HttpPut("{id:guid}")]
     [HasPermission(Permissions.CatalogWrite)]
+    [ProducesResponseType<CategoryDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Update(
         Guid id,
         SaveCategoryRequest request,
@@ -77,6 +83,7 @@ public sealed class AdminCategoriesController : TenantControllerBase
 
     [HttpDelete("{id:guid}")]
     [HasPermission(Permissions.CatalogWrite)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
         Guid id,
         [FromServices] ICommandHandler<DeleteCategoryCommand, bool> handler,
@@ -89,6 +96,7 @@ public sealed class AdminCategoriesController : TenantControllerBase
 
     [HttpPost("{id:guid}/attributes")]
     [HasPermission(Permissions.CatalogWrite)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> AssignAttribute(
         Guid id,
         AssignCategoryAttributeRequest request,
@@ -107,6 +115,7 @@ public sealed class AdminBrandsController : TenantControllerBase
 {
     [HttpGet]
     [HasPermission(Permissions.CatalogRead)]
+    [ProducesResponseType<IReadOnlyList<BrandDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> List(
         [FromServices] IQueryHandler<ListBrandsQuery, IReadOnlyList<BrandDto>> handler,
         CancellationToken cancellationToken) =>
@@ -114,6 +123,7 @@ public sealed class AdminBrandsController : TenantControllerBase
 
     [HttpPost]
     [HasPermission(Permissions.CatalogWrite)]
+    [ProducesResponseType<BrandDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Create(
         SaveBrandRequest request,
         [FromServices] ICommandHandler<CreateBrandCommand, BrandDto> handler,
@@ -122,6 +132,7 @@ public sealed class AdminBrandsController : TenantControllerBase
 
     [HttpPut("{id:guid}")]
     [HasPermission(Permissions.CatalogWrite)]
+    [ProducesResponseType<BrandDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Update(
         Guid id,
         SaveBrandRequest request,
@@ -131,6 +142,7 @@ public sealed class AdminBrandsController : TenantControllerBase
 
     [HttpDelete("{id:guid}")]
     [HasPermission(Permissions.CatalogWrite)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
         Guid id,
         [FromServices] ICommandHandler<DeleteBrandCommand, bool> handler,
@@ -148,6 +160,7 @@ public sealed class AdminAttributesController : TenantControllerBase
 {
     [HttpGet]
     [HasPermission(Permissions.CatalogRead)]
+    [ProducesResponseType<IReadOnlyList<AttributeDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> List(
         [FromServices] IQueryHandler<ListAttributesQuery, IReadOnlyList<AttributeDto>> handler,
         CancellationToken cancellationToken) =>
@@ -155,6 +168,7 @@ public sealed class AdminAttributesController : TenantControllerBase
 
     [HttpPost]
     [HasPermission(Permissions.CatalogWrite)]
+    [ProducesResponseType<AttributeDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Create(
         CreateAttributeRequest request,
         [FromServices] ICommandHandler<CreateAttributeCommand, AttributeDto> handler,
@@ -170,6 +184,7 @@ public sealed class AdminProductsController : TenantControllerBase
 {
     [HttpGet]
     [HasPermission(Permissions.CatalogRead)]
+    [ProducesResponseType<PagedResult<ProductAdminListItemDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> List(
         [FromQuery] int page,
         [FromQuery] int pageSize,
@@ -181,6 +196,7 @@ public sealed class AdminProductsController : TenantControllerBase
 
     [HttpGet("{id:guid}")]
     [HasPermission(Permissions.CatalogRead)]
+    [ProducesResponseType<ProductAdminDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(
         Guid id,
         [FromServices] IQueryHandler<GetProductQuery, ProductAdminDto> handler,
@@ -189,6 +205,7 @@ public sealed class AdminProductsController : TenantControllerBase
 
     [HttpGet("{id:guid}/price-history")]
     [HasPermission(Permissions.CatalogRead)]
+    [ProducesResponseType<IReadOnlyList<PriceChangeDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> PriceHistory(
         Guid id,
         [FromServices] IQueryHandler<GetPriceHistoryQuery, IReadOnlyList<PriceChangeDto>> handler,
@@ -197,6 +214,7 @@ public sealed class AdminProductsController : TenantControllerBase
 
     [HttpPost]
     [HasPermission(Permissions.CatalogWrite)]
+    [ProducesResponseType<ProductAdminDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Create(
         SaveProductRequest request,
         [FromServices] ICommandHandler<CreateProductCommand, ProductAdminDto> handler,
@@ -205,6 +223,7 @@ public sealed class AdminProductsController : TenantControllerBase
 
     [HttpPut("{id:guid}")]
     [HasPermission(Permissions.CatalogWrite)]
+    [ProducesResponseType<ProductAdminDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Update(
         Guid id,
         SaveProductRequest request,
@@ -214,6 +233,7 @@ public sealed class AdminProductsController : TenantControllerBase
 
     [HttpPut("{id:guid}/status")]
     [HasPermission(Permissions.CatalogWrite)]
+    [ProducesResponseType<ProductAdminDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> ChangeStatus(
         Guid id,
         ChangeProductStatusRequest request,
@@ -223,6 +243,7 @@ public sealed class AdminProductsController : TenantControllerBase
 
     [HttpDelete("{id:guid}")]
     [HasPermission(Permissions.CatalogWrite)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
         Guid id,
         [FromServices] ICommandHandler<DeleteProductCommand, bool> handler,

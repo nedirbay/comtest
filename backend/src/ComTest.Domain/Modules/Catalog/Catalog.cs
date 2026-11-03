@@ -356,8 +356,39 @@ public sealed class PriceChange : TenantOwnedEntity
     public Money NewPrice { get; private set; } = null!;
 }
 
+public sealed record ProductImageInput(Guid MediaAssetId, string? AltText);
+
+public sealed class ProductImage : TenantOwnedEntity
+{
+    private ProductImage()
+    {
+    }
+
+    internal ProductImage(ProductImageInput input, int sortOrder)
+    {
+        MediaAssetId = input.MediaAssetId;
+        AltText = input.AltText;
+        SortOrder = sortOrder;
+    }
+
+    public Guid ProductId { get; private set; }
+
+    public Guid MediaAssetId { get; private set; }
+
+    public string? AltText { get; private set; }
+
+    public int SortOrder { get; private set; }
+
+    internal void Update(string? altText, int sortOrder)
+    {
+        AltText = altText;
+        SortOrder = sortOrder;
+    }
+}
+
 public sealed class Product : SoftDeletableEntity
 {
+    private readonly List<ProductImage> _images = [];
     private readonly List<ProductTranslation> _translations = [];
     private readonly List<ProductVariant> _variants = [];
     private readonly List<ProductAttributeValue> _attributeValues = [];
@@ -381,6 +412,8 @@ public sealed class Product : SoftDeletableEntity
 
     /// <summary>Bumped on every edit, so that a change to a child row also changes this row's version.</summary>
     public int Revision { get; private set; }
+
+    public IReadOnlyCollection<ProductImage> Images => _images;
 
     public IReadOnlyCollection<ProductTranslation> Translations => _translations;
 
@@ -425,6 +458,29 @@ public sealed class Product : SoftDeletableEntity
             else
             {
                 existing.Update(input);
+            }
+        }
+    }
+
+    /// <summary>The order of the list is the order on the page. The first image is the main one.</summary>
+    public void SetImages(IReadOnlyList<ProductImageInput> images)
+    {
+        ArgumentNullException.ThrowIfNull(images);
+
+        _images.RemoveAll(existing => !images.Any(input => input.MediaAssetId == existing.MediaAssetId));
+
+        for (var index = 0; index < images.Count; index++)
+        {
+            var input = images[index];
+            var existing = _images.Find(item => item.MediaAssetId == input.MediaAssetId);
+
+            if (existing is null)
+            {
+                _images.Add(new ProductImage(input, index));
+            }
+            else
+            {
+                existing.Update(input.AltText, index);
             }
         }
     }

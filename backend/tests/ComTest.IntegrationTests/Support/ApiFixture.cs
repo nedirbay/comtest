@@ -8,6 +8,8 @@ using ComTest.Application.Modules.Identity.Contracts;
 using ComTest.Infrastructure;
 using ComTest.Infrastructure.Identity;
 using ComTest.Infrastructure.Persistence;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -34,11 +36,22 @@ public sealed partial class ApiFixture : IAsyncLifetime
 
     private const string AppPassword = "app-test-password";
     private const string DatabaseName = "comtest_test";
+    private const string StorageUser = "comtest-test";
+    private const string StoragePassword = "comtest-test-secret";
+    private const ushort StoragePort = 9000;
 
     private readonly PostgreSqlContainer _database = new PostgreSqlBuilder("postgres:16-alpine")
         .WithDatabase(DatabaseName)
         .WithUsername("postgres")
         .WithPassword("postgres")
+        .Build();
+
+    private readonly IContainer _storage = new ContainerBuilder("cgr.dev/chainguard/minio:latest")
+        .WithEnvironment("MINIO_ROOT_USER", StorageUser)
+        .WithEnvironment("MINIO_ROOT_PASSWORD", StoragePassword)
+        .WithCommand("server", "/data")
+        .WithPortBinding(StoragePort, assignRandomHostPort: true)
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPort(StoragePort).ForPath("/minio/health/live")))
         .Build();
 
     private string _ownerConnectionString = string.Empty;
@@ -55,11 +68,13 @@ public sealed partial class ApiFixture : IAsyncLifetime
 
     public string OwnerConnectionString => _ownerConnectionString;
 
+    public string StorageUrl => $"http://{_storage.Hostname}:{_storage.GetMappedPublicPort(StoragePort)}";
+
     public string JwtPrivateKeyPem { get; private set; } = string.Empty;
 
     public async Task InitializeAsync()
     {
-        await _database.StartAsync();
+        await Task.WhenAll(_database.StartAsync(), _storage.StartAsync());
 
         _ownerConnectionString = _database.GetConnectionString();
 
@@ -86,9 +101,16 @@ public sealed partial class ApiFixture : IAsyncLifetime
         Set("Auth__FrontendBaseUrl", AllowedOrigin);
         Set("Email__Smtp__Host", "localhost");
         Set("Outbox__Enabled", "false");
+        Set("Storage__ServiceUrl", StorageUrl);
+        Set("Storage__AccessKey", StorageUser);
+        Set("Storage__SecretKey", StoragePassword);
+        Set("Storage__Bucket", "comtest-test");
+        Set("Storage__CreateBucketIfMissing", "true");
         Set("Tenancy__BaseDomain", BaseDomain);
         Set("Tenancy__AllowTenantHeader", "false");
         Set("RateLimiting__TenantPerMinute", "1000000");
+        Set("RateLimiting__CheckoutPerMinute", "1000000");
+        Set("RateLimiting__TrackingPerMinute", "1000000");
         Set("Cors__AllowedOrigins__0", AllowedOrigin);
         Set("RateLimiting__GlobalPerMinute", "1000000");
         Set("RateLimiting__LoginPerMinute", "1000000");
@@ -105,6 +127,7 @@ public sealed partial class ApiFixture : IAsyncLifetime
     {
         await Factory.DisposeAsync();
         await _database.DisposeAsync();
+        await _storage.DisposeAsync();
     }
 
     public HttpClient CreateClient(WebApplicationFactoryClientOptions? options = null) =>

@@ -1,0 +1,7 @@
+{
+  "extends": "@comtest/config/tsconfig/vue.json",
+  "compilerOptions": {
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": ["src", "test", "env.d.ts"]
+}

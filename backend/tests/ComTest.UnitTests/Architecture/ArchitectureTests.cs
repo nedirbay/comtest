@@ -1,6 +1,7 @@
 using System.Reflection;
 using ComTest.Api.Hosting;
 using ComTest.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Mvc;
 using NetArchTest.Rules;
 
 namespace ComTest.UnitTests.Architecture;
@@ -49,6 +50,44 @@ public sealed class ArchitectureTests
     }
 
     [Fact]
+    public void ApplicationModules_DoNotUseAnotherModulesDomain()
+    {
+        const string DomainModules = "ComTest.Domain.Modules.";
+        const string ApplicationModules = "ComTest.Application.Modules.";
+
+        var domainTypes = DomainAssembly.GetTypes()
+            .Where(type => type.Namespace?.StartsWith(DomainModules, StringComparison.Ordinal) == true && type.FullName is not null)
+            .ToList();
+
+        var modules = ApplicationAssembly.GetTypes()
+            .Where(type => type.Namespace?.StartsWith(ApplicationModules, StringComparison.Ordinal) == true)
+            .Select(type => type.Namespace![ApplicationModules.Length..].Split('.')[0])
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        Assert.Contains("Ordering", modules);
+
+        var violations = new List<string>();
+
+        foreach (var module in modules)
+        {
+            var forbidden = domainTypes
+                .Where(type => !IsInModule(type, DomainModules + module))
+                .Select(type => type.FullName!)
+                .ToArray();
+
+            var result = Types.InAssembly(ApplicationAssembly)
+                .That().ResideInNamespace(ApplicationModules + module)
+                .ShouldNot().HaveDependencyOnAny(forbidden)
+                .GetResult();
+
+            violations.AddRange(result.FailingTypeNames ?? []);
+        }
+
+        Assert.True(violations.Count == 0, "Use the other module's Contracts instead: " + string.Join(", ", violations));
+    }
+
+    [Fact]
     public void ModuleRule_DetectsAViolationAndAllowsContracts()
     {
         var violations = FindModuleViolations(typeof(ArchitectureTests).Assembly, "ComTest.UnitTests.Architecture.Sample");
@@ -66,6 +105,26 @@ public sealed class ArchitectureTests
             .GetResult();
 
         Assert.True(result.IsSuccessful, "Controllers must not use EF Core directly: " + string.Join(", ", result.FailingTypeNames ?? []));
+    }
+
+    [Fact]
+    public void EveryControllerAction_DeclaresASuccessResponse()
+    {
+        // Actions return IActionResult, so this attribute is the only source the OpenAPI document has for them.
+        var actions = ApiAssembly.GetTypes()
+            .Where(type => !type.IsAbstract && type.IsAssignableTo(typeof(ControllerBase)))
+            .SelectMany(type => type.GetMethods(BindingFlags.Public | BindingFlags.Instance))
+            .Where(method => method.DeclaringType!.Assembly == ApiAssembly && !method.IsSpecialName && !method.IsDefined(typeof(NonActionAttribute), inherit: true))
+            .ToList();
+
+        Assert.NotEmpty(actions);
+
+        var offenders = actions
+            .Where(action => !action.GetCustomAttributes<ProducesResponseTypeAttribute>(inherit: true).Any(response => response.StatusCode is >= 200 and < 300))
+            .Select(action => $"{action.DeclaringType!.Name}.{action.Name}")
+            .ToList();
+
+        Assert.True(offenders.Count == 0, "Add [ProducesResponseType] with a 2xx status to: " + string.Join(", ", offenders));
     }
 
     /// <summary>A module may reach another one only through that module's Contracts namespace.</summary>

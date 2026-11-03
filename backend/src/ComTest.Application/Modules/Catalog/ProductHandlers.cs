@@ -1,5 +1,7 @@
 using ComTest.Application.Abstractions;
 using ComTest.Application.Modules.Catalog.Contracts;
+using ComTest.Application.Modules.Media.Contracts;
+using ComTest.Application.Modules.Tenancy.Contracts;
 using ComTest.Domain.Modules.Catalog;
 using ComTest.Shared.Domain;
 using ComTest.Shared.Messaging;
@@ -31,6 +33,8 @@ public sealed record VariantRequest(
 
 public sealed record AttributeValueRequest(Guid AttributeId, string Value);
 
+public sealed record ProductImageRequest(Guid MediaAssetId, string? AltText = null);
+
 public sealed record SaveProductRequest(
     string Slug,
     IReadOnlyList<ProductTranslationRequest> Translations,
@@ -39,7 +43,8 @@ public sealed record SaveProductRequest(
     Guid? BrandId = null,
     string? TaxGroup = null,
     IReadOnlyList<AttributeValueRequest>? Attributes = null,
-    uint? Version = null);
+    uint? Version = null,
+    IReadOnlyList<ProductImageRequest>? Images = null);
 
 internal sealed class ProductTranslationRequestValidator : AbstractValidator<ProductTranslationRequest>
 {
@@ -79,6 +84,8 @@ internal sealed class SaveProductRequestValidator : AbstractValidator<SaveProduc
         RuleFor(x => x.Variants).NotEmpty().Must(items => items.Count <= CatalogRules.MaxVariants && items.Select(item => item.Sku).Distinct(StringComparer.Ordinal).Count() == items.Count);
         RuleForEach(x => x.Variants).SetValidator(new VariantRequestValidator());
         RuleFor(x => x.Attributes).Must(items => items is null || items.Count <= 100);
+        RuleFor(x => x.Images).Must(items => items is null || (items.Count <= 30 && items.Select(item => item.MediaAssetId).Distinct().Count() == items.Count));
+        RuleForEach(x => x.Images).ChildRules(image => image.RuleFor(x => x.AltText).MaximumLength(300));
     }
 }
 
@@ -100,6 +107,8 @@ public sealed class ProductHandlers(
     IApplicationDbContext db,
     ITenantContext tenantContext,
     IHtmlCleaner htmlCleaner,
+    ITenantSettings tenantSettings,
+    IMediaLibrary media,
     CatalogCache cache,
     TimeProvider timeProvider) :
     ICommandHandler<CreateProductCommand, ProductAdminDto>,
@@ -120,10 +129,14 @@ public sealed class ProductHandlers(
         ArgumentNullException.ThrowIfNull(command);
 
         var request = command.Request;
-        var tenantId = tenantContext.TenantId;
-        var maxProducts = await db.Tenants.Where(tenant => tenant.Id == tenantId).Select(tenant => tenant.MaxProducts).FirstOrDefaultAsync(cancellationToken);
+        var settings = await tenantSettings.GetCurrentAsync(cancellationToken);
 
-        if (await db.Products.CountAsync(cancellationToken) >= maxProducts)
+        if (settings is null)
+        {
+            return Error.Validation(ErrorCodes.Tenant.Required);
+        }
+
+        if (await db.Products.CountAsync(cancellationToken) >= settings.MaxProducts)
         {
             return Error.Conflict(ErrorCodes.Catalog.ProductLimitReached);
         }
@@ -142,7 +155,7 @@ public sealed class ProductHandlers(
         db.Products.Add(product);
         await db.SaveChangesAsync(cancellationToken);
 
-        return ToDto(product);
+        return await ToDtoAsync(product, cancellationToken);
     }
 
     public async Task<Result<ProductAdminDto>> HandleAsync(UpdateProductCommand command, CancellationToken cancellationToken)
@@ -175,7 +188,7 @@ public sealed class ProductHandlers(
         await db.SaveChangesAsync(cancellationToken);
         await cache.InvalidateAsync(tenantContext, cancellationToken);
 
-        return ToDto(product);
+        return await ToDtoAsync(product, cancellationToken);
     }
 
     public async Task<Result<bool>> HandleAsync(DeleteProductCommand command, CancellationToken cancellationToken)
@@ -225,7 +238,7 @@ public sealed class ProductHandlers(
         await db.SaveChangesAsync(cancellationToken);
         await cache.InvalidateAsync(tenantContext, cancellationToken);
 
-        return ToDto(product);
+        return await ToDtoAsync(product, cancellationToken);
     }
 
     public async Task<Result<ProductAdminDto>> HandleAsync(GetProductQuery query, CancellationToken cancellationToken)
@@ -234,7 +247,7 @@ public sealed class ProductHandlers(
 
         var product = await LoadAsync(query.Id, cancellationToken);
 
-        return product is null ? Error.NotFound(ErrorCodes.Catalog.ProductNotFound) : ToDto(product);
+        return product is null ? Error.NotFound(ErrorCodes.Catalog.ProductNotFound) : await ToDtoAsync(product, cancellationToken);
     }
 
     public async Task<Result<IReadOnlyList<PriceChangeDto>>> HandleAsync(GetPriceHistoryQuery query, CancellationToken cancellationToken)
@@ -325,6 +338,12 @@ public sealed class ProductHandlers(
             timeProvider.GetUtcNow());
 
         product.SetAttributeValues((request.Attributes ?? []).Select(item => (item.AttributeId, item.Value)));
+
+        // Left out means unchanged, so an older client cannot wipe the gallery by accident.
+        if (request.Images is not null)
+        {
+            product.SetImages(request.Images.Select(item => new ProductImageInput(item.MediaAssetId, item.AltText)).ToList());
+        }
     }
 
     private Task<Product?> LoadAsync(Guid id, CancellationToken cancellationToken) =>
@@ -332,6 +351,7 @@ public sealed class ProductHandlers(
             .Include(item => item.Translations)
             .Include(item => item.Variants)
             .Include(item => item.AttributeValues)
+            .Include(item => item.Images)
             .FirstOrDefaultAsync(item => item.Id == id, cancellationToken);
 
     private async Task<Error?> ValidateAsync(Guid? id, SaveProductRequest request, CancellationToken cancellationToken)
@@ -356,6 +376,16 @@ public sealed class ProductHandlers(
         if (request.CategoryId is { } categoryId && !await db.Categories.AnyAsync(item => item.Id == categoryId, cancellationToken))
         {
             return Error.NotFound(ErrorCodes.Catalog.CategoryNotFound);
+        }
+
+        if (request.Images is { Count: > 0 } images)
+        {
+            var ready = await media.GetReadyAsync(images.Select(item => item.MediaAssetId).ToList(), cancellationToken);
+
+            if (images.Any(item => !ready.ContainsKey(item.MediaAssetId)))
+            {
+                return Error.Validation(ErrorCodes.Media.NotReady);
+            }
         }
 
         return await ValidateAttributesAsync(request, cancellationToken);
@@ -401,7 +431,14 @@ public sealed class ProductHandlers(
         return null;
     }
 
-    private static ProductAdminDto ToDto(Product product) => new(
+    private async Task<ProductAdminDto> ToDtoAsync(Product product, CancellationToken cancellationToken)
+    {
+        var urls = await media.GetReadyAsync(product.Images.Select(item => item.MediaAssetId).ToList(), cancellationToken);
+
+        return ToDto(product, CatalogImages.ToDtos(product.Images, urls));
+    }
+
+    private static ProductAdminDto ToDto(Product product, IReadOnlyList<ProductImageDto> images) => new(
         product.Id,
         product.Slug,
         product.Status.ToString(),
@@ -415,5 +452,6 @@ public sealed class ProductHandlers(
             .Select(item => new VariantAdminDto(item.Id, item.Sku, item.Barcode, item.Price.Amount, item.Price.Currency, item.CompareAtAmount, item.CostAmount, item.Options, item.IsActive))
             .ToList(),
         product.AttributeValues.Select(item => new AttributeValueDto(item.AttributeDefinitionId, item.Value)).ToList(),
+        images,
         product.Version);
 }

@@ -42,7 +42,21 @@ dotnet ef database update --project src/ComTest.Infrastructure --startup-project
 dotnet run --project src/ComTest.Api -- seed
 ```
 
-`seed` demo dükany döredýär we açar sözlerini bir gezek görkezýär.
+`seed` demo dükany (harytlar, ammar, eltip bermek) döredýär we açar sözlerini bir gezek görkezýär.
+
+### Goşmaça hyzmatlar
+
+Surat ýüklemek üçin S3-e laýyk saklaýyş gerek. Saklaýyş sazlanmasa, API işleýär, diňe surat ýüklemek 503 gaýtarýar.
+
+```bash
+cp ../deploy/.env.example ../deploy/.env   # öz bahalaryňyzy ýazyň; 9000 porty başyboş däl bolsa, MINIO_PORT-y üýtgediň
+docker compose -f ../deploy/docker-compose.yml up -d minio
+
+dotnet user-secrets set "Storage:ServiceUrl" "http://localhost:9000" --project src/ComTest.Api
+dotnet user-secrets set "Storage:AccessKey" "<MINIO_ROOT_USER>" --project src/ComTest.Api
+dotnet user-secrets set "Storage:SecretKey" "<MINIO_ROOT_PASSWORD>" --project src/ComTest.Api
+dotnet user-secrets set "Storage:CreateBucketIfMissing" "true" --project src/ComTest.Api
+```
 
 ## Buýruklar
 
@@ -82,6 +96,8 @@ Programma aşakdakylar bolmasa işe başlamaýar:
 | `Jwt__*` | P-256 açar. Rotasiýa: täze açary goş, `ActiveKeyId`-ni çalyş, köne açary 15 minutdan soň aýyr |
 | `DataProtection__CertificatePfxBase64` we `DataProtection__CertificatePassword` | Açarlary bazada şifrleýär |
 | `Email__Smtp__Host` | Development-den başga ýerde hökmany |
+| `Storage__ServiceUrl`, `Storage__AccessKey`, `Storage__SecretKey`, `Storage__Bucket` | Bucket ýapyk bolmaly. Brauzerden ýükleme üçin bucket-da admin domenine CORS `PUT` gerek |
+| `Storage__PublicBaseUrl` | CDN salgysy. Bolmasa, suratlar 1 sagatlyk gollanan URL bilen berilýär |
 | `Auth__FrontendBaseUrl`, `Tenancy__BaseDomain`, `Cors__AllowedOrigins__0` | Gurşawa görä |
 | `ForwardedHeaders__KnownProxies__0` | Proxy arkasynda hökmany, ýogsam müşderi IP-si görünmeýär |
 
@@ -97,5 +113,8 @@ Docker suraty üçin ICU gerek: türkmen dili (`tk`) `InvariantGlobalization` bi
 | `/api/v1/account/*` | Profil, sessiýalar, 2FA, telefon |
 | `/api/v1/tenants`, `/api/v1/store` | Dükan döretmek, dükanyň açyk maglumatlary |
 | `/api/v1/catalog/*` | Storefront katalogy (açyk) |
-| `/api/v1/admin/*` | Dükan dolandyryşy (ygtyýar we 2FA gerek) |
+| `/api/v1/cart`, `/api/v1/checkout` | Sebet we sargyt (myhman üçin hem) |
+| `/api/v1/orders/track` | Myhman sargydyny gollanan token bilen yzarlamak |
+| `/api/v1/account/orders`, `/api/v1/account/addresses` | Müşderiniň öz sargytlary we salgylary |
+| `/api/v1/admin/*` | Dükan dolandyryşy: katalog, ammar, sargyt, töleg, eltip bermek, surat (ygtyýar we 2FA gerek) |
 | `/api/v1/platform/*` | Platforma dolandyryşy |

@@ -10,6 +10,7 @@ Dükanlar we söwda firmalary üçin döwrebap e-commerce platforma.
 - `- [ ]` — edilmeli iş, `- [x]` — ýerine ýetirilen iş.
 - 🔒 — howpsuzlyk işi. Bu işler soňa goýulmaýar: her biri öz tapgyrynda ýerine ýetirilýär.
 - `[MVP]`, `[V1]`, `[V2]` — mümkinçiligiň haýsy wersiýa degişlidigi.
+- `✅ backend` — mümkinçiligiň API bölegi taýýar, interfeýsi entek ýok. Guty diňe mümkinçilik ulanyja tutuşlygyna elýeterli bolanda belgilenýär. „✅ backend: X; Y ýok“ ýazgysy diňe X-iň taýýardygyny aňladýar.
 - Tapgyr diňe onuň ähli işleri, testleri we 🔒 işleri gutarandan soň tamamlanan hasaplanýar.
 
 ## Ýol kartasy
@@ -24,20 +25,20 @@ Dükanlar we söwda firmalary üçin döwrebap e-commerce platforma.
 
 ## Esasy kararlar
 
-Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamaly.
+Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamaly. `[x]` bellik kararyň kodda ulanylýandygyny aňladýar.
 
-- [ ] **K1. Platforma modeli:** multi-tenant SaaS — bir platformada köp firma, her firmanyň öz dükany bar. Bir firma üçin hem şol bir kod işleýär.
-- [ ] **K2. Arhitektura:** modular monolith + Clean Architecture. Microservice başda artykmaç çylşyrymlylyk döredýär; gerek bolanda modullar aýrylyp bilner.
-- [ ] **K3. Maglumatlar bazasy:** PostgreSQL + Row-Level Security (tenant üzňeligi baza derejesinde hem goralýar).
+- [x] **K1. Platforma modeli:** multi-tenant SaaS — bir platformada köp firma, her firmanyň öz dükany bar. Bir firma üçin hem şol bir kod işleýär.
+- [x] **K2. Arhitektura:** modular monolith + Clean Architecture. Microservice başda artykmaç çylşyrymlylyk döredýär; gerek bolanda modullar aýrylyp bilner.
+- [x] **K3. Maglumatlar bazasy:** PostgreSQL + Row-Level Security (tenant üzňeligi baza derejesinde hem goralýar).
 - [ ] **K4. Keş we fon işleri:** Redis, Hangfire; gerek bolanda RabbitMQ.
-- [ ] **K5. Faýl saklaýyş:** S3-e laýyk saklaýyş (dev: MinIO) + CDN.
-- [ ] **K6. Storefront:** Nuxt (SSR, Vue 3 + TS). Haryt sahypalary gözleg ulgamlarynda görünmeli, arassa SPA munuň üçin ýaramaz.
-- [ ] **K7. Admin panel:** Vue 3 + Vite SPA (SEO gerek däl).
-- [ ] **K8. Auth:** gysga ömürli access JWT (brauzeriň RAM-ynda) + refresh token (`HttpOnly` cookie, rotation).
-- [ ] **K9. Diller:** türkmen, rus, iňlis.
-- [ ] **K10. Pul:** esasy pul birligi TMT, goşmaça USD. Pul mukdarlary `decimal` görnüşinde saklanýar, `float`/`double` ulanylmaýar.
-- [ ] **K11. Töleg:** provider abstraksiýasy. Tertip: alanda nagt → bank geçirimi → ýerli bank ekwaýringi → halkara provider. Kart maglumatlary biziň serwerimize düşmeýär.
-- [ ] **K12. Kitaphana ygtyýarnamalary:** MediatR, AutoMapper, MassTransit (v9+) we FluentAssertions (v8+) täjirçilik ygtyýarnamasyna geçdi. Olaryň ýerine öz handler-lerimiz, Mapperly, AwesomeAssertions/Shouldly ulanylýar.
+- [x] **K5. Faýl saklaýyş:** S3-e laýyk saklaýyş (dev: MinIO) + CDN. (CDN üçin sazlama bar; CDN-iň özi P3-de goşulýar.)
+- [x] **K6. Storefront:** Nuxt (SSR, Vue 3 + TS). Haryt sahypalary gözleg ulgamlarynda görünmeli, arassa SPA munuň üçin ýaramaz.
+- [x] **K7. Admin panel:** Vue 3 + Vite SPA (SEO gerek däl).
+- [x] **K8. Auth:** gysga ömürli access JWT (brauzeriň RAM-ynda) + refresh token (`HttpOnly` cookie, rotation).
+- [x] **K9. Diller:** türkmen, rus, iňlis. (Interfeýs terjimeleri her sahypa bilen bilelikde goşulýar.)
+- [x] **K10. Pul:** esasy pul birligi TMT, goşmaça USD. Pul mukdarlary `decimal` görnüşinde saklanýar, `float`/`double` ulanylmaýar.
+- [x] **K11. Töleg:** provider abstraksiýasy. Tertip: alanda nagt → bank geçirimi → ýerli bank ekwaýringi → halkara provider. Kart maglumatlary biziň serwerimize düşmeýär. (Abstraksiýa, nagt we bank geçirimi taýýar; ekwaýring B10-da.)
+- [x] **K12. Kitaphana ygtyýarnamalary:** MediatR, AutoMapper, MassTransit (v9+) we FluentAssertions (v8+) täjirçilik ygtyýarnamasyna geçdi. Olaryň ýerine öz handler-lerimiz, Mapperly, AwesomeAssertions/Shouldly ulanylýar. (Mapperly we AwesomeAssertions/Shouldly gerek bolmady: mapping el bilen, testlerde xUnit `Assert`.)
 
 ---
 
@@ -47,11 +48,11 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 
 **Katalog we gözleg**
 
-- [ ] `[MVP]` Kategoriýalar agajy we haryt sanawy
-- [ ] `[MVP]` Haryt sahypasy: suratlar galereýasy, düşündiriş, häsiýetnamalar, galyndy ýagdaýy
-- [ ] `[MVP]` Haryt wariantlary (reňk, ölçeg, göwrüm)
-- [ ] `[MVP]` Tekst boýunça gözleg
-- [ ] `[MVP]` Süzgüçler (baha, marka, häsiýet) we tertipleşdirme
+- [ ] `[MVP]` Kategoriýalar agajy we haryt sanawy — ✅ backend
+- [ ] `[MVP]` Haryt sahypasy: suratlar galereýasy, düşündiriş, häsiýetnamalar, galyndy ýagdaýy — ✅ backend
+- [ ] `[MVP]` Haryt wariantlary (reňk, ölçeg, göwrüm) — ✅ backend
+- [ ] `[MVP]` Tekst boýunça gözleg — ✅ backend (ýönekeý `LIKE`; FTS B15-de)
+- [ ] `[MVP]` Süzgüçler (baha, marka, häsiýet) we tertipleşdirme — ✅ backend: baha, marka, tertipleşdirme; häsiýet boýunça süzgüç ýok
 - [ ] `[V1]` Gözlegde awtomatik doldurma we ýalňyş ýazuwa çydamlylyk
 - [ ] `[V1]` Harytlary deňeşdirmek
 - [ ] `[V1]` Soňky görlen harytlar, meňzeş harytlar, „bilelikde satyn alynýar“
@@ -61,11 +62,11 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 
 **Sebet we sargyt**
 
-- [ ] `[MVP]` Sebet (myhman we hasaba alnan ulanyjy üçin, ulgama girende birleşýär)
-- [ ] `[MVP]` Myhman hökmünde sargyt etmek
-- [ ] `[MVP]` Sargyt resmileşdirmek: salgy, eltip bermek görnüşi, töleg görnüşi
-- [ ] `[MVP]` Eltip bermegiň bahasynyň hasaplanmagy
-- [ ] `[MVP]` Sargyt ýagdaýyny yzarlamak
+- [ ] `[MVP]` Sebet (myhman we hasaba alnan ulanyjy üçin, ulgama girende birleşýär) — ✅ backend
+- [ ] `[MVP]` Myhman hökmünde sargyt etmek — ✅ backend
+- [ ] `[MVP]` Sargyt resmileşdirmek: salgy, eltip bermek görnüşi, töleg görnüşi — ✅ backend
+- [ ] `[MVP]` Eltip bermegiň bahasynyň hasaplanmagy — ✅ backend
+- [ ] `[MVP]` Sargyt ýagdaýyny yzarlamak — ✅ backend
 - [ ] `[V1]` Promokod we sowgat kartasyny ulanmak
 - [ ] `[V1]` Taşlanan sebet barada ýatlatma
 - [ ] `[V1]` Bir basmada gaýtadan sargyt etmek
@@ -74,22 +75,22 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 
 **Şahsy otag**
 
-- [ ] `[MVP]` Hasaba alynmak, ulgama girmek (e-poçta/telefon)
-- [ ] `[MVP]` Profil we salgylar kitaby
-- [ ] `[MVP]` Sargytlaryň taryhy
+- [x] `[MVP]` Hasaba alynmak, ulgama girmek (e-poçta/telefon) (hasaba alyş e-poçta bilen, telefon soň tassyklanýar; girmek ikisi bilen hem)
+- [ ] `[MVP]` Profil we salgylar kitaby — ✅ backend: salgylar, profili görmek; profili üýtgetmek ýok
+- [ ] `[MVP]` Sargytlaryň taryhy — ✅ backend
 - [ ] `[V1]` Halanlarym sanawy
 - [ ] `[V1]` Haryt barada syn we baha (suratly)
 - [ ] `[V1]` Yzyna gaýtarma haýyşy
 - [ ] `[V1]` Bonus ballary we wepalylyk derejesi
-- [ ] `[V1]` Iki basgançakly tassyklama (2FA), Google bilen girmek
+- [ ] `[V1]` Iki basgançakly tassyklama (2FA), Google bilen girmek — ✅ 2FA (backend we interfeýs); Google ýok
 - [ ] `[V1]` Şahsy maglumatlary göçürip almak we hasaby pozmak
 
 **Umumy**
 
-- [ ] `[MVP]` Köp dilli interfeýs (tk, ru, en)
+- [ ] `[MVP]` Köp dilli interfeýs (tk, ru, en) — ✅ backend: API jogaplary we katalog terjimeleri
 - [ ] `[MVP]` Responsiw dizaýn (telefon, planşet, kompýuter)
 - [ ] `[V1]` Köp pul birligi
-- [ ] `[V1]` Gara tema
+- [x] `[V1]` Gara tema
 - [ ] `[V1]` PWA (telefona gurnamak, push bildirişler)
 - [ ] `[V1]` Onlaýn kömek söhbetdeşligi
 - [ ] `[V2]` Android/iOS programma
@@ -99,21 +100,21 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 
 **Harytlar we ammar**
 
-- [ ] `[MVP]` Harytlary, kategoriýalary, markalary dolandyrmak
-- [ ] `[MVP]` Wariantlar, SKU, ştrih-kod, suratlar
-- [ ] `[MVP]` Ammar galyndysyny dolandyrmak, az galanda duýduryş
+- [ ] `[MVP]` Harytlary, kategoriýalary, markalary dolandyrmak — ✅ backend
+- [ ] `[MVP]` Wariantlar, SKU, ştrih-kod, suratlar — ✅ backend
+- [ ] `[MVP]` Ammar galyndysyny dolandyrmak, az galanda duýduryş — ✅ backend
 - [ ] `[V1]` Excel/CSV arkaly köpçülikleýin import/eksport
 - [ ] `[V1]` Köp ammar we şahamça
-- [ ] `[V1]` Ammar hereketleriniň taryhy, inwentarizasiýa
+- [ ] `[V1]` Ammar hereketleriniň taryhy, inwentarizasiýa — ✅ backend: hereketleriň taryhy; inwentarizasiýa ýok
 - [ ] `[V1]` Üpjünçiler we satyn alma sargytlary
 - [ ] `[V2]` 1C/ERP bilen sinhronlaşdyrmak
 
 **Sargytlar we müşderiler**
 
-- [ ] `[MVP]` Sargytlary görmek, süzmek, ýagdaýyny üýtgetmek
-- [ ] `[MVP]` Müşderiler sanawy we sargyt taryhy
+- [ ] `[MVP]` Sargytlary görmek, süzmek, ýagdaýyny üýtgetmek — ✅ backend
+- [ ] `[MVP]` Müşderiler sanawy we sargyt taryhy — ✅ backend
 - [ ] `[V1]` Faktura we goşma haty çap etmek (PDF)
-- [ ] `[V1]` Yzyna gaýtarma we pul gaýtarma
+- [ ] `[V1]` Yzyna gaýtarma we pul gaýtarma — ✅ backend: pul gaýtarma; yzyna gaýtarma (RMA) ýok
 - [ ] `[V1]` Kurýerlere sargyt bellemek
 - [ ] `[V1]` Müşderi toparlary we CRM bellikleri
 - [ ] `[V2]` POS (dükandaky kassa) onlaýn ammar bilen bilelikde
@@ -123,7 +124,7 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 - [ ] `[V1]` Arzanladyşlar, promokodlar, gysga möhletli aksiýalar
 - [ ] `[V1]` Bannerler we baş sahypany dolandyrmak
 - [ ] `[V1]` CMS sahypalary we blog
-- [ ] `[V1]` SEO sazlamalary (meta, slug, sitemap)
+- [ ] `[V1]` SEO sazlamalary (meta, slug, sitemap) — ✅ backend: meta, slug; sitemap ýok
 - [ ] `[V1]` E-poçta/SMS kampaniýalary
 - [ ] `[V2]` Referal programmasy
 - [ ] `[V2]` AI bilen haryt düşündirişini taýýarlamak
@@ -131,8 +132,8 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 **Dolandyryş we hasabatlar**
 
 - [ ] `[MVP]` Dolandyryş paneli (dashboard): satuw, sargyt, galyndy
-- [ ] `[MVP]` Dükan sazlamalary: logotip, aragatnaşyk, eltip bermek, töleg
-- [ ] `[MVP]` Işgärler we rollar
+- [ ] `[MVP]` Dükan sazlamalary: logotip, aragatnaşyk, eltip bermek, töleg — ✅ backend
+- [ ] `[MVP]` Işgärler we rollar — ✅ backend
 - [ ] `[V1]` Satuw, haryt, müşderi hasabatlary we Excel eksporty
 - [ ] `[V1]` Audit žurnaly (kim, haçan, näme üýtgetdi)
 - [ ] `[V1]` Salgyt sazlamalary
@@ -141,7 +142,7 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 
 ## 1.3. Platforma tarapy (super admin)
 
-- [ ] `[V1]` Firmalary hasaba almak, tassyklamak, wagtlaýyn togtatmak
+- [ ] `[V1]` Firmalary hasaba almak, tassyklamak, wagtlaýyn togtatmak — ✅ backend: hasaba almak, togtatmak; tassyklamak ýok
 - [ ] `[V1]` Tarif meýilnamalary we çäklendirmeler
 - [ ] `[V1]` Abuna tölegleri we hasaplar
 - [ ] `[V1]` Platforma statistikasy we gözegçilik
@@ -149,7 +150,7 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 
 ## 1.4. Integrasiýalar
 
-- [ ] `[MVP]` E-poçta
+- [x] `[MVP]` E-poçta
 - [ ] `[V1]` SMS provider
 - [ ] `[V1]` Ýerli bank ekwaýringi
 - [ ] `[V1]` Telegram bildirişleri
@@ -168,20 +169,23 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 - [x] .NET 10 SDK gurmak (10.0.107 gurlan)
 - [ ] Kompýuterdäki .NET paketlerini düzetmek: SDK Ubuntu-dan, targeting pack-ler Microsoft-yň Debian 13 çeşmesinden gurlan, şonuň üçin SDK olary tapmaýar (`NETSDK1226`). Düzedilenden soň `backend/Directory.Build.props`-daky `RestoreEnablePackagePruning` we `UseAppHost` sazlamalaryna täzeden garamak
 - [x] Docker gurmak (29.9.2 gurlan)
-- [ ] Node.js-i häzirki LTS wersiýa täzelemek (gurlan v18.19.1-iň goldawy gutardy, Vite-iň täze wersiýalary onda işlemeýär)
-- [ ] `corepack` arkaly pnpm gurmak
-- [ ] `git init` we uzakdaky repozitoriý döretmek (häzir bukja git repozitoriýasy däl)
-- [ ] Bukja gurluşyny döretmek: `backend/`, `frontend/`, `deploy/`, `docs/`
-- [ ] `.gitignore`, `.editorconfig`, `.gitattributes`, `README.md` goşmak
-- [ ] Şaha strategiýasyny we Conventional Commits kadasyny kesgitlemek
+- [x] Node.js-i LTS wersiýa täzelemek: nvm-de v24.18 (`frontend/.nvmrc`). Nuxt `>=24.15` talap edýär, `PATH`-daky `/usr/local/lib/nodejs` bolsa v24.14, şonuň üçin `nvm use` gerek
+- [x] pnpm gurmak: 11.9.0, wersiýasy `packageManager`-da berkidilen; täze kompýuterde `corepack enable`
+- [x] `git init` (ýerli repozitoriý, `main` şahasy)
+- [ ] Uzakdaky repozitoriý döretmek
+- [x] Bukja gurluşyny döretmek: `backend/`, `deploy/`
+- [x] Bukja gurluşyny döretmek: `frontend/`, `docs/`
+- [x] `.gitignore`, `.editorconfig` goşmak
+- [x] `.gitattributes` we kök `README.md` goşmak
+- [ ] Şaha strategiýasyny we Conventional Commits kadasyny kesgitlemek — ✅ Conventional Commits (`commit-msg` hook); şaha strategiýasy ýok
 - [ ] PR şablonyny we „tamamlandy“ kesgitlemesini ýazmak
-- [ ] `docker-compose.yml`: PostgreSQL, Redis, MinIO, Mailpit, Seq
+- [x] `docker-compose.yml`: PostgreSQL, Redis, MinIO, Mailpit, Seq
 - [ ] Domen modelini we ER diagrammasyny taýýarlamak
-- [ ] Arhitektura kararlaryny ADR görnüşinde `docs/adr/` bukjasyna ýazmak
+- [ ] Arhitektura kararlaryny ADR görnüşinde `docs/adr/` bukjasyna ýazmak — ✅ frontend (ADR 0001); backend kararlary ýok
 - [ ] 🔒 `main` şahasyny goramak: hökmany PR we CI, göni push gadagan
 - [ ] 🔒 Git hesaplarynda 2FA-ny hökmany etmek
 - [ ] 🔒 `gitleaks` pre-commit hook we CI barlagy (gizlin maglumatlaryň kod bilen düşmezligi üçin)
-- [ ] 🔒 `.env.example` döretmek; hakyky `.env` faýllary hiç haçan commit edilmeýär
+- [x] 🔒 `.env.example` döretmek; hakyky `.env` faýllary hiç haçan commit edilmeýär
 - [ ] 🔒 Howp modelini düzmek (STRIDE): aktiwler, hüjüm ýollary, ynam serhetleri
 - [ ] 🔒 Maglumatlary toparlara bölmek: şahsy maglumat, töleg maglumaty, gizlin maglumat, açyk maglumat
 - [ ] 🔒 Howpsuzlyk ölçegi hökmünde OWASP ASVS Level 2 we API Security Top 10 kabul etmek
@@ -252,6 +256,7 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 - [x] Aktiw sessiýalar sanawy we sessiýany ýatyrmak
 - [x] Rollar: `PlatformAdmin`, `StoreOwner`, `Manager`, `Staff`, `Customer`
 - [x] Permission esasly policy ulgamy
+- [ ] Profili üýtgetmek: at, dil, e-poçtany täzeden tassyklama bilen çalyşmak (häzir diňe `GET /account/me`)
 - [ ] `[V1]` Google bilen girmek (OIDC)
 - [x] 🔒 Access token ömri ≤ 15 minut; `iss`, `aud`, `exp` we algoritm berk barlanýar
 - [x] 🔒 JWT asimmetrik açar bilen (ES256/RS256) gollanýar, `kid` bilen açar rotasiýasy
@@ -266,7 +271,7 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 - [x] 🔒 TOTP 2FA we dikeldiş kodlary; işgärler üçin hökmany
 - [x] 🔒 SMS OTP: synanyşyk sany, möhlet we iberiş ýygylygy çäklendirilýär
 - [x] 🔒 Deny-by-default: `FallbackPolicy` — her endpoint ygtyýar talap edýär, açyklary diňe aýdyň `[AllowAnonymous]`
-- [ ] 🔒 Resource esasly barlag: başga ulanyjynyň sargydyna/salgysyna giriş (IDOR) gadagan
+- [x] 🔒 Resource esasly barlag: başga ulanyjynyň sargydyna/salgysyna giriş (IDOR) gadagan
 - [x] 🔒 Roly ýa-da açar sözi üýtgände sessiýalary täzeden barlamak (`SecurityStamp`)
 - [x] 🔒 Giriş wakalaryny audit etmek: üstünlikli, şowsuz, gulplanan, 2FA
 - [x] Test: tokeniň ähli ýaşaýyş aýlawy we hüjüm ssenariýalary
@@ -283,7 +288,8 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 - [x] 🔒 Ähli tenant tablisalarynda `TenantId` we global query filter
 - [x] 🔒 PostgreSQL RLS: birikme açylanda `set_config('app.tenant_id')`; programma ulanyjysynda `BYPASSRLS` ýok (PgBouncer ulanylsa, `session` režimi gerek)
 - [x] 🔒 Tokendäki tenant bilen soragdaky tenantyň gabat gelmegini barlamak
-- [ ] 🔒 Keş açarlaryna, fon işlerine, faýl ýollaryna we gözleg indeksine `TenantId` goşmak
+- [x] 🔒 Keş açarlaryna, fon işlerine we faýl ýollaryna `TenantId` goşmak
+- [ ] 🔒 Gözleg indeksine `TenantId` goşmak (B15-de gözleg motory bilen)
 - [x] 🔒 `IgnoreQueryFilters` ulanylyşyny analizator/kod syny bilen gözegçilikde saklamak
 - [ ] 🔒 Integrasiýa testi: iki tenant arasynda maglumat syzmasynyň ýoklugyny her endpoint üçin barlamak
 
@@ -295,6 +301,7 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 - [x] Baha, köne baha, özüne düşýän baha, salgyt topary
 - [x] Kategoriýa boýunça dinamiki häsiýetler
 - [x] Sanaw: sahypalama, süzgüç, tertipleşdirme
+- [ ] Storefront sanawynda häsiýet boýunça süzgüç (häzir kategoriýa, marka, baha we tekst bar)
 - [x] Baha üýtgemeleriniň taryhy
 - [x] Storefront üçin aýratyn read modeli we keş
 - [ ] `[V1]` Excel/CSV importy (fon işi, ýalňyşlyk hasabaty bilen)
@@ -305,68 +312,70 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 
 ## B6. Faýllar we suratlar
 
-- [ ] `IFileStorage` abstraksiýasy (S3/MinIO)
-- [ ] Presigned URL bilen ýüklemek
-- [ ] Suratlary WebP/AVIF formatyna we dürli ululyklara öwürmek (fon işi)
-- [ ] CDN we uzak möhletli keş sözbaşylary
-- [ ] Ulanylmaýan faýllary arassalamak işi
-- [ ] 🔒 Faýl görnüşini giňeltme boýunça däl, „magic bytes“ boýunça barlamak (allowlist)
-- [ ] 🔒 Faýl ululygyna çäk, tenant boýunça ýer kwotasy
-- [ ] 🔒 Suratlary täzeden kodlamak we EXIF maglumatlaryny aýyrmak
-- [ ] 🔒 Tötänleýin faýl atlary; path traversal öňüni almak
-- [ ] 🔒 SVG ýüklemek gadagan ýa-da arassalanan; goşmaça domenden bermek
-- [ ] 🔒 Bucket ýapyk; diňe CDN/presigned URL arkaly giriş
+- [x] `IFileStorage` abstraksiýasy (S3/MinIO)
+- [x] Presigned URL bilen ýüklemek
+- [x] Suratlary WebP formatyna we dürli ululyklara öwürmek (fon işi)
+- [x] CDN we uzak möhletli keş sözbaşylary
+- [x] Taşlanan we ret edilen ýüklemeleri arassalamak işi
+- [x] 🔒 Faýl görnüşini giňeltme boýunça däl, „magic bytes“ boýunça barlamak (allowlist)
+- [x] 🔒 Faýl ululygyna çäk, tenant boýunça ýer kwotasy
+- [x] 🔒 Suratlary täzeden kodlamak we EXIF maglumatlaryny aýyrmak
+- [x] 🔒 Tötänleýin faýl atlary; path traversal öňüni almak
+- [x] 🔒 SVG ýüklemek gadagan ýa-da arassalanan; goşmaça domenden bermek
+- [x] 🔒 Bucket ýapyk; diňe CDN/presigned URL arkaly giriş
 - [ ] 🔒 `[V1]` ClamAV bilen wirus barlagy
 
 ## B7. Ammar
 
-- [ ] `Warehouse`, `StockItem`, `StockMovement`
-- [ ] Galyndy hereketleri: girdeji, çykdajy, düzediş, rezerw
-- [ ] Sargyt üçin rezerw (TTL bilen) we möhleti geçenini boşatmak
-- [ ] Az galan haryt duýduryşy
+- [x] `Warehouse`, `StockItem`, `StockMovement`
+- [x] Galyndy hereketleri: girdeji, çykdajy, düzediş, rezerw
+- [x] Sargyt üçin rezerw (TTL bilen) we möhleti geçenini boşatmak
+- [x] Az galan haryt duýduryşy
 - [ ] `[V1]` Köp ammar, ammarlar arasynda geçirim
 - [ ] `[V1]` Inwentarizasiýa
 - [ ] `[V1]` Üpjünçiler we satyn alma sargytlary
-- [ ] 🔒 Galyndy üýtgemeleriniň ählisi kim tarapyndan edilendigi bilen ýazga alynýar
-- [ ] Test: bir wagtda köp sargytda galyndynyň minus bolmazlygy (race condition)
+- [x] 🔒 Galyndy üýtgemeleriniň ählisi kim tarapyndan edilendigi bilen ýazga alynýar
+- [x] Test: bir wagtda köp sargytda galyndynyň minus bolmazlygy (race condition)
 
 ## B8. Sebet we checkout
 
-- [ ] Myhman sebedi (gizlin kukili ID) we ulanyjy sebedi; ulgama girende birleşdirmek
-- [ ] Sebetdäki baha/galyndy üýtgemelerini barlamak we duýdurmak
-- [ ] Checkout hasaplamasy: harytlar, arzanladyş, salgyt, eltip bermek
-- [ ] Salgy we eltip bermek görnüşini saýlamak
-- [ ] 🔒 Baha, arzanladyş we jemi diňe serwerde hasaplanýar; müşderiden gelen baha kabul edilmeýär
-- [ ] 🔒 Mukdar üçin walidasiýa: otrisatel, nol, aşa uly bahalar
-- [ ] 🔒 Sargyt döretmekde idempotency key (iki gezek basylanda iki sargyt bolmaz)
-- [ ] 🔒 Sargyt spamynyň öňüni almak: rate limit, bot goragy, myhman üçin telefon tassyklamak
+- [x] Myhman sebedi (gizlin kukili ID) we ulanyjy sebedi; ulgama girende birleşdirmek
+- [x] Sebetdäki baha/galyndy üýtgemelerini barlamak we duýdurmak
+- [x] Checkout hasaplamasy: harytlar, eltip bermek
+- [ ] Checkout-a arzanladyş (B12) we salgyt hasaplamasyny goşmak (häzir ikisi hem 0)
+- [x] Salgy we eltip bermek görnüşini saýlamak
+- [x] 🔒 Baha, arzanladyş we jemi diňe serwerde hasaplanýar; müşderiden gelen baha kabul edilmeýär
+- [x] 🔒 Mukdar üçin walidasiýa: otrisatel, nol, aşa uly bahalar
+- [x] 🔒 Sargyt döretmekde idempotency key (iki gezek basylanda iki sargyt bolmaz)
+- [x] 🔒 Sargyt spamynyň öňüni almak: rate limit, telefon boýunça açyk sargyt çägi
+- [ ] 🔒 Sargyt spamyna garşy bot goragy we myhman üçin telefon tassyklamak (SMS provideri gerek)
 
 ## B9. Sargytlar
 
-- [ ] `Order`, `OrderItem`, ýagdaý taryhy
-- [ ] Ýagdaý maşyny: `Pending → Confirmed → Packed → Shipped → Delivered`, `Cancelled`, `Returned`
-- [ ] Harytlaryň at we baha nusgasyny (snapshot) sargytda saklamak
-- [ ] Ýatyrylanda galyndyny yzyna goýmak
-- [ ] Admin üçin sanaw, süzgüç, jikme-jiklik, bellikler
-- [ ] Domen wakalary: `OrderCreated`, `OrderPaid`, `OrderShipped`
+- [x] `Order`, `OrderItem`, ýagdaý taryhy
+- [x] Ýagdaý maşyny: `Pending → Confirmed → Packed → Shipped → Delivered`, `Cancelled`, `Returned`
+- [x] Harytlaryň at we baha nusgasyny (snapshot) sargytda saklamak
+- [x] Ýatyrylanda galyndyny yzyna goýmak
+- [x] Admin üçin sanaw, süzgüç, jikme-jiklik, bellikler
+- [x] Domen wakalary: `OrderCreated`, `OrderPaid`, `OrderShipped`
 - [ ] `[V1]` Faktura we goşma haty (PDF; QuestPDF ygtyýarnamasyny barlamak)
 - [ ] `[V1]` Yzyna gaýtarma (RMA) akymy
-- [ ] 🔒 Sargyt belgisi yzygiderli we çaklap bolýan däl
-- [ ] 🔒 Myhman sargydyny yzarlamak gollanan token arkaly
-- [ ] 🔒 Ýagdaý geçişleri rol boýunça ygtyýarlandyrylýar we audit edilýär
+- [x] 🔒 Sargyt belgisi yzygiderli we çaklap bolýan däl
+- [x] 🔒 Myhman sargydyny yzarlamak gollanan token arkaly
+- [x] 🔒 Ýagdaý geçişleri rol boýunça ygtyýarlandyrylýar we audit edilýär
 
 ## B10. Tölegler
 
 **Nagt (MVP)**
 
-- [ ] `IPaymentProvider` abstraksiýasy we `Payment`, `Refund` modelleri
-- [ ] Alanda nagt tölemek
-- [ ] Bank geçirimi: el bilen tassyklamak, audit bilen
+- [x] `IPaymentProvider` abstraksiýasy we `Payment`, `Refund` modelleri
+- [x] Alanda nagt tölemek
+- [x] Bank geçirimi: el bilen tassyklamak, audit bilen
 
 **Onlaýn (V1)**
 
 - [ ] Ýerli bank ekwaýringini birikdirmek (redirect/hosted sahypa)
-- [ ] Doly we bölekleýin pul gaýtarma
+- [x] Doly we bölekleýin pul gaýtarma
 - [ ] Tölegleri bank hasabaty bilen deňeşdirmek (reconciliation, her gün)
 - [ ] Tamamlanmadyk tölegleriň ýagdaýyny barlamak we möhleti geçenleri ýatyrmak
 - [ ] `[V2]` Halkara provider
@@ -375,19 +384,19 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 
 - [ ] 🔒 Kart maglumatlary serwere düşmeýär we saklanmaýar (hosted sahypa, PCI DSS SAQ A derejesi)
 - [ ] 🔒 Webhook goly, wagt belgisi we gaýtalanmaga garşy barlag
-- [ ] 🔒 Sargyt diňe serwer tarapyndan tassyklanandan soň tölenen bolýar; brauzeriň gaýdyp gelmegine ynanylmaýar
+- [x] 🔒 Sargyt diňe serwer tarapyndan tassyklanandan soň tölenen bolýar; brauzeriň gaýdyp gelmegine ynanylmaýar (onlaýn töleg goşulanda täzeden barlanýar)
 - [ ] 🔒 Gelen mukdar we pul birligi sargyt bilen deňeşdirilýär
-- [ ] 🔒 Ähli töleg amallarynda idempotency; iki gezek tutulmagyň öňüni almak
-- [ ] 🔒 Pul gaýtarma aýratyn ygtyýar talap edýär; uly mukdarlar üçin ikinji tassyk
-- [ ] 🔒 Töleg ýagdaý üýtgemeleri üýtgedip bolmaýan žurnala ýazylýar
+- [x] 🔒 Ähli töleg amallarynda idempotency; iki gezek tutulmagyň öňüni almak
+- [x] 🔒 Pul gaýtarma aýratyn ygtyýar talap edýär; uly mukdarlar üçin ikinji tassyk
+- [x] 🔒 Töleg ýagdaý üýtgemeleri üýtgedip bolmaýan žurnala ýazylýar
 - [ ] 🔒 Bank açarlary diňe secret manager-de
 
 ## B11. Eltip bermek
 
-- [ ] Eltip bermek zolaklary (welaýat, etrap, şäher) we tarifler
-- [ ] Mugt eltip bermegiň çägi
-- [ ] Dükandan özi alyp gitmek
-- [ ] Sargyt yzarlaýyş maglumaty
+- [x] Eltip bermek zolaklary (welaýat, etrap, şäher) we tarifler
+- [x] Mugt eltip bermegiň çägi
+- [x] Dükandan özi alyp gitmek
+- [x] Sargyt yzarlaýyş maglumaty
 - [ ] `[V1]` Kurýerlere bellemek we kurýer interfeýsi üçin API
 - [ ] `[V2]` Kurýer gullugynyň integrasiýasy
 - [ ] 🔒 Kurýer diňe özüne bellenen sargydyň zerur maglumatlaryny görýär
@@ -408,8 +417,9 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 ## B13. Bildirişler
 
 - [ ] Umumy bildiriş gullugy, şablonlar (köp dilli)
-- [ ] E-poçta (MailKit, fon nobaty, gaýtalamak)
-- [ ] SMS provider abstraksiýasy
+- [x] E-poçta (MailKit, fon nobaty, gaýtalamak)
+- [ ] Durnukly e-poçta nobaty: häzirki nobat RAM-da, programma täzeden başlasa iberilmedik hatlar ýitýär
+- [x] SMS provider abstraksiýasy
 - [ ] SignalR: admin üçin täze sargyt bildirişi, müşderi üçin ýagdaý üýtgemesi
 - [ ] `[V1]` Telegram bildirişleri, web push
 - [ ] `[V1]` Bildiriş sazlamalary we ýazylmadan çykmak
@@ -479,17 +489,19 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 
 ## B19. Testler
 
-- [ ] Unit testler: domen we biznes kadalary (xUnit)
-- [ ] Integrasiýa testleri: Testcontainers bilen hakyky PostgreSQL we Redis
+- [x] Unit testler: domen we biznes kadalary (xUnit)
+- [x] Integrasiýa testleri: Testcontainers bilen hakyky PostgreSQL we MinIO
+- [ ] Integrasiýa testleri: Testcontainers bilen Redis (K4 ulanylanda)
 - [x] API testleri: `WebApplicationFactory`
-- [ ] Doly ssenariý testi: hasaba alyş → sebet → sargyt → töleg → eltip bermek
-- [ ] Race condition testleri: galyndy, promokod, töleg
-- [ ] OpenAPI kontrakt barlagy
+- [x] Doly ssenariý testi: hasaba alyş → sebet → sargyt → töleg → eltip bermek
+- [x] Race condition testleri: galyndy, töleg
+- [ ] Race condition testleri: promokod (B12 bilen)
+- [ ] OpenAPI kontrakt barlagy — ✅ her endpoint jogap görnüşini yglan edýär (arhitektura testi); dokument bilen hakyky jogaplaryň awtomatik deňeşdirmesi ýok
 - [ ] CI-da örtük hasabaty we iň az çäk (biznes logikasy üçin ≥ 80%)
 - [ ] 🔒 Ygtyýarlandyrma matrisasy testi: her endpoint × her rol
 - [x] 🔒 Her endpoint-iň ygtyýar talap edýändigini awtomatik barlamak
 - [x] 🔒 Tenant üzňeligi test toplumy
-- [ ] 🔒 Regressiýa testi: tapylan her howpsuzlyk kemçiligi üçin
+- [x] 🔒 Regressiýa testi: tapylan her howpsuzlyk kemçiligi üçin (şu wagta çenli tapylanlar örtüldi; kada dowam edýär)
 
 ## B20. Howpsuzlyk gutarnykly barlagy
 
@@ -498,7 +510,7 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 - [ ] 🔒 CodeQL (SAST) CI-da
 - [ ] 🔒 Şahsy maglumatlaryň sütün derejesinde şifrlenmegi (zerur ýerlerde)
 - [ ] 🔒 Maglumat saklama möhletleri we awtomatik arassalamak
-- [ ] 🔒 Audit žurnaly üýtgedip bolmaýan görnüşde saklanýar
+- [x] 🔒 Audit žurnaly üýtgedip bolmaýan görnüşde saklanýar (programma DB ulanyjysy üçin diňe INSERT)
 - [ ] 🔒 Şübheli hereketlere duýduryş: köp şowsuz giriş, tenant bozulma synanyşygy, töleg ýalňyşlyklary
 - [ ] 🔒 Open redirect: `returnUrl` üçin allowlist
 - [ ] 🔒 Biznes logikasyna hüjümleri barlamak: promokod, bonus, yzyna gaýtarma, mukdar manipulýasiýasy
@@ -511,60 +523,62 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 
 ## F0. Taslama gurluşy
 
-- [ ] pnpm workspace monorepo: `apps/storefront`, `apps/admin`, `packages/ui`, `packages/api-client`, `packages/config`
-- [ ] `apps/admin`: Vite + Vue 3 + TS
-- [ ] `apps/storefront`: Nuxt + TS (K6 kararyna görä)
-- [ ] `strict` TypeScript, `vue-tsc` barlagy
-- [ ] ESLint (flat config), Prettier
-- [ ] Husky, lint-staged, commitlint
-- [ ] Feature esasly bukja gurluşy
-- [ ] Elementleri zerur bolanda ýüklemek: `unplugin-vue-components` + `ElementPlusResolver`
-- [ ] 🔒 `pnpm-lock.yaml` commit edilýär; CI-da `--frozen-lockfile`
-- [ ] 🔒 Paketleriň install skriptleri diňe rugsat berlen sanaw boýunça
+- [x] pnpm workspace monorepo: `apps/storefront`, `apps/admin`, `packages/ui`, `packages/api-client`, `packages/config`, goşmaça `packages/auth` (ADR 0001)
+- [x] `apps/admin`: Vite + Vue 3 + TS
+- [x] `apps/storefront`: Nuxt + TS (K6 kararyna görä)
+- [x] `strict` TypeScript, `vue-tsc` barlagy
+- [x] ESLint (flat config), Prettier
+- [x] Husky, lint-staged, commitlint
+- [x] Feature esasly bukja gurluşy
+- [x] Elementleri zerur bolanda ýüklemek: `unplugin-vue-components` + `ElementPlusResolver`
+- [x] 🔒 `pnpm-lock.yaml` döredildi; täze paket azyndan bir hepde garaşýar (`minimumReleaseAge`)
+- [ ] 🔒 CI-da `--frozen-lockfile` (P2-de)
+- [x] 🔒 Paketleriň install skriptleri diňe rugsat berlen sanaw boýunça
 
 ## F1. Dizaýn ulgamy
 
-- [ ] Dizaýn tokenleri: reňk, aralyk, şrift, radius, kölege
-- [ ] Tailwind sazlamak we tokenleri Element Plus CSS üýtgeýjileri bilen birleşdirmek
-- [ ] Tailwind preflight bilen Element Plus stilleriniň çaknyşmagynyň öňüni almak (CSS `@layer` tertibi)
-- [ ] Element Plus temasy we dil faýllary (tk üçin öz terjimämiz, ru, en)
-- [ ] Gara tema
-- [ ] Umumy elementler: `AppButton`, `AppTable`, `AppForm`, `AppDialog`, `PageHeader`
-- [ ] Boş, ýüklenýän (skeleton) we ýalňyşlyk ýagdaýlary
-- [ ] Pul, sene, telefon formatlaýjylary
-- [ ] Responsiw sazlamalar we mobile-first kadalary
-- [ ] Storybook/Histoire bilen elementleri resminamalaşdyrmak
+- [x] Dizaýn tokenleri: reňk, aralyk, şrift, radius, kölege
+- [x] Tailwind sazlamak we tokenleri Element Plus CSS üýtgeýjileri bilen birleşdirmek
+- [x] Tailwind preflight bilen Element Plus stilleriniň çaknyşmagynyň öňüni almak (CSS `@layer` tertibi)
+- [x] Element Plus temasy we dil faýllary (tk üçin öz terjimämiz, ru, en)
+- [x] Gara tema
+- [x] Umumy elementler: `AppButton`, `AppTable`, `AppForm`, `AppDialog`, `PageHeader`
+- [x] Boş, ýüklenýän (skeleton) we ýalňyşlyk ýagdaýlary
+- [x] Pul, sene, telefon formatlaýjylary
+- [x] Responsiw sazlamalar we mobile-first kadalary
+- [x] Storybook/Histoire bilen elementleri resminamalaşdyrmak
 
 ## F2. Esasy gatlaklar
 
-- [ ] OpenAPI-den TypeScript tiplerini we API müşderisini awtomatik döretmek
-- [ ] HTTP gatlagy: bazalaýyn URL, `Accept-Language`, `CorrelationId`, ýalňyşlyklary işlemek
-- [ ] TanStack Query: server maglumatlary, keş, täzeden synanyşmak
-- [ ] Pinia: diňe müşderi ýagdaýy (auth, sebet, UI)
-- [ ] Vue Router: lazy loading, layout-lar, route meta
-- [ ] vue-i18n: tk, ru, en; dil URL-de saklanýar
-- [ ] Zod bilen forma walidasiýasy; serwer ýalňyşlyklaryny meýdanlara baglamak
-- [ ] Global ýalňyşlyk işleýjisi, Error Boundary, 404/403/500 sahypalary
-- [ ] Sentry bilen ýalňyşlyklary yzarlamak
-- [ ] 🔒 Access token diňe RAM-da; `localStorage`/`sessionStorage`-da token saklamak gadagan
-- [ ] 🔒 Silent refresh: bir wagtda diňe bir refresh sorag (single-flight)
-- [ ] 🔒 Cookie diňe öz API domenine iberilýär (`withCredentials` çäkli)
-- [ ] 🔒 `VITE_*`/`NUXT_PUBLIC_*` üýtgeýjilerinde gizlin maglumat ýok (bular brauzerde görünýär)
-- [ ] 🔒 Route guard diňe UX üçin; hakyky barlag serwerde
-- [ ] 🔒 Sentry-de şahsy maglumatlary we tokenleri arassalamak
+- [x] OpenAPI-den TypeScript tiplerini we API müşderisini awtomatik döretmek
+- [x] HTTP gatlagy: bazalaýyn URL, `Accept-Language`, `CorrelationId`, ýalňyşlyklary işlemek
+- [x] TanStack Query: server maglumatlary, keş, täzeden synanyşmak
+- [x] Pinia: diňe müşderi ýagdaýy (auth, sebet, UI) (sebet F5-de goşulýar)
+- [x] Vue Router: lazy loading, layout-lar, route meta
+- [x] vue-i18n: tk, ru, en; dil URL-de saklanýar
+- [x] Zod bilen forma walidasiýasy; serwer ýalňyşlyklaryny meýdanlara baglamak
+- [x] Global ýalňyşlyk işleýjisi, Error Boundary, 404/403/500 sahypalary
+- [x] Sentry bilen brauzer ýalňyşlyklaryny yzarlamak (DSN berlende işleýär)
+- [ ] Sentry: Nuxt serwer ýalňyşlyklary we hakyky DSN bilen synag
+- [x] 🔒 Access token diňe RAM-da; `localStorage`/`sessionStorage`-da token saklamak gadagan
+- [x] 🔒 Silent refresh: bir wagtda diňe bir refresh sorag (single-flight)
+- [x] 🔒 Cookie diňe öz API domenine iberilýär (`withCredentials` çäkli)
+- [x] 🔒 `VITE_*`/`NUXT_PUBLIC_*` üýtgeýjilerinde gizlin maglumat ýok (bular brauzerde görünýär)
+- [x] 🔒 Route guard diňe UX üçin; hakyky barlag serwerde
+- [x] 🔒 Sentry-de şahsy maglumatlary we tokenleri arassalamak
 
 ## F3. Autentifikasiýa sahypalary
 
-- [ ] Hasaba alynmak, ulgama girmek, ulgamdan çykmak
-- [ ] E-poçta/telefon tassyklamak (OTP girizmek elementi)
-- [ ] Açar sözüni dikeltmek
-- [ ] Admin üçin 2FA gurnamak we girmek, dikeldiş kodlary
-- [ ] Aktiw sessiýalar sahypasy
-- [ ] Rol/permission esasly görkeziş: `v-can` direktiwasy
-- [ ] 🔒 Giriş ýalňyşlygynda umumy habar (ulanyjy bar/ýok açyk aýdylmaýar)
-- [ ] 🔒 `returnUrl`-y diňe içerki ýollara rugsat bermek (open redirect)
-- [ ] 🔒 Ulgamdan çykanda ähli ýagdaý, keş we query cache arassalanýar
-- [ ] 🔒 `autocomplete` atributlary dogry; açar sözi dolandyryjylary bilen sazlaşykly
+- [x] Hasaba alynmak, ulgama girmek, ulgamdan çykmak
+- [x] E-poçta/telefon tassyklamak (OTP girizmek elementi)
+- [x] Açar sözüni dikeltmek
+- [x] Admin üçin 2FA gurnamak we girmek, dikeldiş kodlary
+- [x] Aktiw sessiýalar sahypasy
+- [x] Rol/permission esasly görkeziş: `v-can` direktiwasy
+- [x] 🔒 Giriş ýalňyşlygynda umumy habar (ulanyjy bar/ýok açyk aýdylmaýar)
+- [x] 🔒 `returnUrl`-y diňe içerki ýollara rugsat bermek (open redirect)
+- [x] 🔒 Ulgamdan çykanda ähli ýagdaý, keş we query cache arassalanýar
+- [x] 🔒 `autocomplete` atributlary dogry; açar sözi dolandyryjylary bilen sazlaşykly
 
 ## F4. Storefront: katalog
 
@@ -578,8 +592,8 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 - [ ] Telefon üçin süzgüç paneli we aşaky nawigasiýa
 - [ ] `[V1]` Deňeşdirmek, soňky görlenler, meňzeş harytlar
 - [ ] 🔒 CMS/düşündiriş HTML-i diňe DOMPurify-dan soň görkezilýär
-- [ ] 🔒 SSR: ulanyjy maglumatlary soraglar arasynda garyşmaýar (global ýagdaý ýok, Pinia her sorag üçin aýratyn)
-- [ ] 🔒 SSR payload-ynda token ýa-da içerki maglumat ýok
+- [x] 🔒 SSR: ulanyjy maglumatlary soraglar arasynda garyşmaýar (global ýagdaý ýok, Pinia her sorag üçin aýratyn)
+- [x] 🔒 SSR payload-ynda token ýa-da içerki maglumat ýok
 
 ## F5. Storefront: sebet we checkout
 
@@ -686,9 +700,9 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 
 ## F14. Testler we elýeterlilik
 
-- [ ] Vitest + Vue Test Utils: composable, store, element testleri
+- [ ] Vitest + Vue Test Utils: composable, store, element testleri — ✅ gurlan; HTTP, auth we form gatlaklary örtülen, elementler entek ýok
 - [ ] API-ni MSW bilen simulirlemek
-- [ ] Playwright E2E: satyn alyş akymy, admin akymlary
+- [ ] Playwright E2E: satyn alyş akymy, admin akymlary — ✅ gurlan (`e2e/stack.sh`, aýratyn baza); giriş, 2FA, sessiýa akymlary örtülen; satyn alyş F5-den soň
 - [ ] Wizual regressiýa testi (esasy sahypalar)
 - [ ] Brauzerler we enjamlar boýunça synag
 - [ ] Klawiatura bilen doly dolandyrmak, fokus tertibi
@@ -698,15 +712,15 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 
 ## F15. Frontend howpsuzlygy
 
-- [ ] 🔒 ESLint `vue/no-v-html` düzgüni; kadadan çykmalar diňe DOMPurify bilen
+- [x] 🔒 ESLint `vue/no-v-html` düzgüni; kadadan çykmalar diňe DOMPurify bilen
 - [ ] 🔒 Ulanyjy URL-leri üçin protokol barlagy (`javascript:` gadagan)
 - [ ] 🔒 Berk CSP: `script-src` nonce/hash, `object-src 'none'`, `frame-ancestors`, `base-uri`
 - [ ] 🔒 Element Plus-yň inline stilleri üçin `style-src` sazlamasyny synagdan geçirmek; ilki `Content-Security-Policy-Report-Only`
 - [ ] 🔒 CSP bozulma hasabatlaryny ýygnamak
 - [ ] 🔒 Üçünji tarap skriptlerini iň az derejede saklamak; CDN-den alynanlara SRI
-- [ ] 🔒 Source map-ler açyk çap edilmeýär (diňe Sentry-e)
+- [ ] 🔒 Source map-ler açyk çap edilmeýär (diňe Sentry-e) — ✅ sahypalardan salgylanylmaýar; deploy wagtynda `dist`-den aýyrmak P1-de
 - [ ] 🔒 `pnpm audit` we Dependabot/Renovate CI-da
-- [ ] 🔒 `localStorage`-da şahsy maglumat ýok
+- [x] 🔒 `localStorage`-da şahsy maglumat ýok
 - [ ] 🔒 Kod syny çek-listi: XSS, CSRF, açyk maglumat
 
 ---

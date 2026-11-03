@@ -1,0 +1,17 @@
+# Line endings are normalized in the repository and checked out as LF everywhere,
+# because shell scripts and git hooks break with CRLF.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.woff2 binary
+*.pfx binary
+
+# Generated. Reviews show these as one line, and merges take a regenerated copy.
+frontend/pnpm-lock.yaml linguist-generated=true -diff
+frontend/packages/api-client/openapi/v1.json linguist-generated=true
+frontend/packages/api-client/src/generated/* linguist-generated=true
+backend/src/ComTest.Infrastructure/Persistence/Migrations/*.Designer.cs linguist-generated=true

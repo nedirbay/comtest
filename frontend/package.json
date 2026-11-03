@@ -1,0 +1,45 @@
+{
+  "name": "comtest-frontend",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=24.15.0"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "dev:admin": "pnpm --filter @comtest/admin dev",
+    "dev:storefront": "pnpm --filter @comtest/storefront dev",
+    "build": "pnpm --filter \"./apps/*\" build",
+    "typecheck": "pnpm -r --parallel typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "api:sync": "pnpm --filter @comtest/api-client sync",
+    "prepare": "cd .. && husky frontend/.husky",
+    "test:e2e": "VITE_API_URL=http://localhost:5055 pnpm build && playwright test"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.0.0",
+    "@commitlint/config-conventional": "^21.0.0",
+    "@comtest/config": "workspace:*",
+    "@playwright/test": "^1.60.0",
+    "eslint": "^10.0.0",
+    "husky": "^9.1.7",
+    "jsdom": "^30.0.0",
+    "lint-staged": "^17.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "lint-staged": {
+    "*.{ts,mts,js,mjs,vue}": [
+      "eslint --fix --max-warnings 0 --no-warn-ignored",
+      "prettier --write"
+    ],
+    "*.{json,css,md,yaml,yml}": "prettier --write"
+  }
+}

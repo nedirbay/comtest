@@ -1,8 +1,12 @@
 using System.Globalization;
 using ComTest.Application.Abstractions;
+using ComTest.Application.Modules.Catalog.Contracts;
+using ComTest.Application.Modules.Media.Contracts;
+using ComTest.Application.Modules.Tenancy.Contracts;
 using ComTest.Domain.Modules.Catalog;
 using ComTest.Shared.Domain;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 
 namespace ComTest.Application.Modules.Catalog;
@@ -42,6 +46,20 @@ internal static class CatalogRules
     }
 }
 
+internal static class CatalogImages
+{
+    public static List<ProductImageDto> ToDtos(IEnumerable<ProductImage> images, IReadOnlyDictionary<Guid, MediaUrls> urls) =>
+        images
+            .OrderBy(image => image.SortOrder)
+            .Select(image =>
+            {
+                var found = urls.GetValueOrDefault(image.MediaAssetId);
+
+                return new ProductImageDto(image.MediaAssetId, image.AltText, found?.Thumbnail, found?.Medium, found?.Large);
+            })
+            .ToList();
+}
+
 /// <summary>
 /// Storefront cache. Every key and tag starts with the tenant, so one store can never receive
 /// another store's cached data, and a catalog change clears only that store's entries.
@@ -72,5 +90,38 @@ public sealed class CatalogCache(HybridCache cache)
         {
             await cache.RemoveByTagAsync(Tag(tenantId), cancellationToken);
         }
+    }
+}
+
+public sealed class CatalogReader(IApplicationDbContext db, ITenantSettings tenantSettings) : ICatalogReader
+{
+    public Task<bool> IsMediaInUseAsync(Guid mediaAssetId, CancellationToken cancellationToken) =>
+        db.Products.AnyAsync(product => product.Images.Any(image => image.MediaAssetId == mediaAssetId), cancellationToken);
+
+    public async Task<IReadOnlyDictionary<Guid, PurchasableVariant>> GetVariantsAsync(IReadOnlyCollection<Guid> variantIds, CancellationToken cancellationToken)
+    {
+        var language = CatalogRules.CurrentLanguage();
+        var fallback = (await tenantSettings.GetCurrentAsync(cancellationToken))?.DefaultLanguage ?? language;
+
+        var rows = await (
+            from variant in db.ProductVariants.AsNoTracking()
+            join product in db.Products.AsNoTracking().Include(item => item.Translations) on variant.ProductId equals product.Id
+            where variantIds.Contains(variant.Id)
+            select new { Variant = variant, Product = product })
+            .ToListAsync(cancellationToken);
+
+        return rows.ToDictionary(
+            row => row.Variant.Id,
+            row => new PurchasableVariant(
+                row.Variant.Id,
+                row.Product.Id,
+                row.Variant.Sku,
+                CatalogRules.PickTranslation(row.Product.Translations, language, fallback)?.Name ?? row.Product.Slug,
+                row.Product.Slug,
+                row.Variant.Options,
+                row.Variant.Price.Amount,
+                row.Variant.Price.Currency,
+                row.Product.TaxGroup,
+                row.Product.Status == ProductStatus.Published && row.Variant.IsActive));
     }
 }

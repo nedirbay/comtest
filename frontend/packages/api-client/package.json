@@ -1,0 +1,26 @@
+{
+  "name": "@comtest/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "sync": "node scripts/sync.mjs && pnpm generate",
+    "generate": "openapi-typescript openapi/v1.json -o src/generated/schema.d.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "openapi-fetch": "catalog:"
+  },
+  "devDependencies": {
+    "@comtest/config": "workspace:*",
+    "@types/node": "catalog:",
+    "jsdom": "^30.0.0",
+    "openapi-typescript": "^7.0.0",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

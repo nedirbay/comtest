@@ -1,0 +1,26 @@
+# The root .gitignore comes from the .NET template and hides every "packages" folder.
+!packages/
+!packages/*
+
+node_modules/
+dist/
+.nuxt/
+.output/
+.nitro/
+.vite/
+coverage/
+storybook-static/
+playwright-report/
+test-results/
+.eslintcache
+*.tsbuildinfo
+
+# Local configuration. Only the examples are committed.
+.env
+.env.*
+!.env.example
+# Holds only local addresses, and a fresh clone needs it to start.
+!.env.development
+
+# The private backend for browser tests keeps its generated passwords and logs here.
+.e2e/

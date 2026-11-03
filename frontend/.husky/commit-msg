@@ -1,0 +1,11 @@
+# This one runs for backend commits too, including from people or tools without the frontend set
+# up. A missing linter is no reason to refuse their work: the CI checks the message again.
+root="$(git rev-parse --show-toplevel)"
+message="$(realpath "$1")"
+
+if ! command -v pnpm >/dev/null 2>&1 || [ ! -d "$root/frontend/node_modules" ]; then
+  echo "commit-msg: pnpm or frontend/node_modules not found, message not checked" >&2
+  exit 0
+fi
+
+cd "$root/frontend" && pnpm exec commitlint --edit "$message"

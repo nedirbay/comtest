@@ -1,0 +1,54 @@
+{
+  "name": "@comtest/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./format": "./src/format/index.ts",
+    "./monitoring": "./src/monitoring/scrub.ts",
+    "./i18n": "./src/i18n/index.ts",
+    "./locale": "./src/locale/index.ts",
+    "./styles/tailwind.css": "./src/styles/tailwind.css",
+    "./styles/base.css": "./src/styles/base.css",
+    "./styles/element-bridge.css": "./src/styles/element-bridge.css",
+    "./styles/tokens.css": "./src/styles/tokens.css"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc --noEmit",
+    "storybook": "storybook dev -p 6006 --ci",
+    "build-storybook": "storybook build -o storybook-static"
+  },
+  "dependencies": {
+    "@comtest/api-client": "workspace:*",
+    "@element-plus/icons-vue": "catalog:",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "zod": "catalog:"
+  },
+  "peerDependencies": {
+    "element-plus": "catalog:",
+    "vue": "catalog:",
+    "vue-i18n": "catalog:"
+  },
+  "devDependencies": {
+    "@comtest/config": "workspace:*",
+    "@storybook/vue3-vite": "^10.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "element-plus": "catalog:",
+    "jsdom": "^30.0.0",
+    "storybook": "^10.0.0",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "unplugin-vue-components": "^32.0.0",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:",
+    "vue-i18n": "catalog:",
+    "vue-tsc": "catalog:"
+  }
+}

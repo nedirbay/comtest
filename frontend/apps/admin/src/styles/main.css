@@ -1,0 +1,6 @@
+@import '@comtest/ui/styles/tailwind.css';
+@import '@comtest/ui/styles/base.css';
+@import '@comtest/ui/styles/element-bridge.css';
+@import 'element-plus/theme-chalk/dark/css-vars.css' layer(element-plus);
+
+@source '../';

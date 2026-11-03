@@ -42,6 +42,7 @@ public static class ApiServiceExtensions
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
         services.AddSingleton<RefreshCookie>();
+        services.AddSingleton<GuestCartCookie>();
         services.AddSingleton<IAuthorizationMiddlewareResultHandler, ProblemAuthorizationResultHandler>();
         services.AddApiRateLimiting();
         services.AddRequestTimeouts(options => options.DefaultPolicy = new RequestTimeoutPolicy
@@ -84,6 +85,15 @@ public static class ApiServiceExtensions
 
     private static void AddVersioningAndOpenApi(IServiceCollection services)
     {
+        // The OpenAPI generator reads these options, while controllers use the MVC ones above. They must describe
+        // the same JSON: enums as the strings the API emits, and numbers as plain numbers. The only other reader
+        // is the problem details writer, whose values are all strings, so responses stay as they are.
+        services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+        });
+
         services
             .AddApiVersioning(options =>
             {
@@ -98,7 +108,10 @@ public static class ApiServiceExtensions
                 options.GroupNameFormat = "'v'V";
                 options.SubstituteApiVersionInUrl = true;
             })
-            .AddOpenApi(options => options.Document.AddDocumentTransformer<BearerSecuritySchemeTransformer>());
+            .AddOpenApi(options => options.Document
+                .AddDocumentTransformer<BearerSecuritySchemeTransformer>()
+                .AddSchemaTransformer<StringEnumSchemaTransformer>()
+                .AddOperationTransformer<EmptyResponseTransformer>());
     }
 
     private static void AddErrorHandling(IServiceCollection services)

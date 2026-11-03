@@ -6,6 +6,8 @@ public interface ICurrentUser
     Guid? UserId { get; }
 
     Guid? SessionId { get; }
+
+    bool HasPermission(string permission);
 }
 
 /// <summary>The tenant whose data the current scope may touch.</summary>

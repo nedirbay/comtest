@@ -1,0 +1,9 @@
+node_modules
+dist
+.nuxt
+.output
+coverage
+storybook-static
+pnpm-lock.yaml
+packages/api-client/openapi
+packages/api-client/src/generated

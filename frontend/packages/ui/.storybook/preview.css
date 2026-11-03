@@ -1,0 +1,6 @@
+@import '../src/styles/tailwind.css';
+@import '../src/styles/base.css';
+@import '../src/styles/element-bridge.css';
+@import 'element-plus/theme-chalk/dark/css-vars.css' layer(element-plus);
+
+@source './';

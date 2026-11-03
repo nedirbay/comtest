@@ -68,4 +68,44 @@
   <data name="catalog.not_ready_to_publish" xml:space="preserve"><value>A product needs a name and an active variant to be published.</value></data>
   <data name="catalog.invalid_attribute_value" xml:space="preserve"><value>An attribute value is not valid.</value></data>
   <data name="catalog.required_attribute_missing" xml:space="preserve"><value>A required attribute is missing.</value></data>
+  <data name="inventory.warehouse_not_found" xml:space="preserve"><value>Warehouse not found.</value></data>
+  <data name="inventory.warehouse_code_taken" xml:space="preserve"><value>This warehouse code is already in use.</value></data>
+  <data name="inventory.warehouse_not_empty" xml:space="preserve"><value>This warehouse still holds stock.</value></data>
+  <data name="inventory.variant_not_found" xml:space="preserve"><value>Product variant not found.</value></data>
+  <data name="inventory.stock_item_not_found" xml:space="preserve"><value>Stock record not found.</value></data>
+  <data name="inventory.insufficient_stock" xml:space="preserve"><value>There is not enough stock.</value></data>
+  <data name="shipping.zone_not_found" xml:space="preserve"><value>Delivery zone not found.</value></data>
+  <data name="shipping.method_not_found" xml:space="preserve"><value>Delivery method not found.</value></data>
+  <data name="shipping.method_unavailable" xml:space="preserve"><value>This delivery method is not available for this address.</value></data>
+  <data name="shipping.address_required" xml:space="preserve"><value>A delivery address is required.</value></data>
+  <data name="customer.address_not_found" xml:space="preserve"><value>Address not found.</value></data>
+  <data name="customer.address_limit_reached" xml:space="preserve"><value>You have reached the address limit.</value></data>
+  <data name="cart.empty" xml:space="preserve"><value>Your cart is empty.</value></data>
+  <data name="cart.item_unavailable" xml:space="preserve"><value>This item is not available.</value></data>
+  <data name="cart.line_not_found" xml:space="preserve"><value>This item is not in your cart.</value></data>
+  <data name="cart.currency_mismatch" xml:space="preserve"><value>This item is sold in a different currency.</value></data>
+  <data name="cart.too_many_lines" xml:space="preserve"><value>Your cart has too many different items.</value></data>
+  <data name="checkout.idempotency_key_required" xml:space="preserve"><value>The request needs an Idempotency-Key header.</value></data>
+  <data name="checkout.contact_required" xml:space="preserve"><value>Contact name and phone are required.</value></data>
+  <data name="checkout.total_changed" xml:space="preserve"><value>The total has changed. Please review your order.</value></data>
+  <data name="checkout.too_many_open_orders" xml:space="preserve"><value>This number has too many open orders.</value></data>
+  <data name="order.not_found" xml:space="preserve"><value>Order not found.</value></data>
+  <data name="order.invalid_transition" xml:space="preserve"><value>The order cannot move to this status.</value></data>
+  <data name="order.tracking_token_invalid" xml:space="preserve"><value>This tracking link is invalid or has expired.</value></data>
+  <data name="payment.not_found" xml:space="preserve"><value>Payment not found.</value></data>
+  <data name="payment.method_unavailable" xml:space="preserve"><value>This payment method is not available.</value></data>
+  <data name="payment.invalid_state" xml:space="preserve"><value>The payment cannot do this in its current state.</value></data>
+  <data name="payment.refund_exceeds_paid" xml:space="preserve"><value>The refund is more than the amount left to refund.</value></data>
+  <data name="payment.refund_not_found" xml:space="preserve"><value>Refund request not found.</value></data>
+  <data name="payment.same_approver" xml:space="preserve"><value>A different person must approve this refund.</value></data>
+  <data name="media.not_found" xml:space="preserve"><value>File not found.</value></data>
+  <data name="media.unsupported_type" xml:space="preserve"><value>Only JPEG, PNG and WebP images can be uploaded.</value></data>
+  <data name="media.too_large" xml:space="preserve"><value>The file is too large.</value></data>
+  <data name="media.quota_exceeded" xml:space="preserve"><value>Your plan's storage limit has been reached.</value></data>
+  <data name="media.invalid_image" xml:space="preserve"><value>The file is not a valid image.</value></data>
+  <data name="media.upload_missing" xml:space="preserve"><value>The file has not been uploaded yet.</value></data>
+  <data name="media.not_ready" xml:space="preserve"><value>This image is not ready to use.</value></data>
+  <data name="media.in_use" xml:space="preserve"><value>This image is still used by a product.</value></data>
+  <data name="media.invalid_state" xml:space="preserve"><value>This file cannot do that in its current state.</value></data>
+  <data name="media.storage_unavailable" xml:space="preserve"><value>File storage is not available.</value></data>
 </root>

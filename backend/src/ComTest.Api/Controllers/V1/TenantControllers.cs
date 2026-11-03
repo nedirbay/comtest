@@ -31,6 +31,7 @@ public sealed class StoreController : TenantControllerBase
     /// <summary>Public details of the store this request's address belongs to.</summary>
     [HttpGet]
     [AllowAnonymous]
+    [ProducesResponseType<PublicStoreDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(
         [FromServices] IQueryHandler<GetPublicStoreQuery, PublicStoreDto> handler,
         CancellationToken cancellationToken) =>
@@ -38,6 +39,13 @@ public sealed class StoreController : TenantControllerBase
             ? FromResult(await handler.HandleAsync(new GetPublicStoreQuery(tenantId), cancellationToken))
             : Failure(TenantRequired);
 }
+
+public sealed record CreatedTenantResponse(TenantDto Tenant, string AccessToken, DateTimeOffset ExpiresAt)
+{
+    public override string ToString() => nameof(CreatedTenantResponse);
+}
+
+public sealed record AcceptedInvitationResponse(Guid TenantId);
 
 [ApiVersion(1.0)]
 [Route("api/v{version:apiVersion}/tenants")]
@@ -47,6 +55,7 @@ public sealed class TenantsController(ITenantSessionService tenantSessions) : Te
     /// <summary>Registers a new firm with the caller as its owner, and switches the session to it.</summary>
     [HttpPost]
     [EnableRateLimiting(RateLimitPolicies.AccountAction)]
+    [ProducesResponseType<CreatedTenantResponse>(StatusCodes.Status201Created)]
     public async Task<IActionResult> Create(
         CreateTenantRequest request,
         [FromServices] ICommandHandler<CreateTenantCommand, TenantDto> handler,
@@ -65,11 +74,12 @@ public sealed class TenantsController(ITenantSessionService tenantSessions) : Te
 
         return switched.IsFailure
             ? Failure(switched.Error)
-            : Created((string?)null, new { tenant = created.Value, accessToken = switched.Value.AccessToken, expiresAt = switched.Value.ExpiresAt });
+            : Created((string?)null, new CreatedTenantResponse(created.Value, switched.Value.AccessToken, switched.Value.ExpiresAt));
     }
 
     [HttpPost("invitations/accept")]
     [EnableRateLimiting(RateLimitPolicies.AccountAction)]
+    [ProducesResponseType<AcceptedInvitationResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> AcceptInvitation(
         AcceptInvitationRequest request,
         [FromServices] ICommandHandler<AcceptInvitationCommand, Guid> handler,
@@ -77,7 +87,7 @@ public sealed class TenantsController(ITenantSessionService tenantSessions) : Te
     {
         var accepted = await handler.HandleAsync(new AcceptInvitationCommand(UserId, request.Token), cancellationToken);
 
-        return accepted.IsSuccess ? Ok(new { tenantId = accepted.Value }) : Failure(accepted.Error);
+        return accepted.IsSuccess ? Ok(new AcceptedInvitationResponse(accepted.Value)) : Failure(accepted.Error);
     }
 }
 
@@ -87,6 +97,7 @@ public sealed class AdminStoreController : TenantControllerBase
 {
     [HttpGet]
     [HasPermission(Permissions.SettingsManage)]
+    [ProducesResponseType<StoreSettingsDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(
         [FromServices] IQueryHandler<GetStoreSettingsQuery, StoreSettingsDto> handler,
         CancellationToken cancellationToken) =>
@@ -96,6 +107,7 @@ public sealed class AdminStoreController : TenantControllerBase
 
     [HttpPut]
     [HasPermission(Permissions.SettingsManage)]
+    [ProducesResponseType<StoreSettingsDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Update(
         UpdateStoreSettingsRequest request,
         [FromServices] ICommandHandler<UpdateStoreSettingsCommand, StoreSettingsDto> handler,
@@ -106,11 +118,35 @@ public sealed class AdminStoreController : TenantControllerBase
 }
 
 [ApiVersion(1.0)]
+[Route("api/v{version:apiVersion}/admin/store/payment-settings")]
+public sealed class AdminPaymentSettingsController : TenantControllerBase
+{
+    [HttpPut]
+    [HasPermission(Permissions.SettingsManage)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> Update(
+        UpdatePaymentSettingsRequest request,
+        [FromServices] ICommandHandler<UpdatePaymentSettingsCommand, bool> handler,
+        CancellationToken cancellationToken)
+    {
+        if (CurrentTenantId is not { } tenantId)
+        {
+            return Failure(TenantRequired);
+        }
+
+        var result = await handler.HandleAsync(new UpdatePaymentSettingsCommand(tenantId, request), cancellationToken);
+
+        return result.IsSuccess ? NoContent() : Failure(result.Error);
+    }
+}
+
+[ApiVersion(1.0)]
 [Route("api/v{version:apiVersion}/admin/staff")]
 public sealed class AdminStaffController : TenantControllerBase
 {
     [HttpGet]
     [HasPermission(Permissions.StaffManage)]
+    [ProducesResponseType<IReadOnlyList<StaffMemberDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> List(
         [FromServices] IQueryHandler<ListStaffQuery, IReadOnlyList<StaffMemberDto>> handler,
         CancellationToken cancellationToken) =>
@@ -119,6 +155,7 @@ public sealed class AdminStaffController : TenantControllerBase
     [HttpPost("invitations")]
     [HasPermission(Permissions.StaffManage)]
     [EnableRateLimiting(RateLimitPolicies.AccountAction)]
+    [ProducesResponseType<StaffInvitationDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Invite(
         InviteStaffRequest request,
         [FromServices] ICommandHandler<InviteStaffCommand, StaffInvitationDto> handler,
@@ -129,6 +166,7 @@ public sealed class AdminStaffController : TenantControllerBase
 
     [HttpDelete("invitations/{id:guid}")]
     [HasPermission(Permissions.StaffManage)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RevokeInvitation(
         Guid id,
         [FromServices] ICommandHandler<RevokeInvitationCommand, bool> handler,
@@ -141,6 +179,7 @@ public sealed class AdminStaffController : TenantControllerBase
 
     [HttpPut("{userId:guid}/role")]
     [HasPermission(Permissions.StaffManage)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ChangeRole(
         Guid userId,
         ChangeStaffRoleRequest request,
@@ -154,6 +193,7 @@ public sealed class AdminStaffController : TenantControllerBase
 
     [HttpDelete("{userId:guid}")]
     [HasPermission(Permissions.StaffManage)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Remove(
         Guid userId,
         [FromServices] ICommandHandler<RemoveStaffCommand, bool> handler,
@@ -178,6 +218,7 @@ public sealed class PlatformTenantsController : ApiControllerBase
 {
     [HttpGet]
     [HasPermission(Permissions.TenantsManage)]
+    [ProducesResponseType<PagedResult<TenantDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> List(
         [FromQuery] int page,
         [FromQuery] int pageSize,
@@ -188,6 +229,7 @@ public sealed class PlatformTenantsController : ApiControllerBase
 
     [HttpPut("{id:guid}/status")]
     [HasPermission(Permissions.TenantsManage)]
+    [ProducesResponseType<TenantDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> SetStatus(
         Guid id,
         SetTenantStatusRequest request,

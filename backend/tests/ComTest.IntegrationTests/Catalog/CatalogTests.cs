@@ -7,7 +7,7 @@ using ComTest.Shared.Results;
 
 namespace ComTest.IntegrationTests.Catalog;
 
-internal static class CatalogRequests
+public static class CatalogRequests
 {
     public static object Product(string slug, string sku, decimal price = 100m, decimal? cost = 60m, string name = "Telefon", string? description = null, Guid? categoryId = null, Guid? brandId = null, uint? version = null, Guid? variantId = null, object? attributes = null) => new
     {
@@ -42,6 +42,7 @@ internal static class CatalogRequests
 
     public static async Task<string?> ReadCode(this HttpResponseMessage response) =>
         (await response.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("code").GetString();
+
 }
 
 [Collection(ApiCollection.Name)]

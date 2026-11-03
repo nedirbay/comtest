@@ -3,6 +3,8 @@ using ComTest.Application;
 using ComTest.Application.Abstractions;
 using ComTest.Infrastructure.Catalog;
 using ComTest.Infrastructure.Identity;
+using ComTest.Infrastructure.Media;
+using ComTest.Infrastructure.Ordering;
 using ComTest.Infrastructure.Persistence;
 using ComTest.Infrastructure.Persistence.Interceptors;
 using ComTest.Infrastructure.Persistence.Outbox;
@@ -36,6 +38,8 @@ public static class DependencyInjection
 
         services.AddTenancy(environment);
         services.AddCatalogInfrastructure();
+        services.AddOrderingInfrastructure();
+        services.AddMediaInfrastructure(environment);
         services.AddIdentityServices(environment);
         services.AddMessageHandlers(typeof(DependencyInjection).Assembly);
 
