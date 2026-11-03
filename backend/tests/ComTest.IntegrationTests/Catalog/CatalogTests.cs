@@ -59,7 +59,7 @@ public sealed class ProductTests(ApiFixture api)
         var created = await admin.CreateProductAsync(CatalogRequests.Product(slug, "SKU-" + slug));
         var id = created.GetProperty("id").GetGuid();
 
-        Assert.Equal("Draft", created.GetProperty("status").GetString());
+        Assert.Equal("draft", created.GetProperty("status").GetString());
         Assert.Equal(HttpStatusCode.NotFound, (await visitor.GetAsync($"/api/v1/catalog/products/{slug}")).StatusCode);
 
         await admin.PublishAsync(id);

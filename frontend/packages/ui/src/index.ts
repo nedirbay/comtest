@@ -10,11 +10,24 @@ export { default as ErrorState } from './components/ErrorState.vue'
 export { default as LocaleSwitcher } from './components/LocaleSwitcher.vue'
 export { default as OtpInput } from './components/OtpInput.vue'
 export { default as PageHeader } from './components/PageHeader.vue'
+export { default as SafeHtml } from './components/SafeHtml.vue'
 export { default as SkeletonBlock } from './components/SkeletonBlock.vue'
 export { default as StatusPage } from './components/StatusPage.vue'
+export { default as StatusTag } from './components/StatusTag.vue'
 export { default as ThemeToggle } from './components/ThemeToggle.vue'
 export { formatDate, formatDateTime, formatMoney, formatPhone, normalizePhone } from './format'
 export { useApiErrorMessage } from './composables/useApiErrorMessage'
 export { FORM_CONTEXT, useForm, type FormContext, type UseFormOptions } from './composables/useForm'
 export { readPreference, usePreference, writePreference } from './composables/usePreference'
 export { applyTheme, preferredTheme, useTheme, type Theme } from './composables/useTheme'
+export {
+  normalizeStatus,
+  ORDER_STATUSES,
+  PAYMENT_STATES,
+  statusTagType,
+  type OrderStatusName,
+  type StatusKind,
+} from './domain/status'
+export { REGION_CODES } from './domain/regions'
+export { safeUrl } from './security/safeUrl'
+export { sanitizeHtml, setSanitizerWindow } from './security/sanitize'

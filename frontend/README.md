@@ -36,6 +36,8 @@ pnpm test              # unit testler (Vitest)
 e2e/stack.sh up        # brauzer testleri üçin aýratyn backend, baza we poçta (Docker gerek)
 pnpm test:e2e          # brauzer testleri, ilki stack işe girizilen bolmaly
 e2e/stack.sh down      # synag gurşawyny we onuň maglumatlaryny poz
+pnpm test:visual       # ekran suratlaryny deňeşdirmek (täzelemek: test:visual:update)
+pnpm test:lighthouse   # Lighthouse, storefront 3001-nji portda işläp durmaly
 pnpm typecheck
 pnpm lint
 pnpm format
@@ -54,4 +56,15 @@ Commit-ler [Conventional Commits](https://www.conventionalcommits.org) görnüş
 - **`v-html` gadagan** (ESLint). Kadadan çykma diňe DOMPurify bilen we düşündiriş bilen.
 - **`localStorage`/`sessionStorage` gadagan** (ESLint). Zyýansyz interfeýs saýlawlary üçin `usePreference` bar. Token we şahsy maglumat brauzerde saklanmaýar.
 - **`VITE_*` we `NUXT_PUBLIC_*`** brauzerde görünýär: gizlin maglumat ýazmaň.
+- **Daşyndan gelen salgy** `safeUrl`-dan, **serwerden gelen HTML** `SafeHtml`-dan geçýär.
+- **`zod`** göni däl-de, `@comtest/ui/zod` arkaly import edilýär (CSP).
+- **API ýagdaýlary** `normalizeStatus` bilen deňeşdirilýär we `StatusTag` bilen görkezilýär.
 - **Täze paket** azyndan bir hepde öň çap edilen bolmaly (`minimumReleaseAge`), install skriptleri bolsa `allowBuilds` sanawy boýunça.
+
+Kod syny üçin: [docs/frontend-kod-syny.md](../docs/frontend-kod-syny.md).
+
+## Production sazlamalary
+
+Storefront: `NUXT_PUBLIC_API_URL` (boş bolsa, şol bir domen), `NUXT_API_INTERNAL_URL`, `NUXT_PUBLIC_ADMIN_URL`, `NUXT_CSP_MODE` (`report` ýa-da `enforce`). `NUXT_PUBLIC_DEV_TENANT` production-da boş galmaly: dükan host adyndan kesgitlenýär.
+
+Admin (build wagtynda): `VITE_API_URL`, `VITE_CSP_EXTRA_ORIGINS` (surat ýükleýän saklaýyşyň salgysy, ýogsam ýüklemek petiklenýär). Web serwer `Content-Security-Policy: frame-ancestors 'none'` sözbaşysyny goşmaly.

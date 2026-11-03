@@ -27,7 +27,7 @@ public sealed class MediaUploadTests(ApiFixture api)
 
         var asset = await UploadAsync(admin, TestImages.Png(2000, 1000), "image/png");
 
-        Assert.Equal("Ready", asset.GetProperty("status").GetString());
+        Assert.Equal("ready", asset.GetProperty("status").GetString());
         Assert.Equal(2000, asset.GetProperty("width").GetInt32());
 
         foreach (var (field, width) in new[] { ("thumbnail", 320), ("medium", 800), ("large", 1600) })
@@ -110,7 +110,7 @@ public sealed class MediaUploadTests(ApiFixture api)
 
         var asset = await UploadAsync(admin, TestImages.PngWithAppendedScript(), "image/png");
 
-        Assert.Equal("Ready", asset.GetProperty("status").GetString());
+        Assert.Equal("ready", asset.GetProperty("status").GetString());
 
         var bytes = await Direct.GetByteArrayAsync(asset.GetProperty("large").GetString());
 
@@ -128,7 +128,7 @@ public sealed class MediaUploadTests(ApiFixture api)
 
         var asset = await UploadAsync(admin, Encoding.UTF8.GetBytes(content), claimedType);
 
-        Assert.Equal("Rejected", asset.GetProperty("status").GetString());
+        Assert.Equal("rejected", asset.GetProperty("status").GetString());
         Assert.Equal(ErrorCodes.Media.UnsupportedType, asset.GetProperty("rejectionCode").GetString());
         Assert.Equal(JsonValueKind.Null, asset.GetProperty("large").ValueKind);
 
@@ -149,7 +149,7 @@ public sealed class MediaUploadTests(ApiFixture api)
 
         var asset = await UploadAsync(admin, corrupt, "image/png");
 
-        Assert.Equal("Rejected", asset.GetProperty("status").GetString());
+        Assert.Equal("rejected", asset.GetProperty("status").GetString());
     }
 
     [Fact]
@@ -160,7 +160,7 @@ public sealed class MediaUploadTests(ApiFixture api)
 
         var asset = await UploadAsync(admin, TestImages.DecompressionBomb(), "image/png");
 
-        Assert.Equal("Rejected", asset.GetProperty("status").GetString());
+        Assert.Equal("rejected", asset.GetProperty("status").GetString());
         Assert.Equal(ErrorCodes.Media.TooLarge, asset.GetProperty("rejectionCode").GetString());
     }
 
@@ -200,7 +200,7 @@ public sealed class MediaUploadTests(ApiFixture api)
 
         var asset = await admin.GetFromJsonAsync<JsonElement>($"/api/v1/admin/media/{id}");
 
-        Assert.Equal("Rejected", asset.GetProperty("status").GetString());
+        Assert.Equal("rejected", asset.GetProperty("status").GetString());
         Assert.Equal(ErrorCodes.Media.TooLarge, asset.GetProperty("rejectionCode").GetString());
     }
 
@@ -465,7 +465,7 @@ public sealed class MediaUploadTests(ApiFixture api)
         var id = ticket.GetProperty("id").GetGuid();
         var completed = await SalesHelpers.ReadAsync(await admin.PostAsync($"/api/v1/admin/media/{id}/complete", null));
 
-        Assert.Equal("Processing", completed.GetProperty("status").GetString());
+        Assert.Equal("processing", completed.GetProperty("status").GetString());
 
         await DrainAsync();
 

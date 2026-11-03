@@ -13,6 +13,8 @@ namespace ComTest.Application.Modules.Catalog;
 
 public sealed record GetStoreCategoriesQuery : IQuery<IReadOnlyList<StoreCategoryDto>>;
 
+public sealed record GetStoreBrandsQuery : IQuery<IReadOnlyList<StoreBrandDto>>;
+
 public sealed record GetStoreProductQuery(string Slug) : IQuery<StoreProductDto>;
 
 public sealed record ListStoreProductsQuery(
@@ -33,10 +35,33 @@ public sealed class StorefrontQueries(
     IMediaLibrary media,
     CatalogCache cache) :
     IQueryHandler<GetStoreCategoriesQuery, IReadOnlyList<StoreCategoryDto>>,
+    IQueryHandler<GetStoreBrandsQuery, IReadOnlyList<StoreBrandDto>>,
     IQueryHandler<GetStoreProductQuery, StoreProductDto>,
     IQueryHandler<ListStoreProductsQuery, PagedResult<StoreProductListItemDto>>
 {
     private const int MaxSearchLength = 200;
+
+    /// <summary>Only brands with something to buy, as filtering by any other would show an empty page.</summary>
+    public async Task<Result<IReadOnlyList<StoreBrandDto>>> HandleAsync(GetStoreBrandsQuery query, CancellationToken cancellationToken)
+    {
+        if (tenantContext.TenantId is not { } tenantId)
+        {
+            return Error.Validation(ErrorCodes.Tenant.Required);
+        }
+
+        var brands = await cache.GetOrCreateAsync<List<StoreBrandDto>>(
+            tenantId,
+            "brands",
+            async token => await db.Brands
+                .AsNoTracking()
+                .Where(brand => db.Products.Any(product => product.BrandId == brand.Id && product.Status == ProductStatus.Published))
+                .OrderBy(brand => brand.Name)
+                .Select(brand => new StoreBrandDto(brand.Id, brand.Name, brand.Slug, brand.LogoUrl))
+                .ToListAsync(token),
+            cancellationToken);
+
+        return brands;
+    }
 
     public async Task<Result<IReadOnlyList<StoreCategoryDto>>> HandleAsync(GetStoreCategoriesQuery query, CancellationToken cancellationToken)
     {
@@ -140,12 +165,7 @@ public sealed class StorefrontQueries(
             var term = query.Search.Trim();
             term = term.Length > MaxSearchLength ? term[..MaxSearchLength] : term;
 
-            // Escaped, so that % and _ in the user's text are searched for literally.
-            var pattern = "%" + term.Replace(@"\", @"\\", StringComparison.Ordinal)
-                .Replace("%", @"\%", StringComparison.Ordinal)
-                .Replace("_", @"\_", StringComparison.Ordinal) + "%";
-
-            pattern = pattern.ToLowerInvariant();
+            var pattern = CatalogRules.ContainsPattern(term);
 
 #pragma warning disable CA1304, CA1311 // This ToLower runs in the database as lower(), not in .NET.
             products = products.Where(product => product.Translations.Any(item => EF.Functions.Like(item.Name.ToLower(), pattern, @"\")));

@@ -28,6 +28,75 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "Account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/account/email": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeEmailRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeEmailRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeEmailRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          }
+        }
       }
     },
     "/api/v1/account/password": {
@@ -435,6 +504,38 @@
         }
       }
     },
+    "/api/v1/auth/confirm-email-change": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmEmailChangeRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmEmailChangeRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmEmailChangeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
     "/api/v1/auth/resend-confirmation": {
       "post": {
         "tags": [
@@ -654,6 +755,28 @@
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/StoreCategoryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalog/brands": {
+      "get": {
+        "tags": [
+          "Catalog"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StoreBrandDto"
                   }
                 }
               }
@@ -1170,6 +1293,13 @@
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/ProductStatus"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -3312,6 +3442,23 @@
       }
     },
     "/api/v1/admin/store/payment-settings": {
+      "get": {
+        "tags": [
+          "AdminPaymentSettings"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentSettingsDto"
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "tags": [
           "AdminPaymentSettings"
@@ -3366,6 +3513,26 @@
       }
     },
     "/api/v1/admin/staff/invitations": {
+      "get": {
+        "tags": [
+          "AdminStaff"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffInvitationDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "AdminStaff"
@@ -3830,7 +3997,7 @@
             "type": "string"
           },
           "dataType": {
-            "type": "string"
+            "$ref": "#/components/schemas/AttributeDataType"
           },
           "options": {
             "type": "array",
@@ -4102,6 +4269,21 @@
           }
         }
       },
+      "ChangeEmailRequest": {
+        "required": [
+          "password",
+          "newEmail"
+        ],
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string"
+          },
+          "newEmail": {
+            "type": "string"
+          }
+        }
+      },
       "ChangeOrderStatusRequest": {
         "required": [
           "status"
@@ -4218,6 +4400,26 @@
               "string"
             ],
             "format": "uuid"
+          }
+        }
+      },
+      "ConfirmEmailChangeRequest": {
+        "required": [
+          "userId",
+          "newEmail",
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "newEmail": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
           }
         }
       },
@@ -4515,7 +4717,7 @@
             "type": "string"
           },
           "status": {
-            "type": "string"
+            "$ref": "#/components/schemas/MediaStatus"
           },
           "rejectionCode": {
             "type": [
@@ -4563,6 +4765,15 @@
             "format": "uri"
           }
         }
+      },
+      "MediaStatus": {
+        "enum": [
+          "pendingUpload",
+          "processing",
+          "ready",
+          "rejected"
+        ],
+        "type": "string"
       },
       "OrderAddressDto": {
         "required": [
@@ -4670,10 +4881,10 @@
             "type": "string"
           },
           "status": {
-            "type": "string"
+            "$ref": "#/components/schemas/OrderStatus"
           },
           "paymentState": {
-            "type": "string"
+            "$ref": "#/components/schemas/OrderPaymentState"
           },
           "paymentMethod": {
             "type": "string"
@@ -4785,10 +4996,10 @@
             "type": "string"
           },
           "status": {
-            "type": "string"
+            "$ref": "#/components/schemas/OrderStatus"
           },
           "paymentState": {
-            "type": "string"
+            "$ref": "#/components/schemas/OrderPaymentState"
           },
           "paymentMethod": {
             "type": "string"
@@ -4877,13 +5088,17 @@
         "type": "object",
         "properties": {
           "from": {
-            "type": [
-              "null",
-              "string"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OrderStatus"
+              }
             ]
           },
           "to": {
-            "type": "string"
+            "$ref": "#/components/schemas/OrderStatus"
           },
           "note": {
             "type": [
@@ -4922,10 +5137,10 @@
             "type": "string"
           },
           "status": {
-            "type": "string"
+            "$ref": "#/components/schemas/OrderStatus"
           },
           "paymentState": {
-            "type": "string"
+            "$ref": "#/components/schemas/OrderPaymentState"
           },
           "paymentMethod": {
             "type": "string"
@@ -5299,10 +5514,10 @@
             "format": "uuid"
           },
           "method": {
-            "type": "string"
+            "$ref": "#/components/schemas/PaymentMethodType"
           },
           "status": {
-            "type": "string"
+            "$ref": "#/components/schemas/PaymentStatus"
           },
           "amount": {
             "type": "number",
@@ -5361,7 +5576,7 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": "string"
+            "$ref": "#/components/schemas/PaymentEventType"
           },
           "amount": {
             "type": [
@@ -5389,6 +5604,24 @@
           }
         }
       },
+      "PaymentEventType": {
+        "enum": [
+          "created",
+          "confirmed",
+          "cancelled",
+          "refundRequested",
+          "refundCompleted",
+          "refundRejected"
+        ],
+        "type": "string"
+      },
+      "PaymentMethodType": {
+        "enum": [
+          "cashOnDelivery",
+          "bankTransfer"
+        ],
+        "type": "string"
+      },
       "PaymentOptionDto": {
         "required": [
           "code",
@@ -5406,6 +5639,46 @@
             ]
           }
         }
+      },
+      "PaymentSettingsDto": {
+        "required": [
+          "acceptsCashOnDelivery",
+          "acceptsBankTransfer",
+          "bankTransferInstructions",
+          "refundApprovalThreshold"
+        ],
+        "type": "object",
+        "properties": {
+          "acceptsCashOnDelivery": {
+            "type": "boolean"
+          },
+          "acceptsBankTransfer": {
+            "type": "boolean"
+          },
+          "bankTransferInstructions": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "refundApprovalThreshold": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "PaymentStatus": {
+        "enum": [
+          "pending",
+          "paid",
+          "partiallyRefunded",
+          "refunded",
+          "cancelled"
+        ],
+        "type": "string"
       },
       "PlacedOrderDto": {
         "required": [
@@ -5555,7 +5828,7 @@
             "type": "string"
           },
           "status": {
-            "type": "string"
+            "$ref": "#/components/schemas/ProductStatus"
           },
           "categoryId": {
             "type": [
@@ -5626,7 +5899,7 @@
             "type": "string"
           },
           "status": {
-            "type": "string"
+            "$ref": "#/components/schemas/ProductStatus"
           },
           "name": {
             "type": [
@@ -5945,7 +6218,7 @@
             "type": "string"
           },
           "status": {
-            "type": "string"
+            "$ref": "#/components/schemas/RefundStatus"
           },
           "requestedBy": {
             "type": "string",
@@ -5966,6 +6239,14 @@
             "format": "date-time"
           }
         }
+      },
+      "RefundStatus": {
+        "enum": [
+          "pendingApproval",
+          "completed",
+          "rejected"
+        ],
+        "type": "string"
       },
       "RegisterRequest": {
         "required": [
@@ -6434,7 +6715,7 @@
             "format": "uuid"
           },
           "type": {
-            "type": "string"
+            "$ref": "#/components/schemas/ShippingMethodType"
           },
           "zoneId": {
             "type": [
@@ -6726,7 +7007,7 @@
             "format": "uuid"
           },
           "type": {
-            "type": "string"
+            "$ref": "#/components/schemas/StockMovementType"
           },
           "onHandDelta": {
             "type": "integer",
@@ -6797,6 +7078,33 @@
           },
           "value": {
             "type": "string"
+          }
+        }
+      },
+      "StoreBrandDto": {
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "logoUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "logoUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -7007,7 +7315,7 @@
             "type": "string"
           },
           "plan": {
-            "type": "string"
+            "$ref": "#/components/schemas/TenantPlan"
           },
           "maxProducts": {
             "type": "integer",
@@ -7156,12 +7464,20 @@
             "type": "string"
           },
           "status": {
-            "type": "string"
+            "$ref": "#/components/schemas/TenantStatus"
           },
           "plan": {
-            "type": "string"
+            "$ref": "#/components/schemas/TenantPlan"
           }
         }
+      },
+      "TenantPlan": {
+        "enum": [
+          "free",
+          "standard",
+          "business"
+        ],
+        "type": "string"
       },
       "TenantStatus": {
         "enum": [
@@ -7380,6 +7696,23 @@
               "number"
             ],
             "format": "double"
+          }
+        }
+      },
+      "UpdateProfileRequest": {
+        "required": [
+          "fullName"
+        ],
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "locale": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },

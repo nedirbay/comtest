@@ -240,7 +240,7 @@ public sealed class MediaHandlers(
     {
         var urls = ToUrls(asset);
 
-        return new MediaAssetDto(asset.Id, asset.DisplayName, asset.Status.ToString(), asset.RejectionCode, asset.StoredBytes, asset.Width, asset.Height, urls?.Thumbnail, urls?.Medium, urls?.Large);
+        return new MediaAssetDto(asset.Id, asset.DisplayName, asset.Status, asset.RejectionCode, asset.StoredBytes, asset.Width, asset.Height, urls?.Thumbnail, urls?.Medium, urls?.Large);
     }
 }
 

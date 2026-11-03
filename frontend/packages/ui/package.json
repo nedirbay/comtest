@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "sideEffects": [
-    "**/*.css"
+    "**/*.css",
+    "**/validation/zod.ts"
   ],
   "exports": {
     ".": "./src/index.ts",
@@ -15,7 +16,8 @@
     "./styles/tailwind.css": "./src/styles/tailwind.css",
     "./styles/base.css": "./src/styles/base.css",
     "./styles/element-bridge.css": "./src/styles/element-bridge.css",
-    "./styles/tokens.css": "./src/styles/tokens.css"
+    "./styles/tokens.css": "./src/styles/tokens.css",
+    "./zod": "./src/validation/zod.ts"
   },
   "scripts": {
     "typecheck": "vue-tsc --noEmit",
@@ -26,6 +28,7 @@
     "@comtest/api-client": "workspace:*",
     "@element-plus/icons-vue": "catalog:",
     "@fontsource-variable/manrope": "^5.3.0",
+    "dompurify": "^3.0.0",
     "zod": "catalog:"
   },
   "peerDependencies": {

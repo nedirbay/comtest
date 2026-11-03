@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from '@comtest/ui/zod'
 
 const MIN_PASSWORD_LENGTH = 12
 const MAX_PASSWORD_LENGTH = 256

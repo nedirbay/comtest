@@ -22,7 +22,22 @@ Müşderi sahypalary gözleg ulgamlarynda görünmeli, admin panele bolsa bu ger
 
 **Sana we pul formatlary `Intl`-yň `tk` maglumatlaryna daýanmaýar.** Brauzerleriň we Node-yň köpüsinde `tk` üçin maglumat ýok ýa-da dürli, bu bolsa SSR hydration ýalňyşlygyna getirýär.
 
+**Serwer görnüşi formalarda ýok.** Giriş, hasaba alyş we açar sözi formalary diňe brauzerde render edilýär (`ClientOnly`). Haýal internetde adam JavaScript ýüklenmänkä ýazsa, Vue bu bahany görmeýär we doldurylan meýdan üçin „dolduryň“ diýer. Bu sahypalar `noindex`, şonuň üçin SEO ýitgisi ýok.
+
+**CSP: storefront-da nonce, admin-de meta teg.** Her SSR jogabynda täze nonce döredilýär. Admin statik, şonuň üçin syýasat gurlan sahypanyň içinde: ol islendik hostingde işleýär, ýöne `frame-ancestors` meta tegde işlemeýär we web serwerde goýulmaly. Element Plus `style` atributlary bilen işleýär, şonuň üçin diňe `style-src-attr 'unsafe-inline'` açyk: atribut kod işledip bilmeýär.
+
+**Zod diňe `@comtest/ui/zod` arkaly.** Zod özi `new Function` synap görýär, CSP bolsa muny gadagan edýär. Shemalar modul ýüklenende döredilýär, şonuň üçin sazlama plugin-de gijä galýar we import arkaly gelmeli. ESLint göni importy gadagan edýär.
+
+**SSR API-ä kesgitli içerki salgy bilen birigýär, `Host`-y aýratyn iberýär** (`node:http`). Node `fetch` `Host` sözbaşysyny dymyp çalyşýar, salgyny `Host`-dan gurmak bolsa ýasama sözbaşy bilen SSRF-e ýol açardy.
+
+**Sahypa kody diňe hereket edilende ýüklenýär.** NuxtLink deslapky ýagdaýda görünýän ähli salgylaryň kodyny alýar. Haryt sanawy bolan sahypada bu saýtyň ýarysy diýmek: baş sahypa bu üýtgeşme bilen 426 KB-dan 205 KB-a düşdi.
+
+**Service worker diňe hash atly faýllary saklaýar.** Sahypalar we API jogaplary hemişe tora gidýär, şonuň üçin bir enjamy ulanýan iki adamyň maglumaty garyşmaýar.
+
+**API ýagdaýlary `normalizeStatus` arkaly.** Jogaplarda `Pending`, soraglarda `pending`. Backend düzedilýänçä ähli deňeşdirme şu funksiýadan geçýär.
+
 ## Netijeler
 
 - API kontrakty üýtgände `pnpm api:sync` işledilýär we `openapi/v1.json` üýtgeşmesi kod synynda görünýär.
 - `@tanstack/vue-query` client-i Nuxt-da her sorag üçin täzeden döredilýär, şonuň üçin ony modul derejesinde saklamak bolmaýar.
+- Brauzer testleri CSP-ni ýerine ýetirýän re­žimde işleýär: sahypany bozýan her syýasat üýtgeşmesi test ýalňyşlygy bolýar.

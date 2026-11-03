@@ -39,7 +39,7 @@ public sealed class OrderWorkflowTests(ApiFixture api)
         var delivered = await SalesHelpers.ReadAsync(await admin.PutAsJsonAsync($"/api/v1/admin/orders/{orderId}/status", new { status = "delivered", note = "Gowşuryldy" }));
         var history = delivered.GetProperty("history").EnumerateArray().ToList();
 
-        Assert.Equal(["Pending", "Confirmed", "Packed", "Shipped", "Delivered"], history.Select(item => item.GetProperty("to").GetString()));
+        Assert.Equal(["pending", "confirmed", "packed", "shipped", "delivered"], history.Select(item => item.GetProperty("to").GetString()));
         Assert.Equal(store.Store.Owner.UserId, history[^1].GetProperty("by").GetGuid());
         Assert.Equal("Gowşuryldy", history[^1].GetProperty("note").GetString());
 
@@ -80,7 +80,7 @@ public sealed class OrderWorkflowTests(ApiFixture api)
 
         var payment = await admin.GetFromJsonAsync<JsonElement>($"/api/v1/admin/orders/{orderId}/payment");
 
-        Assert.Equal("Cancelled", payment.GetProperty("status").GetString());
+        Assert.Equal("cancelled", payment.GetProperty("status").GetString());
 
         var again = await admin.PutAsJsonAsync($"/api/v1/admin/orders/{orderId}/status", new { status = "confirmed" });
 
@@ -283,7 +283,7 @@ public sealed class CustomerOrderTests(ApiFixture api)
         var body = await response.Content.ReadAsStringAsync();
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("\"status\":\"Pending\"", body, StringComparison.Ordinal);
+        Assert.Contains("\"status\":\"pending\"", body, StringComparison.Ordinal);
 
         foreach (var secret in new[] { "+99365111111", "Köçe", "Aýna", "phone", "line1", "\"sku\"" })
         {

@@ -29,6 +29,13 @@ internal sealed class CheckoutQuoteRequestValidator : AbstractValidator<Checkout
 
 public sealed record CheckoutQuoteQuery(CartOwner Owner, CheckoutQuoteRequest Request) : IQuery<CheckoutQuoteDto>;
 
+internal static class CheckoutRules
+{
+    /// <summary>The API's spelling of a stored name, the same as its enums: `Courier` becomes `courier`.</summary>
+    public static string ApiName(string value) =>
+        string.IsNullOrEmpty(value) ? value : char.ToLowerInvariant(value[0]) + value[1..];
+}
+
 public sealed record ContactRequest(string Name, string Phone, string? Email = null);
 
 internal sealed class ContactRequestValidator : AbstractValidator<ContactRequest>
@@ -115,7 +122,7 @@ public sealed class CheckoutHandlers(
 
         return new CheckoutQuoteDto(
             cart,
-            shippingOptions.Select(option => new ShippingOptionDto(option.MethodId, option.Type, option.Name, option.Price, option.Currency, option.MinDays, option.MaxDays, option.PickupAddress)).ToList(),
+            shippingOptions.Select(option => new ShippingOptionDto(option.MethodId, CheckoutRules.ApiName(option.Type), option.Name, option.Price, option.Currency, option.MinDays, option.MaxDays, option.PickupAddress)).ToList(),
             methods.Select(method => new PaymentOptionDto(method.Code, method.Instructions)).ToList(),
             new TotalsDto(cart.Subtotal, 0m, 0m, shippingCost, cart.Subtotal + shippingCost, settings.DefaultCurrency));
     }

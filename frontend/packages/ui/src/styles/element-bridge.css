@@ -51,8 +51,11 @@
     --el-color-white: var(--color-brand-950);
   }
 
-  /* The label is the white of a primary button, so keep it readable in both themes. */
-  .el-button--primary {
+  /*
+   * The label of a filled primary button has to stay readable in both themes. Link, text and plain
+   * buttons have no fill behind them, so they keep the brand colour Element Plus gives them.
+   */
+  .el-button--primary:not(.is-link, .is-text, .is-plain) {
     --el-button-text-color: var(--theme-on-primary);
     --el-button-hover-text-color: var(--theme-on-primary);
     --el-button-active-text-color: var(--theme-on-primary);

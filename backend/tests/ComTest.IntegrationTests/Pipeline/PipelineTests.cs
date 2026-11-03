@@ -307,6 +307,7 @@ public sealed class AuthorizationDefaultsTests(ApiFixture api)
     {
         "POST api/v{version:apiVersion}/auth/register",
         "POST api/v{version:apiVersion}/auth/confirm-email",
+        "POST api/v{version:apiVersion}/auth/confirm-email-change",
         "POST api/v{version:apiVersion}/auth/resend-confirmation",
         "POST api/v{version:apiVersion}/auth/login",
         "POST api/v{version:apiVersion}/auth/login/two-factor",
@@ -315,6 +316,7 @@ public sealed class AuthorizationDefaultsTests(ApiFixture api)
         "POST api/v{version:apiVersion}/auth/forgot-password",
         "POST api/v{version:apiVersion}/auth/reset-password",
         "GET api/v{version:apiVersion}/store",
+        "GET api/v{version:apiVersion}/catalog/brands",
         "GET api/v{version:apiVersion}/catalog/categories",
         "GET api/v{version:apiVersion}/catalog/products",
         "GET api/v{version:apiVersion}/catalog/products/{slug}",

@@ -32,6 +32,13 @@ internal static class CatalogRules
     public static bool HaveUniqueLanguages<T>(IReadOnlyList<T> items, Func<T, string> language) =>
         items.Select(language).Distinct(StringComparer.Ordinal).Count() == items.Count;
 
+    /// <summary>For LIKE with `\` as the escape: % and _ in the user's text are searched for literally.</summary>
+    public static string ContainsPattern(string term) =>
+        "%" + term.Replace(@"\", @"\\", StringComparison.Ordinal)
+            .Replace("%", @"\%", StringComparison.Ordinal)
+            .Replace("_", @"\_", StringComparison.Ordinal)
+            .ToLowerInvariant() + "%";
+
     public static string CurrentLanguage() => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
 
     /// <summary>The visitor's language, then the store's own, then any: a page is never left blank.</summary>

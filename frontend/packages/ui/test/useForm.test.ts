@@ -2,7 +2,7 @@ import { ApiError } from '@comtest/api-client'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
-import { z } from 'zod'
+import { z } from '../src/validation/zod'
 import { useForm } from '../src/composables/useForm'
 
 const schema = z.object({

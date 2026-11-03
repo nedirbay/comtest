@@ -121,6 +121,16 @@ public sealed class AdminStoreController : TenantControllerBase
 [Route("api/v{version:apiVersion}/admin/store/payment-settings")]
 public sealed class AdminPaymentSettingsController : TenantControllerBase
 {
+    [HttpGet]
+    [HasPermission(Permissions.SettingsManage)]
+    [ProducesResponseType<PaymentSettingsDto>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Get(
+        [FromServices] IQueryHandler<GetPaymentSettingsQuery, PaymentSettingsDto> handler,
+        CancellationToken cancellationToken) =>
+        CurrentTenantId is { } tenantId
+            ? FromResult(await handler.HandleAsync(new GetPaymentSettingsQuery(tenantId), cancellationToken))
+            : Failure(TenantRequired);
+
     [HttpPut]
     [HasPermission(Permissions.SettingsManage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -151,6 +161,14 @@ public sealed class AdminStaffController : TenantControllerBase
         [FromServices] IQueryHandler<ListStaffQuery, IReadOnlyList<StaffMemberDto>> handler,
         CancellationToken cancellationToken) =>
         FromResult(await handler.HandleAsync(new ListStaffQuery(), cancellationToken));
+
+    [HttpGet("invitations")]
+    [HasPermission(Permissions.StaffManage)]
+    [ProducesResponseType<IReadOnlyList<StaffInvitationDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Invitations(
+        [FromServices] IQueryHandler<ListInvitationsQuery, IReadOnlyList<StaffInvitationDto>> handler,
+        CancellationToken cancellationToken) =>
+        FromResult(await handler.HandleAsync(new ListInvitationsQuery(), cancellationToken));
 
     [HttpPost("invitations")]
     [HasPermission(Permissions.StaffManage)]

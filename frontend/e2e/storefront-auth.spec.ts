@@ -52,11 +52,18 @@ test.describe('server rendering', () => {
 })
 
 test.describe('opening the store directly', () => {
-  test('the home page hydrates without a mismatch and offers sign-in', async ({ page }) => {
+  test('the home page hydrates without a mismatch and offers sign-in', async ({
+    page,
+  }, testInfo) => {
     await page.goto(STOREFRONT_URL)
 
     await expect(page.getByTestId('store-hero')).toContainText('Demo Dükan')
-    await expect(page.getByRole('link', { name: 'Girmek' })).toBeVisible()
+    // A phone reaches the account through the bottom menu instead of the header.
+    await expect(
+      testInfo.project.name === 'phone'
+        ? page.getByTestId('bottom-nav').getByRole('link', { name: 'Hasabym' })
+        : page.getByRole('link', { name: 'Girmek' }),
+    ).toBeVisible()
     await expect(page.locator('footer')).toContainText('Demo Dükan')
   })
 
@@ -200,7 +207,7 @@ test('the password fields work with password managers', async ({ page }) => {
 })
 
 test('the language switcher changes the address and the text', async ({ page }) => {
-  await page.goto(`${STOREFRONT_URL}/login`)
+  await page.goto(`${STOREFRONT_URL}/login`, { waitUntil: 'networkidle' })
   await page.getByRole('button', { name: 'Dil' }).click()
   await page.getByRole('menuitem', { name: 'Русский' }).click()
 
@@ -209,7 +216,7 @@ test('the language switcher changes the address and the text', async ({ page }) 
 })
 
 test('the dark theme survives a reload without a flash', async ({ page, request }) => {
-  await page.goto(`${STOREFRONT_URL}/login`)
+  await page.goto(`${STOREFRONT_URL}/login`, { waitUntil: 'networkidle' })
   await page.getByRole('button', { name: 'Gara tema' }).click()
   await expect(page.locator('html')).toHaveClass(/dark/)
 

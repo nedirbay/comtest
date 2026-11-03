@@ -13,17 +13,19 @@ state="$frontend/.e2e"
 
 db=comtest-e2e-db
 mail=comtest-e2e-mail
+storage=comtest-e2e-storage
 db_port=55432
 smtp_port=51025
 mail_ui_port=58025
 api_port=5055
+storage_port=59000
 
 down() {
   if [[ -f "$state/api.pid" ]]; then
     kill "$(cat "$state/api.pid")" 2>/dev/null || true
   fi
 
-  docker rm -f "$db" "$mail" >/dev/null 2>&1 || true
+  docker rm -f "$db" "$mail" "$storage" >/dev/null 2>&1 || true
   rm -rf "$state"
 }
 
@@ -31,7 +33,9 @@ up() {
   down
   mkdir -p "$state"
 
-  local owner_password app_password signing_key
+  local owner_password app_password signing_key storage_key storage_secret
+  storage_key="e2e$(openssl rand -hex 8)"
+  storage_secret="$(openssl rand -hex 24)"
   owner_password="$(openssl rand -hex 24)"
   app_password="$(openssl rand -hex 24)"
   signing_key="$(openssl ecparam -name prime256v1 -genkey -noout | openssl pkcs8 -topk8 -nocrypt)"
@@ -40,6 +44,8 @@ up() {
     -p "127.0.0.1:$db_port:5432" postgres:16-alpine >/dev/null
   docker run -d --name "$mail" -p "127.0.0.1:$smtp_port:1025" -p "127.0.0.1:$mail_ui_port:8025" \
     axllent/mailpit:latest >/dev/null
+  docker run -d --name "$storage" -e MINIO_ROOT_USER="$storage_key" -e MINIO_ROOT_PASSWORD="$storage_secret" \
+    -p "127.0.0.1:$storage_port:9000" cgr.dev/chainguard/minio:latest server /data >/dev/null
 
   until docker exec "$db" pg_isready -q -U postgres -h 127.0.0.1; do sleep 1; done
 
@@ -58,6 +64,10 @@ up() {
   export Email__Smtp__Port="$smtp_port"
   export Email__Smtp__UseStartTls=false
   export Auth__FrontendBaseUrl=http://localhost:3001
+  export Storage__ServiceUrl="http://localhost:$storage_port"
+  export Storage__AccessKey="$storage_key"
+  export Storage__SecretKey="$storage_secret"
+  export Storage__CreateBucketIfMissing=true
   export Auth__BreachedPasswordCheckEnabled=false
   export Cors__AllowedOrigins__0=http://localhost:3001
   export Cors__AllowedOrigins__1=http://localhost:5174
@@ -66,6 +76,8 @@ up() {
   export RateLimiting__LoginPerMinute=100000
   export RateLimiting__AccountActionPerMinute=100000
   export RateLimiting__RefreshPerMinute=100000
+  export RateLimiting__CheckoutPerMinute=100000
+  export RateLimiting__TrackingPerMinute=100000
 
   cd "$backend"
   dotnet tool restore >/dev/null

@@ -13,6 +13,7 @@ public static class SessionRevocationReasons
     public const string UserRequest = "user_request";
     public const string PasswordChanged = "password_changed";
     public const string PasswordReset = "password_reset";
+    public const string EmailChanged = "email_changed";
     public const string TwoFactorDisabled = "two_factor_disabled";
     public const string TokenReuse = "token_reuse";
     public const string AccountUnavailable = "account_unavailable";

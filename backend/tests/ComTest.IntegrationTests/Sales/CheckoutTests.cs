@@ -29,7 +29,7 @@ public sealed class CheckoutQuoteTests(ApiFixture api)
         Assert.Equal(200m, served.GetProperty("totals").GetProperty("subtotal").GetDecimal());
         Assert.Equal(SalesHelpers.CourierPrice, served.GetProperty("totals").GetProperty("shipping").GetDecimal());
         Assert.Equal(220m, served.GetProperty("totals").GetProperty("total").GetDecimal());
-        Assert.Equal("Pickup", Assert.Single(unserved.GetProperty("shippingOptions").EnumerateArray()).GetProperty("type").GetString());
+        Assert.Equal("pickup", Assert.Single(unserved.GetProperty("shippingOptions").EnumerateArray()).GetProperty("type").GetString());
         Assert.Single(noRegion.GetProperty("shippingOptions").EnumerateArray());
         Assert.Equal("cashOnDelivery", Assert.Single(served.GetProperty("paymentOptions").EnumerateArray()).GetProperty("code").GetString());
     }
@@ -74,8 +74,8 @@ public sealed class PlaceOrderTests(ApiFixture api)
         var order = placed.GetProperty("order");
         var totals = order.GetProperty("totals");
 
-        Assert.Equal("Pending", order.GetProperty("status").GetString());
-        Assert.Equal("Unpaid", order.GetProperty("paymentState").GetString());
+        Assert.Equal("pending", order.GetProperty("status").GetString());
+        Assert.Equal("unpaid", order.GetProperty("paymentState").GetString());
         Assert.Equal(300m, totals.GetProperty("subtotal").GetDecimal());
         Assert.Equal(SalesHelpers.CourierPrice, totals.GetProperty("shipping").GetDecimal());
         Assert.Equal(320m, totals.GetProperty("total").GetDecimal());
@@ -276,7 +276,7 @@ public sealed class PlaceOrderTests(ApiFixture api)
         var placed = await SalesHelpers.ReadAsync(await shopper.CheckoutAsync(new { shippingMethodId = store.PickupId, paymentMethod = "cashOnDelivery", contact = new { name = "Aýna", phone = "+99365111111" } }));
 
         Assert.Equal(0m, placed.GetProperty("order").GetProperty("totals").GetProperty("shipping").GetDecimal());
-        Assert.Equal("Pickup", placed.GetProperty("order").GetProperty("shippingType").GetString());
+        Assert.Equal("pickup", placed.GetProperty("order").GetProperty("shippingType").GetString());
     }
 
     [Theory]

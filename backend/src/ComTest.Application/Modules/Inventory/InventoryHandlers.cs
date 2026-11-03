@@ -313,7 +313,7 @@ public sealed class StockHandlers(IApplicationDbContext db, ICatalogReader catal
                 item.Id,
                 item.WarehouseId,
                 item.ProductVariantId,
-                item.Type.ToString(),
+                item.Type,
                 item.OnHandDelta,
                 item.ReservedDelta,
                 item.OnHandAfter,

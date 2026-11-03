@@ -390,7 +390,7 @@ public sealed class AttributeHandlers(IApplicationDbContext db) :
     private static AttributeDto ToDto(AttributeDefinition attribute) => new(
         attribute.Id,
         attribute.Code,
-        attribute.DataType.ToString(),
+        attribute.DataType,
         attribute.Options,
         attribute.Translations.Select(item => new TranslationDto(item.Language, item.Name, null)).ToList());
 }

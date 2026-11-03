@@ -1,3 +1,4 @@
+using ComTest.Domain.Modules.Inventory;
 using ComTest.Shared.Results;
 
 namespace ComTest.Application.Modules.Inventory.Contracts;
@@ -41,7 +42,7 @@ public sealed record StockMovementDto(
     Guid Id,
     Guid WarehouseId,
     Guid VariantId,
-    string Type,
+    StockMovementType Type,
     int OnHandDelta,
     int ReservedDelta,
     int OnHandAfter,

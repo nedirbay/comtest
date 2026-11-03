@@ -73,7 +73,7 @@ public sealed class CreateTenantHandler(IApplicationDbContext db, ITenantScope t
 
         await db.SaveChangesAsync(cancellationToken);
 
-        return new TenantDto(tenant.Id, tenant.Name, tenant.Slug, tenant.Status.ToString(), tenant.Plan.ToString());
+        return new TenantDto(tenant.Id, tenant.Name, tenant.Slug, tenant.Status, tenant.Plan);
     }
 }
 
@@ -210,7 +210,7 @@ public sealed class ListTenantsHandler(IApplicationDbContext db) : IQueryHandler
             .OrderBy(tenant => tenant.Id)
             .Skip(query.Page.Skip)
             .Take(query.Page.PageSize)
-            .Select(tenant => new TenantDto(tenant.Id, tenant.Name, tenant.Slug, tenant.Status.ToString(), tenant.Plan.ToString()))
+            .Select(tenant => new TenantDto(tenant.Id, tenant.Name, tenant.Slug, tenant.Status, tenant.Plan))
             .ToListAsync(cancellationToken);
 
         return new PagedResult<TenantDto>(items, query.Page.Page, query.Page.PageSize, total);
@@ -245,7 +245,7 @@ public sealed class SetTenantStatusHandler(IApplicationDbContext db, ITenantDire
         await db.SaveChangesAsync(cancellationToken);
         directory.Invalidate(new TenantInfo(tenant.Id, tenant.Slug, tenant.Name, tenant.Status));
 
-        return new TenantDto(tenant.Id, tenant.Name, tenant.Slug, tenant.Status.ToString(), tenant.Plan.ToString());
+        return new TenantDto(tenant.Id, tenant.Name, tenant.Slug, tenant.Status, tenant.Plan);
     }
 }
 
@@ -292,6 +292,34 @@ internal sealed class UpdatePaymentSettingsRequestValidator : AbstractValidator<
     }
 }
 
+public sealed record PaymentSettingsDto(
+    bool AcceptsCashOnDelivery,
+    bool AcceptsBankTransfer,
+    string? BankTransferInstructions,
+    decimal? RefundApprovalThreshold);
+
+public sealed record GetPaymentSettingsQuery(Guid TenantId) : IQuery<PaymentSettingsDto>;
+
+public sealed class GetPaymentSettingsHandler(IApplicationDbContext db) : IQueryHandler<GetPaymentSettingsQuery, PaymentSettingsDto>
+{
+    public async Task<Result<PaymentSettingsDto>> HandleAsync(GetPaymentSettingsQuery query, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(query);
+
+        var settings = await db.Tenants
+            .AsNoTracking()
+            .Where(tenant => tenant.Id == query.TenantId)
+            .Select(tenant => new PaymentSettingsDto(
+                tenant.AcceptsCashOnDelivery,
+                tenant.AcceptsBankTransfer,
+                tenant.BankTransferInstructions,
+                tenant.RefundApprovalThreshold))
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return settings is null ? Error.NotFound(ErrorCodes.Tenant.NotFound) : settings;
+    }
+}
+
 public sealed record UpdatePaymentSettingsCommand(Guid TenantId, UpdatePaymentSettingsRequest Settings) : ICommand<bool>;
 
 public sealed class UpdatePaymentSettingsHandler(IApplicationDbContext db) : ICommandHandler<UpdatePaymentSettingsCommand, bool>
@@ -326,7 +354,7 @@ internal static class TenantMappings
     public static StoreSettingsDto ToSettingsDto(this Tenant tenant) => new(
         tenant.Name,
         tenant.Slug,
-        tenant.Plan.ToString(),
+        tenant.Plan,
         tenant.MaxProducts,
         tenant.MaxStaff,
         tenant.StorageQuotaMegabytes,

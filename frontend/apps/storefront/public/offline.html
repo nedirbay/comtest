@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="tk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Internet ýok · Нет интернета · Offline</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+
+      body {
+        display: flex;
+        min-height: 100dvh;
+        margin: 0;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        font-family: system-ui, sans-serif;
+        text-align: center;
+      }
+
+      section + section {
+        margin-top: 1.5rem;
+      }
+
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.25rem;
+      }
+
+      p {
+        margin: 0;
+        opacity: 0.75;
+      }
+    </style>
+  </head>
+  <body>
+    <main data-testid="offline-page">
+      <section lang="tk">
+        <h1>Internet baglanyşygy ýok</h1>
+        <p>Baglanyşygyňyzy barlap, gaýtadan synanyşyň.</p>
+      </section>
+      <section lang="ru">
+        <h1>Нет подключения к интернету</h1>
+        <p>Проверьте соединение и попробуйте снова.</p>
+      </section>
+      <section lang="en">
+        <h1>You are offline</h1>
+        <p>Check your connection and try again.</p>
+      </section>
+      <a
+        href=""
+        style="
+          display: inline-block;
+          margin-top: 2rem;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.625rem;
+          background: #145b45;
+          color: #fff;
+          font-weight: 600;
+          text-decoration: none;
+        "
+      >
+        ↻ Gaýtadan · Повторить · Retry
+      </a>
+    </main>
+  </body>
+</html>

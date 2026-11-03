@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { SecuritySettings } from '@comtest/auth'
-import { PageHeader } from '@comtest/ui'
 
 definePageMeta({ middleware: 'auth', requiresAuth: true })
 
@@ -10,6 +9,8 @@ useHead({ title: computed(() => t('auth.security.title')) })
 </script>
 
 <template>
-  <PageHeader :title="t('auth.security.title')" :description="t('auth.security.description')" />
-  <SecuritySettings class="max-w-3xl" />
+  <AccountShell :title="t('auth.security.title')">
+    <p class="mb-5 text-sm text-ink-muted">{{ t('auth.security.description') }}</p>
+    <SecuritySettings class="max-w-3xl" />
+  </AccountShell>
 </template>

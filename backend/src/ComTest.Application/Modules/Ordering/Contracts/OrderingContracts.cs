@@ -1,3 +1,5 @@
+using ComTest.Domain.Modules.Ordering;
+
 namespace ComTest.Application.Modules.Ordering.Contracts;
 
 /// <summary>Lets the payments module update an order. Changes are saved by the caller, in one transaction.</summary>
@@ -79,8 +81,8 @@ public sealed record TrackingDto(string? Carrier, string? Number, string? Url, D
 public sealed record OrderDto(
     Guid Id,
     string Number,
-    string Status,
-    string PaymentState,
+    OrderStatus Status,
+    OrderPaymentState PaymentState,
     string PaymentMethod,
     TotalsDto Totals,
     IReadOnlyList<OrderItemDto> Items,
@@ -92,19 +94,19 @@ public sealed record OrderDto(
     string? CustomerNote,
     DateTimeOffset PlacedAt);
 
-public sealed record OrderStatusChangeDto(string? From, string To, string? Note, DateTimeOffset At, Guid? By);
+public sealed record OrderStatusChangeDto(OrderStatus? From, OrderStatus To, string? Note, DateTimeOffset At, Guid? By);
 
 public sealed record OrderNoteDto(Guid Id, string Text, DateTimeOffset At, Guid? By);
 
 public sealed record AdminOrderDto(OrderDto Order, Guid? CustomerUserId, IReadOnlyList<OrderStatusChangeDto> History, IReadOnlyList<OrderNoteDto> Notes, uint Version);
 
-public sealed record OrderListItemDto(Guid Id, string Number, string Status, string PaymentState, string PaymentMethod, decimal Total, string Currency, int ItemCount, string ContactName, string ContactPhone, DateTimeOffset PlacedAt);
+public sealed record OrderListItemDto(Guid Id, string Number, OrderStatus Status, OrderPaymentState PaymentState, string PaymentMethod, decimal Total, string Currency, int ItemCount, string ContactName, string ContactPhone, DateTimeOffset PlacedAt);
 
 /// <summary>What a guest with a tracking link sees: no phone number, no street address, no staff data.</summary>
 public sealed record OrderTrackingDto(
     string Number,
-    string Status,
-    string PaymentState,
+    OrderStatus Status,
+    OrderPaymentState PaymentState,
     string PaymentMethod,
     TotalsDto Totals,
     IReadOnlyList<OrderTrackingItemDto> Items,

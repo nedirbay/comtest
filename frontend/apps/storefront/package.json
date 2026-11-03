@@ -22,11 +22,13 @@
     "@sentry/vue": "^11.0.0",
     "@tanstack/vue-query": "catalog:",
     "element-plus": "catalog:",
+    "jsdom": "^30.0.0",
     "nuxt": "^4.5.0",
     "pinia": "catalog:",
     "vue": "catalog:",
     "vue-i18n": "catalog:",
-    "vue-router": "catalog:"
+    "vue-router": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@comtest/config": "workspace:*",

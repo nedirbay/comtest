@@ -1,0 +1,33 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+    groups:
+      # Upgrading these one at a time would only break the build in between.
+      vue-and-nuxt:
+        patterns:
+          [
+            "vue*",
+            "nuxt",
+            "@nuxt/*",
+            "@nuxtjs/*",
+            "pinia",
+            "@pinia/*",
+            "@vue/*",
+          ]
+      tooling:
+        patterns:
+          [
+            "eslint*",
+            "@typescript-eslint/*",
+            "typescript-eslint",
+            "prettier",
+            "vite",
+            "vitest",
+          ]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

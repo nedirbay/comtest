@@ -2,12 +2,27 @@ import { CSS_LAYER_ORDER, elementPlusCssLayer } from '@comtest/config/vite'
 import tailwindcss from '@tailwindcss/vite'
 
 /** Personal pages are rendered in the browser only, so no user data can reach the SSR payload. */
-const PRIVATE_PAGES = ['/account/**', '/ru/account/**', '/en/account/**']
+const PRIVATE_PATHS = [
+  '/account/**',
+  '/cart',
+  '/checkout',
+  '/order-confirmed',
+  '/track',
+  '/accept-invitation',
+]
 
 /** Pages that are useless in search results. */
-const NO_INDEX_PAGES = ['login', 'register', 'forgot-password', 'reset-password', 'confirm-email']
+const NO_INDEX_PAGES = [
+  'login',
+  'register',
+  'forgot-password',
+  'reset-password',
+  'confirm-email',
+  'compare',
+]
 
 const prefixes = ['', '/ru', '/en']
+const PRIVATE_PAGES = prefixes.flatMap((prefix) => PRIVATE_PATHS.map((path) => prefix + path))
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-10-01',
@@ -16,6 +31,8 @@ export default defineNuxtConfig({
   typescript: { strict: true },
 
   modules: ['@element-plus/nuxt', '@pinia/nuxt', '@nuxtjs/i18n'],
+
+  components: [{ path: '~/components', pathPrefix: false }],
 
   css: ['@fontsource-variable/manrope/index.css', '~/assets/css/main.css'],
 
@@ -40,17 +57,28 @@ export default defineNuxtConfig({
   app: {
     head: {
       style: [{ innerHTML: CSS_LAYER_ORDER, tagPriority: 'critical' }],
-      meta: [{ name: 'referrer', content: 'strict-origin-when-cross-origin' }],
-      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      meta: [
+        { name: 'referrer', content: 'strict-origin-when-cross-origin' },
+        { name: 'theme-color', content: '#145b45' },
+      ],
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'manifest', href: '/manifest.webmanifest' },
+      ],
     },
   },
 
   runtimeConfig: {
     // Server only, and never sent to the browser.
     apiInternalUrl: '',
+    // `report` only logs what the policy would block, and `enforce` blocks it. See server/plugins.
+    cspMode: 'report',
+    // Where product pictures come from when that is not https, as with local object storage.
+    cspExtraImageOrigins: '',
     public: {
       apiUrl: 'http://localhost:5050',
       devTenant: '',
+      adminUrl: 'http://localhost:5173',
       sentryDsn: '',
     },
   },
@@ -76,11 +104,31 @@ export default defineNuxtConfig({
     transpile: ['@comtest/ui', '@comtest/auth', '@comtest/api-client'],
   },
 
+  // None by default, so nothing can publish them by accident. See the task list's F15.
+  sourcemap: { server: false, client: false },
+
   vite: {
     plugins: [elementPlusCssLayer(), tailwindcss()],
-    build: {
-      // Maps are for uploading to the error tracker. They are not linked from the published files.
-      sourcemap: 'hidden',
+  },
+
+  experimental: {
+    defaults: {
+      // Pages load their code when a visitor reaches for a link and not whenever one scrolls into
+      // view, since a page full of product cards would otherwise download half the site.
+      nuxtLink: { prefetch: true, prefetchOn: { interaction: true, visibility: false } },
     },
   },
+
+  hooks: {
+    // Same reason: the HTML should not ask the browser to fetch every page's code in advance.
+    'build:manifest': (manifest) => {
+      for (const entry of Object.values(manifest)) {
+        entry.dynamicImports = []
+        entry.prefetch = false
+      }
+    },
+  },
+
+  // Ready-made gzip and brotli copies of static files. On a slow connection this matters most.
+  nitro: { compressPublicAssets: true },
 })

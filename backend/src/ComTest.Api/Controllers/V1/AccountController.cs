@@ -23,6 +23,23 @@ public sealed class AccountController(
     public async Task<IActionResult> Me(CancellationToken cancellationToken) =>
         FromResult(await accounts.GetProfileAsync(UserId, cancellationToken));
 
+    [HttpPut("me")]
+    [EnableRateLimiting(RateLimitPolicies.AccountAction)]
+    [ProducesResponseType<ProfileDto>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateProfile(UpdateProfileRequest request, CancellationToken cancellationToken) =>
+        FromResult(await accounts.UpdateProfileAsync(UserId, request, Client, cancellationToken));
+
+    /// <summary>Sends a link to the new address. The change happens when that link is opened.</summary>
+    [HttpPost("email")]
+    [EnableRateLimiting(RateLimitPolicies.AccountAction)]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> ChangeEmail(ChangeEmailRequest request, CancellationToken cancellationToken)
+    {
+        var result = await accounts.RequestEmailChangeAsync(UserId, request, Client, cancellationToken);
+
+        return result.IsSuccess ? Accepted() : Failure(result.Error);
+    }
+
     [HttpPost("password")]
     [EnableRateLimiting(RateLimitPolicies.AccountAction)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

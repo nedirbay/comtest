@@ -20,16 +20,16 @@ public sealed class PaymentTests(ApiFixture api)
         var first = await SalesHelpers.ReadAsync(await admin.PostAsJsonAsync($"/api/v1/admin/orders/{orderId}/payment/confirm", new { note = "Kurýer aldy" }));
         var second = await SalesHelpers.ReadAsync(await admin.PostAsJsonAsync($"/api/v1/admin/orders/{orderId}/payment/confirm", new { }));
 
-        Assert.Equal("Paid", first.GetProperty("status").GetString());
-        Assert.Equal("Paid", second.GetProperty("status").GetString());
+        Assert.Equal("paid", first.GetProperty("status").GetString());
+        Assert.Equal("paid", second.GetProperty("status").GetString());
 
         var events = second.GetProperty("events").EnumerateArray().Select(item => item.GetProperty("type").GetString()).ToList();
 
-        Assert.Equal(["Created", "Confirmed"], events);
+        Assert.Equal(["created", "confirmed"], events);
         Assert.Equal(store.Store.Owner.UserId, second.GetProperty("events")[1].GetProperty("by").GetGuid());
 
         var order = await admin.GetFromJsonAsync<JsonElement>($"/api/v1/admin/orders/{orderId}");
-        Assert.Equal("Paid", order.GetProperty("order").GetProperty("paymentState").GetString());
+        Assert.Equal("paid", order.GetProperty("order").GetProperty("paymentState").GetString());
 
         Assert.Equal(1L, await api.QueryAsOwnerAsync<long>(
             "SELECT count(*) FROM outbox_messages WHERE type LIKE '%OrderPaid' AND payload->>'OrderId' = @id",
@@ -78,7 +78,7 @@ public sealed class PaymentTests(ApiFixture api)
 
         var payment = await admin.GetFromJsonAsync<JsonElement>($"/api/v1/admin/orders/{orderId}/payment");
 
-        Assert.Equal("Paid", payment.GetProperty("status").GetString());
+        Assert.Equal("paid", payment.GetProperty("status").GetString());
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public sealed class PaymentTests(ApiFixture api)
         await SalesHelpers.ReadAsync(await admin.PostAsJsonAsync($"/api/v1/admin/orders/{orderId}/payment/confirm", new { }));
 
         var partial = await SalesHelpers.ReadAsync(await admin.PostAsJsonAsync($"/api/v1/admin/orders/{orderId}/payment/refunds", new { amount = 70m, reason = "Bölek" }));
-        Assert.Equal("PartiallyRefunded", partial.GetProperty("status").GetString());
+        Assert.Equal("partiallyRefunded", partial.GetProperty("status").GetString());
         Assert.Equal("PartiallyRefunded", await api.QueryAsOwnerAsync<string>("SELECT payment_state FROM orders WHERE id = @id", ("id", orderId)));
 
         // The order total is 120: the item plus 20 for delivery.
@@ -101,7 +101,7 @@ public sealed class PaymentTests(ApiFixture api)
         Assert.Equal(ErrorCodes.Payment.RefundExceedsPaid, await tooMuch.ReadCode());
 
         var rest = await SalesHelpers.ReadAsync(await admin.PostAsJsonAsync($"/api/v1/admin/orders/{orderId}/payment/refunds", new { amount = 50m, reason = "Galany" }));
-        Assert.Equal("Refunded", rest.GetProperty("status").GetString());
+        Assert.Equal("refunded", rest.GetProperty("status").GetString());
         Assert.Equal("Refunded", await api.QueryAsOwnerAsync<string>("SELECT payment_state FROM orders WHERE id = @id", ("id", orderId)));
     }
 
@@ -164,7 +164,7 @@ public sealed class PaymentTests(ApiFixture api)
 
         Assert.Equal(700m, approved.GetProperty("refundedAmount").GetDecimal());
         Assert.Equal(0m, approved.GetProperty("pendingRefundAmount").GetDecimal());
-        Assert.Equal("Completed", approved.GetProperty("refunds")[1].GetProperty("status").GetString());
+        Assert.Equal("completed", approved.GetProperty("refunds")[1].GetProperty("status").GetString());
 
         var again = await manager.PostAsync($"/api/v1/admin/orders/{orderId}/payment/refunds/{refundId}/approve", null);
         Assert.Equal(HttpStatusCode.NotFound, again.StatusCode);
@@ -300,15 +300,15 @@ public sealed class FullPurchaseScenarioTests(ApiFixture api)
         Assert.Equal((3, 0), await api.StockOfAsync(product.VariantId));
 
         var tracked = await SalesHelpers.ReadAsync(await accountClient.GetAsync($"/api/v1/account/orders/{orderId}"));
-        Assert.Equal("Shipped", tracked.GetProperty("status").GetString());
+        Assert.Equal("shipped", tracked.GetProperty("status").GetString());
 
         await SalesHelpers.ReadAsync(await admin.PutAsJsonAsync($"/api/v1/admin/orders/{orderId}/status", new { status = "delivered" }));
         await SalesHelpers.ReadAsync(await admin.PostAsJsonAsync($"/api/v1/admin/orders/{orderId}/payment/confirm", new { note = "Nagt alyndy" }));
 
         var finished = await SalesHelpers.ReadAsync(await accountClient.GetAsync($"/api/v1/account/orders/{orderId}"));
 
-        Assert.Equal("Delivered", finished.GetProperty("status").GetString());
-        Assert.Equal("Paid", finished.GetProperty("paymentState").GetString());
+        Assert.Equal("delivered", finished.GetProperty("status").GetString());
+        Assert.Equal("paid", finished.GetProperty("paymentState").GetString());
         Assert.Equal(520m, finished.GetProperty("totals").GetProperty("total").GetDecimal());
     }
 }

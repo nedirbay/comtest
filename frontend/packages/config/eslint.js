@@ -42,6 +42,19 @@ export default tseslint.config(
       'vue/block-order': ['error', { order: ['script', 'template', 'style'] }],
       // Raw HTML is an XSS risk. An exception must go through DOMPurify and say so.
       'vue/no-v-html': 'error',
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'zod',
+              message:
+                'Import z from @comtest/ui/zod, which keeps it within the content security policy.',
+              allowTypeImports: true,
+            },
+          ],
+        },
+      ],
       'no-restricted-globals': [
         'error',
         { name: 'localStorage', message: STORAGE_MESSAGE },
@@ -55,6 +68,10 @@ export default tseslint.config(
         ]),
       ],
     },
+  },
+  {
+    files: ['**/validation/zod.ts'],
+    rules: { '@typescript-eslint/no-restricted-imports': 'off' },
   },
   {
     // Tests are allowed to look into browser storage, to prove that no token ended up there.

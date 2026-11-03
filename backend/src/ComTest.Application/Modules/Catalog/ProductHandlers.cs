@@ -101,7 +101,7 @@ public sealed record GetProductQuery(Guid Id) : IQuery<ProductAdminDto>;
 
 public sealed record GetPriceHistoryQuery(Guid ProductId) : IQuery<IReadOnlyList<PriceChangeDto>>;
 
-public sealed record ListProductsQuery(PageRequest Page, string? Sort, ProductStatus? Status) : IQuery<PagedResult<ProductAdminListItemDto>>;
+public sealed record ListProductsQuery(PageRequest Page, string? Sort, ProductStatus? Status, string? Search = null) : IQuery<PagedResult<ProductAdminListItemDto>>;
 
 public sealed class ProductHandlers(
     IApplicationDbContext db,
@@ -119,6 +119,8 @@ public sealed class ProductHandlers(
     IQueryHandler<GetPriceHistoryQuery, IReadOnlyList<PriceChangeDto>>,
     IQueryHandler<ListProductsQuery, PagedResult<ProductAdminListItemDto>>
 {
+    private const int MaxSearchLength = 100;
+
     private static readonly SortMap<Product> AdminSort = new SortMap<Product>()
         .Add("slug", product => product.Slug)
         .Add("status", product => product.Status)
@@ -287,6 +289,21 @@ public sealed class ProductHandlers(
             products = products.Where(product => product.Status == status);
         }
 
+        if (!string.IsNullOrWhiteSpace(query.Search))
+        {
+            var term = query.Search.Trim();
+            term = term.Length > MaxSearchLength ? term[..MaxSearchLength] : term;
+
+            var pattern = CatalogRules.ContainsPattern(term);
+
+#pragma warning disable CA1304, CA1311 // This ToLower runs in the database as lower(), not in .NET.
+            products = products.Where(product =>
+                EF.Functions.Like(product.Slug.ToLower(), pattern, @"\")
+                || product.Translations.Any(item => EF.Functions.Like(item.Name.ToLower(), pattern, @"\"))
+                || product.Variants.Any(item => EF.Functions.Like(item.Sku.ToLower(), pattern, @"\")));
+#pragma warning restore CA1304, CA1311
+        }
+
         var ordered = AdminSort.Apply(products, query.Sort, product => product.Id);
 
         if (ordered.IsFailure)
@@ -295,6 +312,7 @@ public sealed class ProductHandlers(
         }
 
         var total = await products.LongCountAsync(cancellationToken);
+        var language = CatalogRules.CurrentLanguage();
 
         var items = await ordered.Value
             .Skip(query.Page.Skip)
@@ -302,8 +320,12 @@ public sealed class ProductHandlers(
             .Select(product => new ProductAdminListItemDto(
                 product.Id,
                 product.Slug,
-                product.Status.ToString(),
-                product.Translations.OrderBy(item => item.Language).Select(item => item.Name).FirstOrDefault(),
+                product.Status,
+                product.Translations
+                    .OrderBy(item => item.Language == language ? 0 : 1)
+                    .ThenBy(item => item.Language)
+                    .Select(item => item.Name)
+                    .FirstOrDefault(),
                 product.Variants.Count,
                 product.CreatedAt))
             .ToListAsync(cancellationToken);
@@ -441,7 +463,7 @@ public sealed class ProductHandlers(
     private static ProductAdminDto ToDto(Product product, IReadOnlyList<ProductImageDto> images) => new(
         product.Id,
         product.Slug,
-        product.Status.ToString(),
+        product.Status,
         product.CategoryId,
         product.BrandId,
         product.TaxGroup,

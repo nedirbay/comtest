@@ -3,6 +3,7 @@ import { isAppLocale } from '@comtest/ui/locale'
 import type { Pinia } from 'pinia'
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { applyLocale, preferredLocale } from './i18n'
+import { Permission as P } from './permissions'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -14,6 +15,10 @@ declare module 'vue-router' {
     layout?: 'auth' | 'admin'
     /** Any one of these permissions lets the user in. */
     permission?: string | string[]
+    /** An i18n key: the page's name in the breadcrumbs and the browser tab. */
+    title?: string
+    /** The route name one level up in the breadcrumbs. */
+    parent?: string
   }
 }
 
@@ -53,19 +58,153 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'dashboard',
-        meta: { layout: 'admin' },
+        meta: { layout: 'admin', title: 'admin.nav.dashboard' },
         component: () => import('@/features/dashboard/pages/DashboardPage.vue'),
       },
       {
         path: 'security',
         name: 'security',
-        meta: { layout: 'admin' },
+        meta: { layout: 'admin', title: 'admin.nav.security' },
         component: () => import('@/features/account/pages/SecurityPage.vue'),
+      },
+      {
+        path: 'orders',
+        name: 'orders',
+        meta: { layout: 'admin', title: 'admin.nav.orders', permission: P.OrdersRead },
+        component: () => import('@/features/orders/pages/OrdersPage.vue'),
+      },
+      {
+        path: 'orders/:id',
+        name: 'order-detail',
+        meta: {
+          layout: 'admin',
+          title: 'admin.order.title',
+          parent: 'orders',
+          permission: P.OrdersRead,
+        },
+        component: () => import('@/features/orders/pages/OrderDetailPage.vue'),
+      },
+      {
+        path: 'customers',
+        name: 'customers',
+        meta: { layout: 'admin', title: 'admin.nav.customers', permission: P.CustomersRead },
+        component: () => import('@/features/customers/pages/CustomersPage.vue'),
+      },
+      {
+        // Guests have no account, so their profile is found through one of their orders. A phone
+        // number would otherwise have to sit in the address bar and the browser history.
+        path: 'customers/guest/:orderId',
+        name: 'customer-guest',
+        meta: {
+          layout: 'admin',
+          title: 'admin.customers.profile',
+          parent: 'customers',
+          permission: P.CustomersRead,
+        },
+        component: () => import('@/features/customers/pages/CustomerProfilePage.vue'),
+      },
+      {
+        path: 'customers/:userId',
+        name: 'customer-profile',
+        meta: {
+          layout: 'admin',
+          title: 'admin.customers.profile',
+          parent: 'customers',
+          permission: P.CustomersRead,
+        },
+        component: () => import('@/features/customers/pages/CustomerProfilePage.vue'),
+      },
+      {
+        path: 'products',
+        name: 'products',
+        meta: { layout: 'admin', title: 'admin.nav.products', permission: P.CatalogRead },
+        component: () => import('@/features/catalog/pages/ProductsPage.vue'),
+      },
+      {
+        path: 'products/new',
+        name: 'product-new',
+        meta: {
+          layout: 'admin',
+          title: 'admin.products.new',
+          parent: 'products',
+          permission: P.CatalogWrite,
+        },
+        component: () => import('@/features/catalog/pages/ProductFormPage.vue'),
+      },
+      {
+        path: 'products/:id',
+        name: 'product-edit',
+        meta: {
+          layout: 'admin',
+          title: 'admin.products.edit',
+          parent: 'products',
+          permission: P.CatalogRead,
+        },
+        component: () => import('@/features/catalog/pages/ProductFormPage.vue'),
+      },
+      {
+        path: 'categories',
+        name: 'categories',
+        meta: { layout: 'admin', title: 'admin.nav.categories', permission: P.CatalogRead },
+        component: () => import('@/features/catalog/pages/CategoriesPage.vue'),
+      },
+      {
+        path: 'brands',
+        name: 'brands',
+        meta: { layout: 'admin', title: 'admin.nav.brands', permission: P.CatalogRead },
+        component: () => import('@/features/catalog/pages/BrandsPage.vue'),
+      },
+      {
+        path: 'attributes',
+        name: 'attributes',
+        meta: { layout: 'admin', title: 'admin.nav.attributes', permission: P.CatalogRead },
+        component: () => import('@/features/catalog/pages/AttributesPage.vue'),
+      },
+      {
+        path: 'stock',
+        name: 'stock',
+        meta: { layout: 'admin', title: 'admin.nav.stock', permission: P.InventoryRead },
+        component: () => import('@/features/inventory/pages/StockPage.vue'),
+      },
+      {
+        path: 'stock/movements',
+        name: 'movements',
+        meta: {
+          layout: 'admin',
+          title: 'admin.nav.movements',
+          parent: 'stock',
+          permission: P.InventoryRead,
+        },
+        component: () => import('@/features/inventory/pages/MovementsPage.vue'),
+      },
+      {
+        path: 'warehouses',
+        name: 'warehouses',
+        meta: { layout: 'admin', title: 'admin.nav.warehouses', permission: P.InventoryRead },
+        component: () => import('@/features/inventory/pages/WarehousesPage.vue'),
+      },
+      {
+        path: 'settings',
+        name: 'settings',
+        meta: { layout: 'admin', title: 'admin.nav.settings', permission: P.SettingsManage },
+        component: () => import('@/features/settings/pages/SettingsPage.vue'),
+      },
+      {
+        path: 'staff',
+        name: 'staff',
+        meta: { layout: 'admin', title: 'admin.nav.staff', permission: P.StaffManage },
+        component: () => import('@/features/staff/pages/StaffPage.vue'),
+      },
+      {
+        path: 'platform/tenants',
+        name: 'tenants',
+        meta: { layout: 'admin', title: 'admin.nav.tenants', permission: P.TenantsManage },
+        component: () => import('@/features/platform/pages/TenantsPage.vue'),
       },
       {
         path: 'forbidden',
         name: 'forbidden',
-        meta: { layout: 'admin' },
+        meta: { layout: 'admin', title: 'pages.forbiddenTitle' },
         component: () => import('@/features/system/pages/ForbiddenPage.vue'),
       },
       {

@@ -24,7 +24,7 @@ public sealed class InventoryTests(ApiFixture api)
         var movements = await admin.GetFromJsonAsync<JsonElement>($"/api/v1/admin/inventory/movements?variantId={product.VariantId}");
         var movement = Assert.Single(movements.GetProperty("items").EnumerateArray());
 
-        Assert.Equal("Receipt", movement.GetProperty("type").GetString());
+        Assert.Equal("receipt", movement.GetProperty("type").GetString());
         Assert.Equal(7, movement.GetProperty("onHandDelta").GetInt32());
         Assert.Equal(7, movement.GetProperty("onHandAfter").GetInt32());
         Assert.Equal(store.Store.Owner.UserId, movement.GetProperty("by").GetGuid());

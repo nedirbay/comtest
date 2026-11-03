@@ -24,6 +24,13 @@ public sealed class CatalogController : TenantControllerBase
         CancellationToken cancellationToken) =>
         FromResult(await handler.HandleAsync(new GetStoreCategoriesQuery(), cancellationToken));
 
+    [HttpGet("brands")]
+    [ProducesResponseType<IReadOnlyList<StoreBrandDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Brands(
+        [FromServices] IQueryHandler<GetStoreBrandsQuery, IReadOnlyList<StoreBrandDto>> handler,
+        CancellationToken cancellationToken) =>
+        FromResult(await handler.HandleAsync(new GetStoreBrandsQuery(), cancellationToken));
+
     [HttpGet("products")]
     [ProducesResponseType<PagedResult<StoreProductListItemDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Products(
@@ -190,9 +197,10 @@ public sealed class AdminProductsController : TenantControllerBase
         [FromQuery] int pageSize,
         [FromQuery] string? sort,
         [FromQuery] ProductStatus? status,
+        [FromQuery] string? q,
         [FromServices] IQueryHandler<ListProductsQuery, PagedResult<ProductAdminListItemDto>> handler,
         CancellationToken cancellationToken) =>
-        FromResult(await handler.HandleAsync(new ListProductsQuery(PageRequests.From(page, pageSize), sort, status), cancellationToken));
+        FromResult(await handler.HandleAsync(new ListProductsQuery(PageRequests.From(page, pageSize), sort, status, q), cancellationToken));
 
     [HttpGet("{id:guid}")]
     [HasPermission(Permissions.CatalogRead)]

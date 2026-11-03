@@ -30,6 +30,41 @@ public sealed class AuthEmailComposer(IOptions<AuthOptions> options)
         ["en"] = new("You already have an account", "Someone tried to register with this email. If that was you, sign in or reset your password:"),
     };
 
+    private static readonly Dictionary<string, EmailText> ConfirmChange = new(StringComparer.Ordinal)
+    {
+        ["tk"] = new("E-poçtaňyzy üýtgetmek", "Hasabyňyzyň e-poçtasyny şu salga çalyşmak üçin aşakdaky salgyny açyň. Bu siz däl bolsaňyz, haty äsgermäň."),
+        ["ru"] = new("Смена эл. почты", "Чтобы сменить адрес вашей учётной записи на этот, откройте ссылку ниже. Если это были не вы, просто проигнорируйте письмо."),
+        ["en"] = new("Change your email", "To change your account's email to this address, open the link below. If this wasn't you, ignore this message."),
+    };
+
+    private static readonly Dictionary<string, EmailText> EmailChanged = new(StringComparer.Ordinal)
+    {
+        ["tk"] = new("E-poçtaňyz üýtgedildi", "Hasabyňyzyň e-poçtasy üýtgedildi. Bu siz däl bolsaňyz, derrew dükan bilen habarlaşyň."),
+        ["ru"] = new("Адрес эл. почты изменён", "Адрес вашей учётной записи был изменён. Если это были не вы, немедленно свяжитесь с магазином."),
+        ["en"] = new("Your email was changed", "Your account's email address was changed. If this wasn't you, contact the store immediately."),
+    };
+
+    /// <summary>Goes to the new address, so that only someone who can read it can finish the change.</summary>
+    public EmailMessage ConfirmEmailChange(ApplicationUser user, string newEmail, string token)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        var text = ConfirmChange.GetValueOrDefault(user.Locale) ?? ConfirmChange["tk"];
+        var link = $"{options.Value.FrontendBaseUrl.TrimEnd('/')}/confirm-email-change#userId={user.Id:D}&email={Uri.EscapeDataString(newEmail)}&token={Uri.EscapeDataString(token)}";
+
+        return new EmailMessage(newEmail, text.Subject, $"{text.Body}\n\n{link}\n");
+    }
+
+    /// <summary>Goes to the old address, the owner's only warning if someone else made the change.</summary>
+    public static EmailMessage EmailChangedNotice(ApplicationUser user, string oldEmail)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        var text = EmailChanged.GetValueOrDefault(user.Locale) ?? EmailChanged["tk"];
+
+        return new EmailMessage(oldEmail, text.Subject, $"{text.Body}\n");
+    }
+
     public EmailMessage ConfirmEmail(ApplicationUser user, string token)
     {
         ArgumentNullException.ThrowIfNull(user);

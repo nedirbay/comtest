@@ -4,7 +4,7 @@ import type { NuxtError } from '#app'
 
 const props = defineProps<{ error: NuxtError }>()
 
-const { t } = useI18n()
+const { t, locale, localeProperties } = useI18n()
 const localePath = useLocalePath()
 
 const kind = computed(() => {
@@ -16,7 +16,11 @@ const kind = computed(() => {
 })
 
 useSiteTheme()
-useHead({ title: computed(() => t(`pages.${kind.value}Title`)) })
+useHead({
+  title: computed(() => t(`pages.${kind.value}Title`)),
+  // The error page replaces app.vue, which sets the language on normal pages.
+  htmlAttrs: { lang: computed(() => localeProperties.value.language ?? locale.value) },
+})
 </script>
 
 <template>

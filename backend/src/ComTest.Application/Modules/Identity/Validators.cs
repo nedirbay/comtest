@@ -40,6 +40,36 @@ internal sealed class RegisterRequestValidator : AbstractValidator<RegisterReque
     }
 }
 
+internal sealed class UpdateProfileRequestValidator : AbstractValidator<UpdateProfileRequest>
+{
+    private static readonly string[] Locales = ["tk", "ru", "en"];
+
+    public UpdateProfileRequestValidator()
+    {
+        RuleFor(x => x.FullName).NotEmpty().MaximumLength(200);
+        RuleFor(x => x.Locale).Must(locale => locale is null || Locales.Contains(locale));
+    }
+}
+
+internal sealed class ChangeEmailRequestValidator : AbstractValidator<ChangeEmailRequest>
+{
+    public ChangeEmailRequestValidator()
+    {
+        RuleFor(x => x.Password).ValidPassword();
+        RuleFor(x => x.NewEmail).ValidEmail();
+    }
+}
+
+internal sealed class ConfirmEmailChangeRequestValidator : AbstractValidator<ConfirmEmailChangeRequest>
+{
+    public ConfirmEmailChangeRequestValidator()
+    {
+        RuleFor(x => x.UserId).NotEmpty();
+        RuleFor(x => x.NewEmail).ValidEmail();
+        RuleFor(x => x.Token).ValidToken();
+    }
+}
+
 internal sealed class LoginRequestValidator : AbstractValidator<LoginRequest>
 {
     public LoginRequestValidator()

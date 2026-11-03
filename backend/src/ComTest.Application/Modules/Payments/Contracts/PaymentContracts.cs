@@ -1,3 +1,4 @@
+using ComTest.Domain.Modules.Payments;
 using ComTest.Shared.Domain;
 using ComTest.Shared.Results;
 
@@ -31,15 +32,15 @@ public sealed record PaymentMethodOption(string Code, string? Instructions);
 
 public sealed record CreatedPayment(Guid PaymentId, PaymentInitiation Initiation);
 
-public sealed record RefundDto(Guid Id, decimal Amount, string Currency, string Reason, string Status, Guid RequestedBy, Guid? DecidedBy, DateTimeOffset? DecidedAt);
+public sealed record RefundDto(Guid Id, decimal Amount, string Currency, string Reason, RefundStatus Status, Guid RequestedBy, Guid? DecidedBy, DateTimeOffset? DecidedAt);
 
-public sealed record PaymentEventDto(string Type, decimal? Amount, string? Note, DateTimeOffset At, Guid? By);
+public sealed record PaymentEventDto(PaymentEventType Type, decimal? Amount, string? Note, DateTimeOffset At, Guid? By);
 
 public sealed record PaymentDto(
     Guid Id,
     Guid OrderId,
-    string Method,
-    string Status,
+    PaymentMethodType Method,
+    PaymentStatus Status,
     decimal Amount,
     string Currency,
     decimal RefundedAmount,

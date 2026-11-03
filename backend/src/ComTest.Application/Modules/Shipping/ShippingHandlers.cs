@@ -278,7 +278,7 @@ public sealed class ShippingHandlers(IApplicationDbContext db) :
 
     private static ShippingMethodDto ToDto(ShippingMethod method) => new(
         method.Id,
-        method.Type.ToString(),
+        method.Type,
         method.ZoneId,
         method.Names,
         method.Price.Amount,

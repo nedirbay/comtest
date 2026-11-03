@@ -46,6 +46,12 @@ public sealed class AuthController(
     public async Task<IActionResult> ConfirmEmail(ConfirmEmailRequest request, CancellationToken cancellationToken) =>
         FromResult(await accounts.ConfirmEmailAsync(request, Client, cancellationToken));
 
+    [HttpPost("confirm-email-change")]
+    [EnableRateLimiting(RateLimitPolicies.AccountAction)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ConfirmEmailChange(ConfirmEmailChangeRequest request, CancellationToken cancellationToken) =>
+        FromResult(await accounts.ConfirmEmailChangeAsync(request, Client, cancellationToken));
+
     [HttpPost("resend-confirmation")]
     [EnableRateLimiting(RateLimitPolicies.AccountAction)]
     [ProducesResponseType(StatusCodes.Status202Accepted)]

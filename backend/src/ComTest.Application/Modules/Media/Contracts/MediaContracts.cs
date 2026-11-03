@@ -1,3 +1,4 @@
+using ComTest.Domain.Modules.Media;
 using ComTest.Shared.Results;
 
 namespace ComTest.Application.Modules.Media.Contracts;
@@ -50,7 +51,7 @@ public sealed record UploadTicketDto(Guid Id, Uri UploadUrl, string ContentType,
 public sealed record MediaAssetDto(
     Guid Id,
     string DisplayName,
-    string Status,
+    MediaStatus Status,
     string? RejectionCode,
     long StoredBytes,
     int? Width,

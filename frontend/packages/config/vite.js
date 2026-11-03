@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto'
+
 /**
  * The order of the cascade layers decides who wins: Tailwind's reset cannot break Element Plus, and
  * a utility class can always override a component. A browser fixes the order the first time it sees
@@ -31,6 +33,53 @@ export function elementPlusCssLayer(layer = 'element-plus') {
 
       // @charset is only allowed at the very start of a file, so it cannot stay inside the layer.
       return { code: `@layer ${layer} {\n${code.replace(charset, '')}\n}`, map: null }
+    },
+  }
+}
+
+/**
+ * The admin panel's content security policy, as a meta tag in the built page, so that it holds on
+ * any static host. Scripts can only come from this site. Inline style attributes stay allowed
+ * because Element Plus positions its popups with them, and a style attribute cannot run code.
+ *
+ * A meta tag cannot set `frame-ancestors`: the web server has to send that one as a header.
+ *
+ * @param {{ apiUrl?: string, extraOrigins?: string }} options
+ * @returns {import('vite').Plugin}
+ */
+export function adminContentSecurityPolicy({ apiUrl = '', extraOrigins = '' }) {
+  const extras = extraOrigins.split(/\s+/).filter(Boolean)
+  const api = apiUrl ? [new URL(apiUrl).origin] : []
+  const layerHash = createHash('sha256').update(CSS_LAYER_ORDER).digest('base64')
+  const policy = [
+    "default-src 'self'",
+    "script-src 'self'",
+    `style-src 'self' 'sha256-${layerHash}'`,
+    "style-src-attr 'unsafe-inline'",
+    `img-src ${["'self'", 'data:', 'blob:', 'https:', ...extras].join(' ')}`,
+    "font-src 'self' data:",
+    // Named hosts only, so that a script slipped into the page cannot send data anywhere it likes.
+    // Pictures go straight to object storage with a signed address, so its host is one of them.
+    `connect-src ${["'self'", ...api, ...extras].join(' ')}`,
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; ')
+
+  return {
+    name: 'comtest:admin-csp',
+    apply: 'build',
+    transformIndexHtml: {
+      order: 'post',
+      handler() {
+        return [
+          {
+            tag: 'meta',
+            attrs: { 'http-equiv': 'Content-Security-Policy', content: policy },
+            injectTo: 'head-prepend',
+          },
+        ]
+      },
     },
   }
 }

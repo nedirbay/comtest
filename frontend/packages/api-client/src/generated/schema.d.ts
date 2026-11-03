@@ -31,8 +31,72 @@ export interface paths {
                 };
             };
         };
-        put?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateProfileRequest"];
+                    "text/json": components["schemas"]["UpdateProfileRequest"];
+                    "application/*+json": components["schemas"]["UpdateProfileRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProfileDto"];
+                    };
+                };
+            };
+        };
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/account/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ChangeEmailRequest"];
+                    "text/json": components["schemas"]["ChangeEmailRequest"];
+                    "application/*+json": components["schemas"]["ChangeEmailRequest"];
+                };
+            };
+            responses: {
+                /** @description Accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -553,6 +617,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/confirm-email-change": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ConfirmEmailChangeRequest"];
+                    "text/json": components["schemas"]["ConfirmEmailChangeRequest"];
+                    "application/*+json": components["schemas"]["ConfirmEmailChangeRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/resend-confirmation": {
         parameters: {
             query?: never;
@@ -843,6 +946,41 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["StoreCategoryDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/catalog/brands": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StoreBrandDto"][];
                     };
                 };
             };
@@ -1295,6 +1433,7 @@ export interface paths {
                     pageSize?: number;
                     sort?: string;
                     status?: components["schemas"]["ProductStatus"];
+                    q?: string;
                 };
                 header?: never;
                 path?: never;
@@ -3357,7 +3496,26 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaymentSettingsDto"];
+                    };
+                };
+            };
+        };
         put: {
             parameters: {
                 query?: never;
@@ -3431,7 +3589,26 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StaffInvitationDto"][];
+                    };
+                };
+            };
+        };
         put?: never;
         post: {
             parameters: {
@@ -3725,7 +3902,7 @@ export interface components {
             /** Format: uuid */
             id: string;
             code: string;
-            dataType: string;
+            dataType: components["schemas"]["AttributeDataType"];
             options: string[];
             translations: components["schemas"]["TranslationDto"][];
         };
@@ -3799,6 +3976,10 @@ export interface components {
             /** Format: uint32 */
             version: number;
         };
+        ChangeEmailRequest: {
+            password: string;
+            newEmail: string;
+        };
         ChangeOrderStatusRequest: {
             status: components["schemas"]["OrderStatus"];
             note?: null | string;
@@ -3826,6 +4007,12 @@ export interface components {
             region?: null | string;
             /** Format: uuid */
             shippingMethodId?: null | string;
+        };
+        ConfirmEmailChangeRequest: {
+            /** Format: uuid */
+            userId: string;
+            newEmail: string;
+            token: string;
         };
         ConfirmEmailRequest: {
             /** Format: uuid */
@@ -3902,7 +4089,7 @@ export interface components {
             /** Format: uuid */
             id: string;
             displayName: string;
-            status: string;
+            status: components["schemas"]["MediaStatus"];
             rejectionCode: null | string;
             /** Format: int64 */
             storedBytes: number;
@@ -3917,6 +4104,8 @@ export interface components {
             /** Format: uri */
             large: null | string;
         };
+        /** @enum {string} */
+        MediaStatus: "pendingUpload" | "processing" | "ready" | "rejected";
         OrderAddressDto: {
             recipient: string;
             phone: string;
@@ -3936,8 +4125,8 @@ export interface components {
             /** Format: uuid */
             id: string;
             number: string;
-            status: string;
-            paymentState: string;
+            status: components["schemas"]["OrderStatus"];
+            paymentState: components["schemas"]["OrderPaymentState"];
             paymentMethod: string;
             totals: components["schemas"]["TotalsDto"];
             items: components["schemas"]["OrderItemDto"][];
@@ -3971,8 +4160,8 @@ export interface components {
             /** Format: uuid */
             id: string;
             number: string;
-            status: string;
-            paymentState: string;
+            status: components["schemas"]["OrderStatus"];
+            paymentState: components["schemas"]["OrderPaymentState"];
             paymentMethod: string;
             /** Format: double */
             total: number;
@@ -3998,8 +4187,8 @@ export interface components {
         /** @enum {string} */
         OrderStatus: "pending" | "confirmed" | "packed" | "shipped" | "delivered" | "cancelled" | "returned";
         OrderStatusChangeDto: {
-            from: null | string;
-            to: string;
+            from: null | components["schemas"]["OrderStatus"];
+            to: components["schemas"]["OrderStatus"];
             note: null | string;
             /** Format: date-time */
             at: string;
@@ -4008,8 +4197,8 @@ export interface components {
         };
         OrderTrackingDto: {
             number: string;
-            status: string;
-            paymentState: string;
+            status: components["schemas"]["OrderStatus"];
+            paymentState: components["schemas"]["OrderPaymentState"];
             paymentMethod: string;
             totals: components["schemas"]["TotalsDto"];
             items: components["schemas"]["OrderTrackingItemDto"][];
@@ -4131,8 +4320,8 @@ export interface components {
             id: string;
             /** Format: uuid */
             orderId: string;
-            method: string;
-            status: string;
+            method: components["schemas"]["PaymentMethodType"];
+            status: components["schemas"]["PaymentStatus"];
             /** Format: double */
             amount: number;
             currency: string;
@@ -4149,7 +4338,7 @@ export interface components {
             version: number;
         };
         PaymentEventDto: {
-            type: string;
+            type: components["schemas"]["PaymentEventType"];
             /** Format: double */
             amount: null | number;
             note: null | string;
@@ -4158,10 +4347,23 @@ export interface components {
             /** Format: uuid */
             by: null | string;
         };
+        /** @enum {string} */
+        PaymentEventType: "created" | "confirmed" | "cancelled" | "refundRequested" | "refundCompleted" | "refundRejected";
+        /** @enum {string} */
+        PaymentMethodType: "cashOnDelivery" | "bankTransfer";
         PaymentOptionDto: {
             code: string;
             instructions: null | string;
         };
+        PaymentSettingsDto: {
+            acceptsCashOnDelivery: boolean;
+            acceptsBankTransfer: boolean;
+            bankTransferInstructions: null | string;
+            /** Format: double */
+            refundApprovalThreshold: null | number;
+        };
+        /** @enum {string} */
+        PaymentStatus: "pending" | "paid" | "partiallyRefunded" | "refunded" | "cancelled";
         PlacedOrderDto: {
             order: components["schemas"]["OrderDto"];
             trackingToken: string;
@@ -4197,7 +4399,7 @@ export interface components {
             /** Format: uuid */
             id: string;
             slug: string;
-            status: string;
+            status: components["schemas"]["ProductStatus"];
             /** Format: uuid */
             categoryId: null | string;
             /** Format: uuid */
@@ -4214,7 +4416,7 @@ export interface components {
             /** Format: uuid */
             id: string;
             slug: string;
-            status: string;
+            status: components["schemas"]["ProductStatus"];
             name: null | string;
             /** Format: int32 */
             variantCount: number;
@@ -4288,7 +4490,7 @@ export interface components {
             amount: number;
             currency: string;
             reason: string;
-            status: string;
+            status: components["schemas"]["RefundStatus"];
             /** Format: uuid */
             requestedBy: string;
             /** Format: uuid */
@@ -4296,6 +4498,8 @@ export interface components {
             /** Format: date-time */
             decidedAt: null | string;
         };
+        /** @enum {string} */
+        RefundStatus: "pendingApproval" | "completed" | "rejected";
         RegisterRequest: {
             email: string;
             password: string;
@@ -4425,7 +4629,7 @@ export interface components {
         ShippingMethodDto: {
             /** Format: uuid */
             id: string;
-            type: string;
+            type: components["schemas"]["ShippingMethodType"];
             /** Format: uuid */
             zoneId: null | string;
             names: {
@@ -4512,7 +4716,7 @@ export interface components {
             warehouseId: string;
             /** Format: uuid */
             variantId: string;
-            type: string;
+            type: components["schemas"]["StockMovementType"];
             /** Format: int32 */
             onHandDelta: number;
             /** Format: int32 */
@@ -4535,6 +4739,13 @@ export interface components {
             code: string;
             name: string;
             value: string;
+        };
+        StoreBrandDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            slug: string;
+            logoUrl: null | string;
         };
         StoreCategoryDto: {
             /** Format: uuid */
@@ -4579,7 +4790,7 @@ export interface components {
         StoreSettingsDto: {
             name: string;
             slug: string;
-            plan: string;
+            plan: components["schemas"]["TenantPlan"];
             /** Format: int32 */
             maxProducts: number;
             /** Format: int32 */
@@ -4624,9 +4835,11 @@ export interface components {
             id: string;
             name: string;
             slug: string;
-            status: string;
-            plan: string;
+            status: components["schemas"]["TenantStatus"];
+            plan: components["schemas"]["TenantPlan"];
         };
+        /** @enum {string} */
+        TenantPlan: "free" | "standard" | "business";
         /** @enum {string} */
         TenantStatus: "active" | "suspended";
         TotalsDto: {
@@ -4682,6 +4895,10 @@ export interface components {
             bankTransferInstructions: null | string;
             /** Format: double */
             refundApprovalThreshold: null | number;
+        };
+        UpdateProfileRequest: {
+            fullName: string;
+            locale?: null | string;
         };
         UpdateStoreSettingsRequest: {
             name: string;

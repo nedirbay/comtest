@@ -93,6 +93,27 @@ describe('admin route guards', () => {
     expect(router.currentRoute.value.name).toBe('select-store')
   })
 
+  it('turns away a user without the permission a page asks for', async () => {
+    const { router } = setup({ ...owner, permission: ['catalog.read'] })
+
+    await router.push('/tk/settings')
+    expect(router.currentRoute.value.name).toBe('forbidden')
+
+    await router.push('/tk/products/new')
+    expect(router.currentRoute.value.name).toBe('forbidden')
+  })
+
+  it('names a permission on every page of the panel except the ones for everyone', () => {
+    const { router } = setup(owner)
+    const open = new Set(['dashboard', 'security', 'forbidden'])
+    const pages = router
+      .getRoutes()
+      .filter((route) => route.meta.layout === 'admin' && !open.has(String(route.name)))
+
+    expect(pages.length).toBeGreaterThan(15)
+    expect(pages.filter((route) => !route.meta.permission).map((route) => route.name)).toEqual([])
+  })
+
   it('shows public error pages to guests', async () => {
     const { router } = setup(null)
 

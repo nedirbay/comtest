@@ -28,8 +28,8 @@ internal static class OrderMappings
     public static OrderDto ToDto(Order order) => new(
         order.Id,
         order.Number,
-        order.Status.ToString(),
-        order.PaymentState.ToString(),
+        order.Status,
+        order.PaymentState,
         order.PaymentMethod,
         ToTotals(order),
         order.Items
@@ -39,15 +39,15 @@ internal static class OrderMappings
         new OrderContactDto(order.Contact.Name, order.Contact.Phone, order.Contact.Email),
         new OrderAddressDto(order.ShipTo.Recipient, order.ShipTo.Phone, order.ShipTo.Region, order.ShipTo.District, order.ShipTo.City, order.ShipTo.Line1, order.ShipTo.Line2, order.ShipTo.PostalCode),
         order.ShippingMethodName,
-        order.ShippingType,
+        CheckoutRules.ApiName(order.ShippingType),
         ToTracking(order),
         order.CustomerNote,
         order.PlacedAt);
 
     public static OrderTrackingDto ToTrackingView(Order order) => new(
         order.Number,
-        order.Status.ToString(),
-        order.PaymentState.ToString(),
+        order.Status,
+        order.PaymentState,
         order.PaymentMethod,
         ToTotals(order),
         order.Items
@@ -63,13 +63,53 @@ internal static class OrderMappings
         order.CustomerUserId,
         order.StatusHistory
             .OrderBy(item => item.Id)
-            .Select(item => new OrderStatusChangeDto(item.FromStatus?.ToString(), item.ToStatus.ToString(), item.Note, item.CreatedAt, item.CreatedBy))
+            .Select(item => new OrderStatusChangeDto(item.FromStatus, item.ToStatus, item.Note, item.CreatedAt, item.CreatedBy))
             .ToList(),
         order.Notes
             .OrderBy(item => item.Id)
             .Select(item => new OrderNoteDto(item.Id, item.Text, item.CreatedAt, item.CreatedBy))
             .ToList(),
         order.Version);
+}
+
+/// <summary>
+/// What staff without `customers.read` see of an order: enough to work it, not enough to contact or
+/// find the customer. The server decides this, as hiding it in the interface would still send it.
+/// </summary>
+internal static class OrderPrivacy
+{
+    private const string Mask = "***";
+    private const int VisiblePhoneDigits = 2;
+
+    public static string MaskName(string name) =>
+        string.IsNullOrWhiteSpace(name) ? Mask : name.Trim()[0] + Mask;
+
+    public static string MaskPhone(string phone) =>
+        phone.Length > VisiblePhoneDigits ? Mask + phone[^VisiblePhoneDigits..] : Mask;
+
+    public static OrderListItemDto Hide(OrderListItemDto item) => item with
+    {
+        ContactName = MaskName(item.ContactName),
+        ContactPhone = MaskPhone(item.ContactPhone),
+    };
+
+    public static AdminOrderDto Hide(AdminOrderDto dto) => dto with
+    {
+        CustomerUserId = null,
+        Order = dto.Order with
+        {
+            Contact = new OrderContactDto(MaskName(dto.Order.Contact.Name), MaskPhone(dto.Order.Contact.Phone), null),
+            ShipTo = dto.Order.ShipTo with
+            {
+                Recipient = MaskName(dto.Order.ShipTo.Recipient),
+                Phone = MaskPhone(dto.Order.ShipTo.Phone),
+                Line1 = null,
+                Line2 = null,
+                PostalCode = null,
+            },
+            CustomerNote = null,
+        },
+    };
 }
 
 /// <summary>Applies a status change with its effects on stock and payment, all or nothing.</summary>
@@ -266,7 +306,10 @@ public sealed class OrderHandlers(
             var term = filter.Search.Trim();
             term = term.Length > MaxSearchLength ? term[..MaxSearchLength] : term;
 
-            orders = orders.Where(order => order.Number == term || order.Contact.Phone == term);
+            // Searching by phone would confirm who a number belongs to, so it needs the same permission.
+            orders = SeesCustomers
+                ? orders.Where(order => order.Number == term || order.Contact.Phone == term)
+                : orders.Where(order => order.Number == term);
         }
 
         var sorted = AdminSort.Apply(orders, filter.Sort ?? "-placedAt", order => order.Id);
@@ -276,7 +319,20 @@ public sealed class OrderHandlers(
             return sorted.Error;
         }
 
-        return await ToPageAsync(orders, sorted.Value, filter.Page, cancellationToken);
+        var page = await ToPageAsync(orders, sorted.Value, filter.Page, cancellationToken);
+
+        return SeesCustomers
+            ? page
+            : page with { Items = [.. page.Items.Select(OrderPrivacy.Hide)] };
+    }
+
+    private bool SeesCustomers => currentUser.HasPermission(Permissions.CustomersRead);
+
+    private AdminOrderDto ForStaff(Order order)
+    {
+        var dto = OrderMappings.ToAdminDto(order);
+
+        return SeesCustomers ? dto : OrderPrivacy.Hide(dto);
     }
 
     public async Task<Result<AdminOrderDto>> HandleAsync(GetAdminOrderQuery query, CancellationToken cancellationToken)
@@ -285,7 +341,7 @@ public sealed class OrderHandlers(
 
         var order = await LoadAsync(query.OrderId, cancellationToken);
 
-        return order is null ? Error.NotFound(ErrorCodes.Order.NotFound) : OrderMappings.ToAdminDto(order);
+        return order is null ? Error.NotFound(ErrorCodes.Order.NotFound) : ForStaff(order);
     }
 
     public async Task<Result<AdminOrderDto>> HandleAsync(ChangeOrderStatusCommand command, CancellationToken cancellationToken)
@@ -314,7 +370,7 @@ public sealed class OrderHandlers(
 
         var changed = await workflow.ChangeStatusAsync(order, request.Status, request.Note, cancellationToken);
 
-        return changed.IsFailure ? changed.Error : OrderMappings.ToAdminDto(order);
+        return changed.IsFailure ? changed.Error : ForStaff(order);
     }
 
     public async Task<Result<AdminOrderDto>> HandleAsync(AddOrderNoteCommand command, CancellationToken cancellationToken)
@@ -331,7 +387,7 @@ public sealed class OrderHandlers(
         order.AddNote(command.Text);
         await db.SaveChangesAsync(cancellationToken);
 
-        return OrderMappings.ToAdminDto(order);
+        return ForStaff(order);
     }
 
     public async Task<Result<PagedResult<CustomerSummaryDto>>> HandleAsync(ListCustomersQuery query, CancellationToken cancellationToken)
@@ -474,8 +530,8 @@ public sealed class OrderHandlers(
             .Select(order => new OrderListItemDto(
                 order.Id,
                 order.Number,
-                order.Status.ToString(),
-                order.PaymentState.ToString(),
+                order.Status,
+                order.PaymentState,
                 order.PaymentMethod,
                 order.GrandTotal.Amount,
                 order.GrandTotal.Currency,

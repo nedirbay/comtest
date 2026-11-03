@@ -251,8 +251,8 @@ public sealed class PaymentHandlers(
     private static PaymentDto ToDto(Payment payment) => new(
         payment.Id,
         payment.OrderId,
-        payment.Method.ToString(),
-        payment.Status.ToString(),
+        payment.Method,
+        payment.Status,
         payment.Amount.Amount,
         payment.Amount.Currency,
         payment.RefundedAmount,
@@ -261,11 +261,11 @@ public sealed class PaymentHandlers(
         payment.PaidAt,
         payment.Refunds
             .OrderBy(item => item.Id)
-            .Select(item => new RefundDto(item.Id, item.Amount.Amount, item.Amount.Currency, item.Reason, item.Status.ToString(), item.RequestedBy, item.DecidedBy, item.DecidedAt))
+            .Select(item => new RefundDto(item.Id, item.Amount.Amount, item.Amount.Currency, item.Reason, item.Status, item.RequestedBy, item.DecidedBy, item.DecidedAt))
             .ToList(),
         payment.Events
             .OrderBy(item => item.Id)
-            .Select(item => new PaymentEventDto(item.Type.ToString(), item.Amount, item.Note, item.CreatedAt, item.CreatedBy))
+            .Select(item => new PaymentEventDto(item.Type, item.Amount, item.Note, item.CreatedAt, item.CreatedBy))
             .ToList(),
         payment.Version);
 }

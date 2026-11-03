@@ -89,6 +89,7 @@ public static class IdentityServiceRegistration
 
                 options.SignIn.RequireConfirmedEmail = true;
                 options.Tokens.EmailConfirmationTokenProvider = EmailConfirmationTokenProviderOptions.ProviderName;
+                options.Tokens.ChangeEmailTokenProvider = EmailConfirmationTokenProviderOptions.ProviderName;
             })
             .AddRoles<ApplicationRole>()
             .AddEntityFrameworkStores<AppDbContext>()

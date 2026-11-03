@@ -1,3 +1,5 @@
+using ComTest.Domain.Modules.Catalog;
+
 namespace ComTest.Application.Modules.Catalog.Contracts;
 
 public sealed record TranslationDto(string Language, string Name, string? Description);
@@ -6,7 +8,10 @@ public sealed record CategoryDto(Guid Id, Guid? ParentId, string Slug, int SortO
 
 public sealed record BrandDto(Guid Id, string Name, string Slug, string? LogoUrl, uint Version);
 
-public sealed record AttributeDto(Guid Id, string Code, string DataType, IReadOnlyList<string> Options, IReadOnlyList<TranslationDto> Translations);
+/// <summary>A brand as visitors see it, without the fields staff need for editing.</summary>
+public sealed record StoreBrandDto(Guid Id, string Name, string Slug, string? LogoUrl);
+
+public sealed record AttributeDto(Guid Id, string Code, AttributeDataType DataType, IReadOnlyList<string> Options, IReadOnlyList<TranslationDto> Translations);
 
 public sealed record ProductTranslationDto(string Language, string Name, string? ShortDescription, string? Description, string? MetaTitle, string? MetaDescription);
 
@@ -29,7 +34,7 @@ public sealed record ProductImageDto(Guid MediaAssetId, string? AltText, Uri? Th
 public sealed record ProductAdminDto(
     Guid Id,
     string Slug,
-    string Status,
+    ProductStatus Status,
     Guid? CategoryId,
     Guid? BrandId,
     string? TaxGroup,
@@ -39,7 +44,7 @@ public sealed record ProductAdminDto(
     IReadOnlyList<ProductImageDto> Images,
     uint Version);
 
-public sealed record ProductAdminListItemDto(Guid Id, string Slug, string Status, string? Name, int VariantCount, DateTimeOffset CreatedAt);
+public sealed record ProductAdminListItemDto(Guid Id, string Slug, ProductStatus Status, string? Name, int VariantCount, DateTimeOffset CreatedAt);
 
 public sealed record PriceChangeDto(Guid VariantId, decimal OldAmount, decimal NewAmount, string Currency, DateTimeOffset ChangedAt, Guid? ChangedBy);
 

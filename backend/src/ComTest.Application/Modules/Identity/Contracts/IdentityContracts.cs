@@ -38,6 +38,18 @@ public sealed record ChangePasswordRequest(string CurrentPassword, string NewPas
     public override string ToString() => nameof(ChangePasswordRequest);
 }
 
+public sealed record UpdateProfileRequest(string FullName, string? Locale = null);
+
+public sealed record ChangeEmailRequest(string Password, string NewEmail)
+{
+    public override string ToString() => nameof(ChangeEmailRequest);
+}
+
+public sealed record ConfirmEmailChangeRequest(Guid UserId, string NewEmail, string Token)
+{
+    public override string ToString() => nameof(ConfirmEmailChangeRequest);
+}
+
 public sealed record TwoFactorCodeRequest(string Code)
 {
     public override string ToString() => nameof(TwoFactorCodeRequest);
@@ -127,6 +139,13 @@ public interface IAccountService
     Task<Result> ChangePasswordAsync(Guid userId, Guid? currentSessionId, ChangePasswordRequest request, ClientInfo client, CancellationToken cancellationToken);
 
     Task<Result<ProfileDto>> GetProfileAsync(Guid userId, CancellationToken cancellationToken);
+
+    Task<Result<ProfileDto>> UpdateProfileAsync(Guid userId, UpdateProfileRequest request, ClientInfo client, CancellationToken cancellationToken);
+
+    /// <summary>Answers the same whether or not the new address is free, so it cannot be used to probe accounts.</summary>
+    Task<Result> RequestEmailChangeAsync(Guid userId, ChangeEmailRequest request, ClientInfo client, CancellationToken cancellationToken);
+
+    Task<Result> ConfirmEmailChangeAsync(ConfirmEmailChangeRequest request, ClientInfo client, CancellationToken cancellationToken);
 }
 
 public interface ISessionService

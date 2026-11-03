@@ -4,3 +4,55 @@
 @import 'element-plus/theme-chalk/dark/css-vars.css' layer(element-plus);
 
 @source '../';
+
+/* Fits Element Plus to the panel. Kept here rather than in the shared bridge, which the storefront uses too. */
+@layer element-bridge {
+  :root {
+    /* The default grey is too faint to read on its own tinted background. */
+    --el-color-info: var(--theme-ink-muted);
+  }
+
+  /* A select is shorter than an input by default, which shows when they stand side by side. */
+  .el-select__wrapper {
+    min-height: var(--el-component-size);
+    border-radius: var(--el-border-radius-base);
+  }
+
+  .el-select--small .el-select__wrapper {
+    min-height: var(--el-component-size-small);
+  }
+
+  /* These rows space their buttons with `gap`, and a wrapped button must not start indented. */
+  .flex.flex-wrap > .el-button + .el-button {
+    margin-left: 0;
+  }
+
+  /* Element's small radius on a box this size would make a checkbox look like a radio button. */
+  .el-checkbox {
+    --el-checkbox-border-radius: 0.25rem;
+  }
+
+  /* Room for an error line under an input, so that it does not run into the next label. */
+  .el-form-item {
+    margin-bottom: 1.375rem;
+  }
+
+  /* Big enough to hit with a finger, as the buttons in each row are tapped on phones. */
+  .el-tree-node__content {
+    height: 2.5rem;
+  }
+
+  .el-tabs__nav-wrap {
+    max-width: 100%;
+  }
+
+  /* A long pager or row of tabs scrolls inside its own box and never widens the page. */
+  .el-pagination {
+    flex-wrap: nowrap;
+  }
+
+  .el-table-v2__header-cell,
+  .el-table-v2__row-cell {
+    font-size: 0.875rem;
+  }
+}

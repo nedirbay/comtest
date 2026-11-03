@@ -35,6 +35,29 @@ internal static class InvitationTokens
     public static string Hash(string token) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
 }
 
+public sealed record ListInvitationsQuery : IQuery<IReadOnlyList<StaffInvitationDto>>;
+
+/// <summary>Invitations still waiting for an answer. Only the normalized address is stored, so it shows in lower case.</summary>
+public sealed class ListInvitationsHandler(IApplicationDbContext db, TimeProvider timeProvider)
+    : IQueryHandler<ListInvitationsQuery, IReadOnlyList<StaffInvitationDto>>
+{
+    public async Task<Result<IReadOnlyList<StaffInvitationDto>>> HandleAsync(ListInvitationsQuery query, CancellationToken cancellationToken)
+    {
+        var now = timeProvider.GetUtcNow();
+
+        var pending = await db.StaffInvitations
+            .AsNoTracking()
+            .Where(invitation => invitation.AcceptedAt == null && invitation.RevokedAt == null && invitation.ExpiresAt > now)
+            .OrderBy(invitation => invitation.ExpiresAt)
+            .Select(invitation => new { invitation.Id, invitation.NormalizedEmail, invitation.Role, invitation.ExpiresAt })
+            .ToListAsync(cancellationToken);
+
+        return pending
+            .Select(item => new StaffInvitationDto(item.Id, item.NormalizedEmail.ToLowerInvariant(), item.Role, item.ExpiresAt))
+            .ToList();
+    }
+}
+
 public sealed record ListStaffQuery : IQuery<IReadOnlyList<StaffMemberDto>>;
 
 public sealed class ListStaffHandler(IApplicationDbContext db, IUserDirectory users)

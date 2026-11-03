@@ -134,6 +134,10 @@ public enum SecurityEventType
     PhoneCodeSent,
     PhoneCodeFailed,
     PhoneVerified,
+    ProfileUpdated,
+    EmailChangeRequested,
+    EmailChangeFailed,
+    EmailChanged,
 }
 
 /// <summary>Append-only security log. The application role cannot update or delete these rows.</summary>

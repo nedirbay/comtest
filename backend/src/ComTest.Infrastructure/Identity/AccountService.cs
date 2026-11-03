@@ -196,6 +196,100 @@ public sealed class AccountService(
         return Result.Success();
     }
 
+    public async Task<Result<ProfileDto>> UpdateProfileAsync(Guid userId, UpdateProfileRequest request, ClientInfo client, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var user = await users.FindByIdAsync(userId.ToString());
+
+        if (user is null)
+        {
+            return Error.Unauthorized(ErrorCodes.Common.Unauthorized);
+        }
+
+        user.FullName = request.FullName.Trim();
+        user.Locale = request.Locale ?? user.Locale;
+
+        await users.UpdateAsync(user);
+        await securityEvents.WriteAsync(SecurityEventType.ProfileUpdated, user.Id, client, cancellationToken);
+
+        return await GetProfileAsync(userId, cancellationToken);
+    }
+
+    public async Task<Result> RequestEmailChangeAsync(Guid userId, ChangeEmailRequest request, ClientInfo client, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var user = await users.FindByIdAsync(userId.ToString());
+
+        if (user is null)
+        {
+            return Result.Failure(Error.Unauthorized(ErrorCodes.Common.Unauthorized));
+        }
+
+        // A stolen session alone must not be enough to take over the account.
+        if (!await users.CheckPasswordAsync(user, request.Password))
+        {
+            await users.AccessFailedAsync(user);
+            await securityEvents.WriteAsync(SecurityEventType.EmailChangeFailed, user.Id, client, cancellationToken);
+
+            return Result.Failure(Error.Validation(ErrorCodes.Auth.CurrentPasswordInvalid));
+        }
+
+        var taken = await users.FindByEmailAsync(request.NewEmail);
+
+        if (taken is not null)
+        {
+            // Its owner hears about it, and the person asking gets the same answer as for a free address.
+            emailDispatcher.TryEnqueue(emails.ExistingAccountNotice(taken));
+        }
+        else
+        {
+            var token = await users.GenerateChangeEmailTokenAsync(user, request.NewEmail);
+
+            emailDispatcher.TryEnqueue(emails.ConfirmEmailChange(user, request.NewEmail, EncodeToken(token)));
+        }
+
+        await securityEvents.WriteAsync(SecurityEventType.EmailChangeRequested, user.Id, client, cancellationToken);
+
+        return Result.Success();
+    }
+
+    public async Task<Result> ConfirmEmailChangeAsync(ConfirmEmailChangeRequest request, ClientInfo client, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var user = await users.FindByIdAsync(request.UserId.ToString());
+        var token = DecodeToken(request.Token);
+
+        if (user is null || token is null || user.Email is not { } oldEmail)
+        {
+            return Result.Failure(InvalidToken);
+        }
+
+        // Someone may have registered the address since the link was sent.
+        if (await users.FindByEmailAsync(request.NewEmail) is not null)
+        {
+            return Result.Failure(InvalidToken);
+        }
+
+        var changed = await users.ChangeEmailAsync(user, request.NewEmail, token);
+
+        if (!changed.Succeeded)
+        {
+            return Result.Failure(InvalidToken);
+        }
+
+        await users.SetUserNameAsync(user, request.NewEmail);
+
+        // The sign-in name changed, so every device signs in again, and the old address is told.
+        await sessions.RevokeAllAsync(user.Id, SessionRevocationReasons.EmailChanged, cancellationToken);
+        await securityEvents.WriteAsync(SecurityEventType.EmailChanged, user.Id, client, cancellationToken);
+        emailDispatcher.TryEnqueue(AuthEmailComposer.EmailChangedNotice(user, oldEmail));
+
+        return Result.Success();
+    }
+
     public async Task<Result<ProfileDto>> GetProfileAsync(Guid userId, CancellationToken cancellationToken)
     {
         var user = await users.FindByIdAsync(userId.ToString());

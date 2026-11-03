@@ -20,17 +20,23 @@
     "format:check": "prettier --check .",
     "api:sync": "pnpm --filter @comtest/api-client sync",
     "prepare": "cd .. && husky frontend/.husky",
-    "test:e2e": "VITE_API_URL=http://localhost:5055 pnpm build && playwright test"
+    "test:e2e": "VITE_API_URL=http://localhost:5055 VITE_CSP_EXTRA_ORIGINS=http://localhost:59000 pnpm build && playwright test",
+    "test:visual": "VISUAL=1 playwright test e2e/visual.spec.ts",
+    "test:visual:update": "VISUAL=1 playwright test e2e/visual.spec.ts --update-snapshots",
+    "test:lighthouse": "lhci autorun"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.0.0",
     "@commitlint/cli": "^21.0.0",
     "@commitlint/config-conventional": "^21.0.0",
     "@comtest/config": "workspace:*",
+    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.60.0",
     "eslint": "^10.0.0",
     "husky": "^9.1.7",
     "jsdom": "^30.0.0",
     "lint-staged": "^17.0.0",
+    "msw": "^2.0.0 || ^3.0.0",
     "prettier": "^3.0.0",
     "typescript": "catalog:",
     "vitest": "catalog:"

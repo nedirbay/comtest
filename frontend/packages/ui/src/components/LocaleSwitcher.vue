@@ -13,7 +13,7 @@ const { t } = useI18n({ useScope: 'global' })
     <button
       type="button"
       class="inline-flex h-9 items-center gap-1 rounded-control px-2.5 text-sm font-semibold text-ink-muted hover:bg-primary-soft hover:text-ink"
-      :aria-label="t('common.language')"
+      :aria-label="`${t('common.language')}: ${modelValue.toUpperCase()}`"
     >
       {{ modelValue.toUpperCase() }}
     </button>

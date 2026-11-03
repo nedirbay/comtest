@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import { useI18n } from 'vue-i18n'
-import { z } from 'zod'
 import AppButton from '../components/AppButton.vue'
 import AppField from '../components/AppField.vue'
 import AppForm from '../components/AppForm.vue'
+import { z } from '../validation/zod'
 import { useApiErrorMessage } from '../composables/useApiErrorMessage'
 import { useForm } from '../composables/useForm'
 

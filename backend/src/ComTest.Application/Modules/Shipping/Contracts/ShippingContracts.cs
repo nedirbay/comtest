@@ -1,3 +1,5 @@
+using ComTest.Domain.Modules.Shipping;
+
 namespace ComTest.Application.Modules.Shipping.Contracts;
 
 public sealed record ShippingOption(
@@ -26,7 +28,7 @@ public sealed record ShippingZoneDto(Guid Id, string Name, IReadOnlyList<string>
 
 public sealed record ShippingMethodDto(
     Guid Id,
-    string Type,
+    ShippingMethodType Type,
     Guid? ZoneId,
     IReadOnlyDictionary<string, string> Names,
     decimal Price,

@@ -37,7 +37,7 @@ public interface ITenantSettings
 
 public sealed record MembershipDto(Guid TenantId, string TenantName, string TenantSlug, string Role);
 
-public sealed record TenantDto(Guid Id, string Name, string Slug, string Status, string Plan);
+public sealed record TenantDto(Guid Id, string Name, string Slug, TenantStatus Status, TenantPlan Plan);
 
 public sealed record PublicStoreDto(
     string Name,
@@ -53,7 +53,7 @@ public sealed record PublicStoreDto(
 public sealed record StoreSettingsDto(
     string Name,
     string Slug,
-    string Plan,
+    TenantPlan Plan,
     int MaxProducts,
     int MaxStaff,
     int StorageQuotaMegabytes,
