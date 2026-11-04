@@ -7,7 +7,7 @@ catalog:
   '@element-plus/icons-vue': ^2.3.2
   '@element-plus/nuxt': ^1.1.5
   '@tanstack/vue-query': ^5.100.0
-  '@types/node': ^24.0.0
+  '@types/node': ^26.6.5
   '@vitejs/plugin-vue': ^6.0.10
   '@vue/test-utils': ^2.5.1
   element-plus: ^2.13.0
