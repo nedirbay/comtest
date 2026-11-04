@@ -46,6 +46,10 @@ test('staff are invited, see only what their role allows, and can be changed and
   await page.getByRole('dialog').getByRole('button', { name: 'Yzyna al' }).click()
   await expect(page.getByTestId('invitation-row')).toHaveCount(1)
 
+  // The list comes from the server, so what is still open is there the next time too.
+  await page.reload()
+  await expect(page.getByTestId('invitation-row')).toHaveText(email)
+
   await acceptInvitation(email)
 
   const staffContext = await browser.newContext()

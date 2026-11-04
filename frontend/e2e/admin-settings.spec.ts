@@ -83,8 +83,9 @@ test('payment settings take effect at the checkout', async ({ page }) => {
 
   await page.goto(`${ADMIN_URL}/tk/settings?tab=payment`)
 
-  // The panel says plainly that it cannot show what is currently set.
-  await expect(page.getByTestId('payment-no-read')).toBeVisible()
+  // A new store takes cash only, and the form shows what is really set.
+  await expect(page.getByRole('switch', { name: 'Alanda nagt' })).toBeChecked()
+  await expect(page.getByTestId('settings-bank-text')).toHaveCount(0)
 
   await page.getByTestId('settings-bank').click()
   await page.getByTestId('settings-payment-save').click()
@@ -92,6 +93,10 @@ test('payment settings take effect at the checkout', async ({ page }) => {
   await page.getByTestId('settings-bank-text').fill('Hasap: 1234')
   await page.getByTestId('settings-payment-save').click()
   await expect(page.getByText('Sazlamalar saklandy')).toBeVisible()
+
+  // Coming back shows what was saved.
+  await page.reload()
+  await expect(page.getByTestId('settings-bank-text')).toHaveValue('Hasap: 1234')
 
   const guest = await request.newContext({
     baseURL: API_URL,

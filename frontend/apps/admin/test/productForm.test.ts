@@ -106,7 +106,7 @@ describe('the product form', () => {
     const product = {
       id: 'p1',
       slug: 'bir',
-      status: 'Draft',
+      status: 'draft' as const,
       categoryId: 'c1',
       brandId: null,
       taxGroup: null,

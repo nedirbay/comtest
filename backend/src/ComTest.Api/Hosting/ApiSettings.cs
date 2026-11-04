@@ -56,6 +56,8 @@ public sealed class RateLimitSettings
 
     [Range(1, int.MaxValue)]
     public int TrackingPerMinute { get; set; } = 30;
+
+    public int ReportExportPerMinute { get; set; } = 10;
 }
 
 /// <summary>Reverse proxies whose X-Forwarded-* headers may be believed. Empty means none.</summary>

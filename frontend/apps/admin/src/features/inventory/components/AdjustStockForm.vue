@@ -2,7 +2,7 @@
 import { unwrap, type Schema } from '@comtest/api-client'
 import { useApi } from '@comtest/auth'
 import { AppField } from '@comtest/ui'
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { z } from '@comtest/ui/zod'
@@ -93,14 +93,22 @@ watch(
 )
 
 const productId = ref('')
+const productTerm = ref('')
 
 const products = useQuery({
-  queryKey: ['admin', 'catalog', 'products', 'picker'],
+  queryKey: ['admin', 'catalog', 'products', 'picker', productTerm],
   enabled: computed(() => !props.stock && canPickProduct.value),
+  placeholderData: keepPreviousData,
   queryFn: () =>
     unwrap(
       api.client.GET('/api/v1/admin/catalog/products', {
-        params: { query: { pageSize: PRODUCT_CHOICES, sort: '-createdAt' } },
+        params: {
+          query: {
+            pageSize: PRODUCT_CHOICES,
+            sort: '-createdAt',
+            q: productTerm.value || undefined,
+          },
+        },
       }),
     ),
 })
@@ -165,7 +173,13 @@ function variantLabel(variant: Schema<'VariantAdminDto'>): string {
         :label="t('admin.stock.product')"
         :hint="t('admin.stock.productHint')"
       >
-        <el-select v-model="productId" filterable data-testid="adjust-product">
+        <el-select
+          v-model="productId"
+          filterable
+          remote
+          :remote-method="(term: string) => (productTerm = term.trim())"
+          data-testid="adjust-product"
+        >
           <el-option
             v-for="product in products.data.value?.items"
             :key="product.id"

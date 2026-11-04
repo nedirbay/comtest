@@ -58,7 +58,7 @@ Commit-ler [Conventional Commits](https://www.conventionalcommits.org) görnüş
 - **`VITE_*` we `NUXT_PUBLIC_*`** brauzerde görünýär: gizlin maglumat ýazmaň.
 - **Daşyndan gelen salgy** `safeUrl`-dan, **serwerden gelen HTML** `SafeHtml`-dan geçýär.
 - **`zod`** göni däl-de, `@comtest/ui/zod` arkaly import edilýär (CSP).
-- **API ýagdaýlary** `normalizeStatus` bilen deňeşdirilýär we `StatusTag` bilen görkezilýär.
+- **API ýagdaýlary** OpenAPI-den gelýän tipler bilen deňeşdirilýär we `StatusTag` bilen görkezilýär.
 - **Täze paket** azyndan bir hepde öň çap edilen bolmaly (`minimumReleaseAge`), install skriptleri bolsa `allowBuilds` sanawy boýunça.
 
 Kod syny üçin: [docs/frontend-kod-syny.md](../docs/frontend-kod-syny.md).

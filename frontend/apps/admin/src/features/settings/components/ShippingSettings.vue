@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { unwrap, type Schema } from '@comtest/api-client'
 import { useApi } from '@comtest/auth'
-import { AppTable, normalizeStatus, type TableColumn } from '@comtest/ui'
+import { AppTable, type TableColumn } from '@comtest/ui'
 import { Delete, Edit, Plus } from '@element-plus/icons-vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed } from 'vue'
@@ -160,7 +160,7 @@ function removeMethod(method: Schema<'ShippingMethodDto'>): void {
           <span class="font-semibold text-ink" data-testid="method-row">{{ methodName(row) }}</span>
         </template>
         <template #cell-type="{ row }">
-          {{ t(`enums.shippingType.${normalizeStatus(row.type)}`) }}
+          {{ t(`enums.shippingType.${row.type}`) }}
         </template>
         <template #cell-zone="{ row }">{{ zoneName(row.zoneId) }}</template>
         <template #cell-price="{ row }">{{ format.money(row.price, row.currency) }}</template>

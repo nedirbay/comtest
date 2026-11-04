@@ -7,7 +7,6 @@ import {
   ErrorState,
   SkeletonBlock,
   formatPhone,
-  normalizeStatus,
   useApiErrorMessage,
 } from '@comtest/ui'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
@@ -34,7 +33,7 @@ const order = useQuery({
 useHead({ title: computed(() => order.data.value?.number ?? t('store.account.orders')) })
 
 /** The server has the final say. This only avoids offering what it would certainly refuse. */
-const canCancel = computed(() => normalizeStatus(order.data.value?.status) === 'pending')
+const canCancel = computed(() => order.data.value?.status === 'pending')
 const confirmOpen = ref(false)
 
 const cancel = useMutation({

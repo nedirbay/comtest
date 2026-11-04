@@ -34,7 +34,7 @@ Müşderi sahypalary gözleg ulgamlarynda görünmeli, admin panele bolsa bu ger
 
 **Service worker diňe hash atly faýllary saklaýar.** Sahypalar we API jogaplary hemişe tora gidýär, şonuň üçin bir enjamy ulanýan iki adamyň maglumaty garyşmaýar.
 
-**API ýagdaýlary `normalizeStatus` arkaly.** Jogaplarda `Pending`, soraglarda `pending`. Backend düzedilýänçä ähli deňeşdirme şu funksiýadan geçýär.
+**API ýagdaýlary bir ýazuwda.** Soraglarda-da, jogaplarda-da `pending`, `partiallyRefunded` görnüşinde. Öň jogaplar `Pending` görnüşindedi we frontend `normalizeStatus` bilen özgerdýärdi; backend düzedilenden soň ol funksiýa aýryldy, indi ýagdaýlar OpenAPI-den gelýän tipler bilen barlanýar.
 
 ## Netijeler
 

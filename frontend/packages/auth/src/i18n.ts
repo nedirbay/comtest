@@ -83,6 +83,25 @@ const tk = {
       submit: 'Açar sözüni üýtget',
       changed: 'Açar sözi üýtgedildi. Beýleki enjamlardaky sessiýalar ýapyldy.',
     },
+    profile: {
+      title: 'Profil',
+      locale: 'Hatlaryň dili',
+      localeHint: 'Size iberilýän hatlar şu dilde ýazylýar.',
+      saved: 'Profil saklandy.',
+    },
+    emailChange: {
+      title: 'E-poçta salgysy',
+      current: 'Häzirki salgy: {email}',
+      intro:
+        'Täze salga tassyklama haty iberilýär. Hatdaky salgy açylýança häzirki e-poçtaňyz üýtgemeýär.',
+      newEmail: 'Täze e-poçta',
+      submit: 'Tassyklama hatyny iber',
+      sent: 'Salgy boş bolsa, {email} adresine tassyklama haty gelýär. Şoňa çenli häzirki e-poçtaňyz işleýär.',
+      confirmTitle: 'Täze e-poçtany tassyklamak',
+      doneTitle: 'E-poçta üýtgedildi',
+      doneText: 'Howpsuzlyk üçin ähli enjamlardaky sessiýalar ýapyldy. Täze salgyňyz bilen giriň.',
+      failedTitle: 'E-poçtany üýtgedip bolmady',
+    },
     phone: {
       title: 'Telefon belgisi',
       number: 'Telefon belgisi',
@@ -205,6 +224,25 @@ const ru: Messages = {
       submit: 'Сменить пароль',
       changed: 'Пароль изменён. Сессии на других устройствах закрыты.',
     },
+    profile: {
+      title: 'Профиль',
+      locale: 'Язык писем',
+      localeHint: 'На этом языке вам будут приходить письма.',
+      saved: 'Профиль сохранён.',
+    },
+    emailChange: {
+      title: 'Адрес эл. почты',
+      current: 'Текущий адрес: {email}',
+      intro:
+        'На новый адрес придёт письмо с подтверждением. Пока ссылка из письма не открыта, текущая почта не меняется.',
+      newEmail: 'Новая эл. почта',
+      submit: 'Отправить письмо',
+      sent: 'Если адрес свободен, на {email} придёт письмо с подтверждением. До этого работает текущая почта.',
+      confirmTitle: 'Подтверждение новой почты',
+      doneTitle: 'Почта изменена',
+      doneText: 'В целях безопасности сессии на всех устройствах закрыты. Войдите с новым адресом.',
+      failedTitle: 'Не удалось изменить почту',
+    },
     phone: {
       title: 'Номер телефона',
       number: 'Номер телефона',
@@ -323,6 +361,26 @@ const en: Messages = {
       current: 'Current password',
       submit: 'Change password',
       changed: 'Password changed. Sessions on your other devices were closed.',
+    },
+    profile: {
+      title: 'Profile',
+      locale: 'Email language',
+      localeHint: 'The emails we send you are written in this language.',
+      saved: 'Profile saved.',
+    },
+    emailChange: {
+      title: 'Email address',
+      current: 'Current address: {email}',
+      intro:
+        'A confirmation goes to the new address. Your current email stays until the link in it is opened.',
+      newEmail: 'New email',
+      submit: 'Send confirmation',
+      sent: 'If the address is free, a confirmation is on its way to {email}. Your current email works until then.',
+      confirmTitle: 'Confirm your new email',
+      doneTitle: 'Email changed',
+      doneText:
+        'For safety, sessions on all your devices were closed. Sign in with the new address.',
+      failedTitle: 'The email could not be changed',
     },
     phone: {
       title: 'Phone number',

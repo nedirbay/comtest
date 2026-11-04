@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ApiError, unwrap, type Schema } from '@comtest/api-client'
 import { useApi, useAuthStore } from '@comtest/auth'
-import { AppButton, ErrorState, normalizeStatus, SkeletonBlock, StatusTag } from '@comtest/ui'
+import { AppButton, ErrorState, SkeletonBlock, StatusTag } from '@comtest/ui'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -34,7 +34,7 @@ const payment = useQuery({
     ),
 })
 
-const status = computed(() => normalizeStatus(payment.data.value?.status))
+const status = computed(() => payment.data.value?.status)
 const canConfirm = computed(
   () => status.value === 'pending' && auth.can(Permission.PaymentsConfirm),
 )
@@ -71,8 +71,7 @@ function approve(refund: Schema<'RefundDto'>, currency: string): void {
   })
 }
 
-const isPendingApproval = (refund: Schema<'RefundDto'>) =>
-  normalizeStatus(refund.status) === 'pendingApproval'
+const isPendingApproval = (refund: Schema<'RefundDto'>) => refund.status === 'pendingApproval'
 
 // A second person has to approve: the server refuses the one who asked.
 const isOwnRequest = (refund: Schema<'RefundDto'>) => refund.requestedBy === auth.claims?.userId
@@ -190,7 +189,7 @@ const isOwnRequest = (refund: Schema<'RefundDto'>) => refund.requestedBy === aut
         <ul class="space-y-1 text-xs text-ink-muted">
           <li v-for="(event, index) in payment.data.value.events" :key="index">
             {{ format.dateTime(event.at) }} ·
-            {{ t(`admin.order.event_${normalizeStatus(event.type)}`) }}
+            {{ t(`admin.order.event_${event.type}`) }}
             <template v-if="event.note">· {{ event.note }}</template>
           </li>
         </ul>

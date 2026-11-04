@@ -57,6 +57,10 @@ public sealed record StoreVariantDto(Guid Id, string Sku, decimal Price, string 
 
 public sealed record StoreAttributeDto(string Code, string Name, string Value);
 
+public sealed record StoreAttributeFilterValueDto(string Value, int Count);
+
+public sealed record StoreAttributeFilterDto(string Code, string Name, AttributeDataType DataType, IReadOnlyList<StoreAttributeFilterValueDto> Values);
+
 public sealed record StoreProductDto(
     Guid Id,
     string Slug,
@@ -91,4 +95,7 @@ public interface ICatalogReader
 
     /// <summary>Finds variants in the current store. Others are simply absent from the result.</summary>
     Task<IReadOnlyDictionary<Guid, PurchasableVariant>> GetVariantsAsync(IReadOnlyCollection<Guid> variantIds, CancellationToken cancellationToken);
+
+    /// <summary>Today's cost of each variant that has one. Never pass this on to anything a visitor can see.</summary>
+    Task<IReadOnlyDictionary<Guid, decimal>> GetCostsAsync(IReadOnlyCollection<Guid> variantIds, CancellationToken cancellationToken);
 }

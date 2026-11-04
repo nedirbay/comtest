@@ -15,6 +15,8 @@ public sealed record GetStoreCategoriesQuery : IQuery<IReadOnlyList<StoreCategor
 
 public sealed record GetStoreBrandsQuery : IQuery<IReadOnlyList<StoreBrandDto>>;
 
+public sealed record GetStoreAttributeFiltersQuery(Guid? CategoryId) : IQuery<IReadOnlyList<StoreAttributeFilterDto>>;
+
 public sealed record GetStoreProductQuery(string Slug) : IQuery<StoreProductDto>;
 
 public sealed record ListStoreProductsQuery(
@@ -24,7 +26,51 @@ public sealed record ListStoreProductsQuery(
     Guid? BrandId,
     decimal? MinPrice,
     decimal? MaxPrice,
-    string? Search) : IQuery<PagedResult<StoreProductListItemDto>>;
+    string? Search,
+    IReadOnlyList<string>? Attributes = null) : IQuery<PagedResult<StoreProductListItemDto>>;
+
+/// <summary>Reads `code:value` pairs from an address. Values of one attribute widen the search, different attributes narrow it.</summary>
+internal static class AttributeFilter
+{
+    private const int MaxPairs = 30;
+    private const int MaxPairLength = 300;
+
+    public static Dictionary<string, List<string>>? Parse(IReadOnlyList<string>? pairs)
+    {
+        var groups = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+
+        if (pairs is null)
+        {
+            return groups;
+        }
+
+        if (pairs.Count > MaxPairs)
+        {
+            return null;
+        }
+
+        foreach (var pair in pairs)
+        {
+            var separator = pair.IndexOf(':', StringComparison.Ordinal);
+
+            if (separator <= 0 || separator == pair.Length - 1 || pair.Length > MaxPairLength)
+            {
+                return null;
+            }
+
+            var code = pair[..separator];
+
+            if (!groups.TryGetValue(code, out var values))
+            {
+                groups[code] = values = [];
+            }
+
+            values.Add(pair[(separator + 1)..]);
+        }
+
+        return groups;
+    }
+}
 
 /// <summary>What visitors see: published products only, in their language, without staff-only fields.</summary>
 public sealed class StorefrontQueries(
@@ -36,10 +82,12 @@ public sealed class StorefrontQueries(
     CatalogCache cache) :
     IQueryHandler<GetStoreCategoriesQuery, IReadOnlyList<StoreCategoryDto>>,
     IQueryHandler<GetStoreBrandsQuery, IReadOnlyList<StoreBrandDto>>,
+    IQueryHandler<GetStoreAttributeFiltersQuery, IReadOnlyList<StoreAttributeFilterDto>>,
     IQueryHandler<GetStoreProductQuery, StoreProductDto>,
     IQueryHandler<ListStoreProductsQuery, PagedResult<StoreProductListItemDto>>
 {
     private const int MaxSearchLength = 200;
+    private const int MaxFilterValues = 50;
 
     /// <summary>Only brands with something to buy, as filtering by any other would show an empty page.</summary>
     public async Task<Result<IReadOnlyList<StoreBrandDto>>> HandleAsync(GetStoreBrandsQuery query, CancellationToken cancellationToken)
@@ -61,6 +109,28 @@ public sealed class StorefrontQueries(
             cancellationToken);
 
         return brands;
+    }
+
+    /// <summary>Only what narrows the current shelf: chosen-from-a-list attributes that some product on sale actually has.</summary>
+    public async Task<Result<IReadOnlyList<StoreAttributeFilterDto>>> HandleAsync(GetStoreAttributeFiltersQuery query, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(query);
+
+        if (tenantContext.TenantId is not { } tenantId)
+        {
+            return Error.Validation(ErrorCodes.Tenant.Required);
+        }
+
+        var language = CatalogRules.CurrentLanguage();
+        var fallback = await GetStoreLanguageAsync(cancellationToken);
+
+        var filters = await cache.GetOrCreateAsync(
+            tenantId,
+            $"attribute-filters:{query.CategoryId:N}:{language}",
+            token => new ValueTask<List<StoreAttributeFilterDto>>(LoadAttributeFiltersAsync(query.CategoryId, language, fallback, token)),
+            cancellationToken);
+
+        return filters;
     }
 
     public async Task<Result<IReadOnlyList<StoreCategoryDto>>> HandleAsync(GetStoreCategoriesQuery query, CancellationToken cancellationToken)
@@ -148,6 +218,18 @@ public sealed class StorefrontQueries(
         if (query.BrandId is { } brandId)
         {
             products = products.Where(product => product.BrandId == brandId);
+        }
+
+        if (AttributeFilter.Parse(query.Attributes) is not { } attributeFilters)
+        {
+            return Error.Validation(ErrorCodes.Catalog.InvalidAttributeFilter);
+        }
+
+        foreach (var (code, values) in attributeFilters)
+        {
+            products = products.Where(product => product.AttributeValues.Any(item =>
+                values.Contains(item.Value)
+                && db.AttributeDefinitions.Any(definition => definition.Id == item.AttributeDefinitionId && definition.Code == code)));
         }
 
         if (query.MinPrice is { } minPrice)
@@ -238,6 +320,53 @@ public sealed class StorefrontQueries(
                 return new StoreCategoryDto(item.Id, item.Slug, translation?.Name ?? item.Slug, translation?.Description, BuildTree(categories, item.Id, language, fallback));
             })
             .ToList();
+
+    private async Task<List<StoreAttributeFilterDto>> LoadAttributeFiltersAsync(Guid? categoryId, string language, string fallback, CancellationToken cancellationToken)
+    {
+        var products = db.Products.AsNoTracking().Where(product => product.Status == ProductStatus.Published);
+
+        if (categoryId is { } id)
+        {
+            products = products.Where(product => product.CategoryId == id);
+        }
+
+        var counts = await products
+            .SelectMany(product => product.AttributeValues)
+            .GroupBy(item => new { item.AttributeDefinitionId, item.Value })
+            .Select(group => new { group.Key.AttributeDefinitionId, group.Key.Value, Count = group.Count() })
+            .ToListAsync(cancellationToken);
+
+        var definitionIds = counts.Select(item => item.AttributeDefinitionId).Distinct().ToList();
+
+        var definitions = await db.AttributeDefinitions
+            .AsNoTracking()
+            .Include(item => item.Translations)
+            .Where(item => definitionIds.Contains(item.Id) && (item.DataType == AttributeDataType.Select || item.DataType == AttributeDataType.Boolean))
+            .OrderBy(item => item.Code)
+            .ToListAsync(cancellationToken);
+
+        return definitions
+            .Select(definition => new StoreAttributeFilterDto(
+                definition.Code,
+                CatalogRules.PickTranslation(definition.Translations, language, fallback)?.Name ?? definition.Code,
+                definition.DataType,
+                counts
+                    .Where(item => item.AttributeDefinitionId == definition.Id)
+                    .OrderBy(item => OptionPosition(definition, item.Value))
+                    .ThenBy(item => item.Value, StringComparer.Ordinal)
+                    .Take(MaxFilterValues)
+                    .Select(item => new StoreAttributeFilterValueDto(item.Value, item.Count))
+                    .ToList()))
+            .ToList();
+    }
+
+    /// <summary>Keeps the order staff gave the options, so sizes read S, M, L. A removed option goes last.</summary>
+    private static int OptionPosition(AttributeDefinition definition, string value)
+    {
+        var position = definition.Options.ToList().IndexOf(value);
+
+        return position < 0 ? int.MaxValue : position;
+    }
 
     private async Task<StoreProductDto?> LoadProductAsync(string slug, string language, string fallback, CancellationToken cancellationToken)
     {

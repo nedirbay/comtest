@@ -9,7 +9,6 @@ import {
   PageHeader,
   SkeletonBlock,
   StatusTag,
-  normalizeStatus,
 } from '@comtest/ui'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
@@ -240,7 +239,7 @@ async function reload(): Promise<void> {
   }
 }
 
-const status = computed(() => normalizeStatus(product.data.value?.status))
+const status = computed(() => product.data.value?.status)
 
 function setStatus(next: Schema<'ProductStatus'>): void {
   const id = productId.value
@@ -551,7 +550,7 @@ function setAttribute(id: string, value: unknown): void {
                 :label="attributeLabel(attribute)"
               >
                 <el-select
-                  v-if="normalizeStatus(attribute.dataType) === 'select'"
+                  v-if="attribute.dataType === 'select'"
                   :model-value="attributeValue(attribute.id)"
                   clearable
                   value-on-clear=""
@@ -567,7 +566,7 @@ function setAttribute(id: string, value: unknown): void {
                   />
                 </el-select>
                 <el-select
-                  v-else-if="normalizeStatus(attribute.dataType) === 'boolean'"
+                  v-else-if="attribute.dataType === 'boolean'"
                   :model-value="attributeValue(attribute.id)"
                   clearable
                   value-on-clear=""
@@ -581,7 +580,7 @@ function setAttribute(id: string, value: unknown): void {
                 <el-input
                   v-else
                   :model-value="attributeValue(attribute.id)"
-                  :inputmode="normalizeStatus(attribute.dataType) === 'number' ? 'decimal' : 'text'"
+                  :inputmode="attribute.dataType === 'number' ? 'decimal' : 'text'"
                   :data-testid="`attribute-${attribute.code}`"
                   @update:model-value="setAttribute(attribute.id, $event)"
                 />

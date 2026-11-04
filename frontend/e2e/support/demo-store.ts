@@ -186,6 +186,8 @@ export interface VariantSpec {
 }
 
 export interface ProductSpec {
+  brandId?: string
+  attributes?: { attributeId: string; value: string }[]
   name?: string
   variants?: VariantSpec[]
   description?: string
@@ -266,9 +268,45 @@ async function uploadImage(context: APIRequestContext): Promise<string> {
           .status,
       { timeout: 20_000 },
     )
-    .toBe('Ready')
+    .toBe('ready')
 
   return ticket.id
+}
+
+/** A brand in the demo store. It stays behind, and is not listed once its products are gone. */
+export async function createBrand(name: string): Promise<{ id: string; name: string }> {
+  const { context } = await ownerApi()
+  const slug = `e2e-${randomBytes(5).toString('hex')}`
+  const brand = await json<{ id: string }>(
+    await context.post('/api/v1/admin/catalog/brands', { data: { name, slug } }),
+  )
+
+  await context.dispose()
+
+  return { id: brand.id, name }
+}
+
+/** A pick-from-a-list attribute in the demo store. It shows as a filter once a product has it. */
+export async function createAttribute(
+  name: string,
+  options: string[],
+): Promise<{ id: string; code: string; name: string }> {
+  const { context } = await ownerApi()
+  const code = `e2e_${randomBytes(5).toString('hex')}`
+  const attribute = await json<{ id: string }>(
+    await context.post('/api/v1/admin/catalog/attributes', {
+      data: {
+        code,
+        dataType: 'select',
+        options,
+        translations: [{ language: 'tk', name }],
+      },
+    }),
+  )
+
+  await context.dispose()
+
+  return { id: attribute.id, code, name }
 }
 
 /** A published product in the demo store, with exactly the stock the test asks for. */
@@ -284,6 +322,8 @@ export async function createProduct(spec: ProductSpec = {}): Promise<CreatedProd
       data: {
         slug: `e2e-${unique}`,
         categoryId: state.categoryId,
+        brandId: spec.brandId ?? null,
+        attributes: spec.attributes ?? [],
         translations: [{ language: 'tk', name, description: spec.description ?? null }],
         variants: specs.map((variant, index) => ({
           id: null,

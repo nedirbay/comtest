@@ -105,6 +105,17 @@ public sealed class CatalogReader(IApplicationDbContext db, ITenantSettings tena
     public Task<bool> IsMediaInUseAsync(Guid mediaAssetId, CancellationToken cancellationToken) =>
         db.Products.AnyAsync(product => product.Images.Any(image => image.MediaAssetId == mediaAssetId), cancellationToken);
 
+    public async Task<IReadOnlyDictionary<Guid, decimal>> GetCostsAsync(IReadOnlyCollection<Guid> variantIds, CancellationToken cancellationToken)
+    {
+        var costs = await db.ProductVariants
+            .AsNoTracking()
+            .Where(variant => variantIds.Contains(variant.Id) && variant.CostAmount != null)
+            .Select(variant => new { variant.Id, variant.CostAmount })
+            .ToListAsync(cancellationToken);
+
+        return costs.ToDictionary(item => item.Id, item => item.CostAmount!.Value);
+    }
+
     public async Task<IReadOnlyDictionary<Guid, PurchasableVariant>> GetVariantsAsync(IReadOnlyCollection<Guid> variantIds, CancellationToken cancellationToken)
     {
         var language = CatalogRules.CurrentLanguage();

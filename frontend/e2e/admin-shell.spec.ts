@@ -97,7 +97,7 @@ test('the search palette finds pages, products, orders and customers', async ({ 
   await page.keyboard.press('Control+k')
   await input.fill('köýnek')
   await expect(results.filter({ hasText: 'Gyzyl köýnek' })).toBeVisible()
-  // A draft is not in the public search, and still has to be findable here.
+  // A draft has to be findable here, unlike in the storefront's search.
   await expect(results.filter({ hasText: 'Garalama köýnek' })).toBeVisible()
   await results.filter({ hasText: 'Garalama köýnek' }).click()
   await expect(page).toHaveURL(new RegExp(`/products/${draft.id}$`))

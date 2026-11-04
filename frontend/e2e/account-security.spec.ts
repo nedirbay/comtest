@@ -4,10 +4,12 @@ import { expect, test } from './support/fixtures'
 import {
   createConfirmedUser,
   enterOtp,
+  linkFromMail,
   nextTotp,
   PASSWORD,
   STOREFRONT_URL,
   totp,
+  uniqueEmail,
 } from './support/stack'
 
 const NEW_PASSWORD = 'a-completely-different-passphrase'
@@ -25,7 +27,7 @@ test('a customer can change their password and keep working', async ({ page }) =
   await signIn(page, email)
   await expect(page).toHaveURL(/account\/security/)
 
-  await page.getByLabel('Häzirki açar sözi').fill(PASSWORD)
+  await page.getByLabel('Häzirki açar sözi').first().fill(PASSWORD)
   await page.getByLabel('Täze açar sözi', { exact: true }).fill(NEW_PASSWORD)
   await page.getByLabel('Täze açar sözüni gaýtalaň').fill(NEW_PASSWORD)
   await page.getByRole('button', { name: 'Açar sözüni üýtget' }).click()
@@ -50,13 +52,82 @@ test('the wrong current password is refused', async ({ page }) => {
   const email = await createConfirmedUser()
 
   await signIn(page, email)
-  await page.getByLabel('Häzirki açar sözi').fill('not-my-current-password')
+  await page.getByLabel('Häzirki açar sözi').first().fill('not-my-current-password')
   await page.getByLabel('Täze açar sözi', { exact: true }).fill(NEW_PASSWORD)
   await page.getByLabel('Täze açar sözüni gaýtalaň').fill(NEW_PASSWORD)
   await page.getByRole('button', { name: 'Açar sözüni üýtget' }).click()
 
   await expect(page.getByRole('alert').filter({ hasNotText: 'üýtgedildi' })).toBeVisible()
   await expect(page.getByText('Açar sözi üýtgedildi')).toBeHidden()
+})
+
+test('a customer can change their name and the language of their mail', async ({ page }) => {
+  const email = await createConfirmedUser('Köne At')
+
+  await signIn(page, email)
+  // The sign-in page's own address has this path in it, so wait for the page itself.
+  await expect(page.getByTestId('current-email')).toBeVisible()
+  await page.goto(`${STOREFRONT_URL}/account`)
+
+  const name = page.getByTestId('profile-name')
+
+  await expect(name).toHaveValue('Köne At')
+  await name.fill('Täze At')
+  await page.getByTestId('profile-locale').click()
+  await page.getByRole('option', { name: 'English' }).click()
+  await page.getByTestId('profile-save').click()
+  await expect(page.getByTestId('profile-saved')).toBeVisible()
+
+  await page.reload()
+  await expect(name).toHaveValue('Täze At')
+  await expect(page.getByTestId('profile-locale')).toContainText('English')
+  await expect(page.getByTestId('profile-email')).toHaveText(email)
+
+  // The address is not edited here, and the page says where it is.
+  await page.getByTestId('change-contact').click()
+  await expect(page).toHaveURL(/account\/security/)
+})
+
+test('an email address changes only once the new one is confirmed', async ({ page }) => {
+  test.slow()
+
+  const email = await createConfirmedUser()
+  const newEmail = uniqueEmail('moved')
+
+  await signIn(page, email)
+  await expect(page).toHaveURL(/account\/security/)
+  await expect(page.getByTestId('current-email')).toContainText(email)
+
+  await page.getByTestId('new-email').fill(newEmail)
+  await page.getByTestId('new-email-password').fill('not-my-current-password')
+  await page.getByTestId('new-email-submit').click()
+  await expect(page.getByRole('alert').first()).toBeVisible()
+  await expect(page.getByTestId('email-change-sent')).toHaveCount(0)
+
+  await page.getByTestId('new-email-password').fill(PASSWORD)
+  await page.getByTestId('new-email-submit').click()
+  await expect(page.getByTestId('email-change-sent')).toContainText(newEmail)
+  // Nothing has changed yet.
+  await expect(page.getByTestId('current-email')).toContainText(email)
+
+  await page.goto(await linkFromMail(newEmail, 'confirm-email-change'))
+  await expect(page.getByText('E-poçta üýtgedildi')).toBeVisible()
+  // The secret must not stay in the address bar or the browser history.
+  expect(page.url()).not.toContain('token')
+
+  // That ended every session, this one included. The old address no longer signs in.
+  await signIn(page, email)
+  await expect(page.getByRole('alert')).toBeVisible()
+
+  await signIn(page, newEmail)
+  await expect(page).toHaveURL(/account\/security/)
+  await expect(page.getByTestId('current-email')).toContainText(newEmail)
+})
+
+test('the confirmation page explains a broken link', async ({ page }) => {
+  await page.goto(`${STOREFRONT_URL}/confirm-email-change`)
+  await expect(page.getByText('E-poçtany üýtgedip bolmady')).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Girmek' }).last()).toBeVisible()
 })
 
 test('a customer can turn two-factor on, renew the codes and turn it off', async ({ page }) => {
@@ -137,7 +208,7 @@ test('a customer can confirm a phone number with an SMS code', async ({ page }, 
     .toBeTruthy()
 
   await enterOtp(page, code!)
-  await page.getByRole('button', { name: 'Tassykla' }).click()
+  await page.getByRole('button', { name: 'Tassykla', exact: true }).click()
 
   await expect(page.getByText('Tassyklanan belgi:')).toBeVisible()
 })

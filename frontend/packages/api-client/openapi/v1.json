@@ -785,6 +785,38 @@
         }
       }
     },
+    "/api/v1/catalog/attribute-filters": {
+      "get": {
+        "tags": [
+          "Catalog"
+        ],
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StoreAttributeFilterDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/catalog/products": {
       "get": {
         "tags": [
@@ -851,6 +883,16 @@
             "in": "query",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "attr",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           }
         ],
@@ -2013,6 +2055,234 @@
                   "$ref": "#/components/schemas/MediaAssetDto"
                 }
               }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reports/sales": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "utcOffsetMinutes",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesReportDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reports/products": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductReportDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reports/customers": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerReportDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reports/stock": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StockReportDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reports/export": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ReportKind"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ReportFormat"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "utcOffsetMinutes",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "format": "byte"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": {
+                  "type": "string",
+                  "format": "byte"
+                }
+              },
+              "application/json": {}
             }
           }
         }
@@ -4097,6 +4367,35 @@
           }
         }
       },
+      "BuyerDto": {
+        "required": [
+          "name",
+          "phone",
+          "orders",
+          "revenue",
+          "isGuest"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "orders": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "revenue": {
+            "type": "number",
+            "format": "double"
+          },
+          "isGuest": {
+            "type": "boolean"
+          }
+        }
+      },
       "CartDto": {
         "required": [
           "lines",
@@ -4549,6 +4848,49 @@
           "defaultLanguage": {
             "type": "string",
             "default": "tk"
+          }
+        }
+      },
+      "CustomerReportDto": {
+        "required": [
+          "from",
+          "to",
+          "currency",
+          "buyers",
+          "newBuyers",
+          "returningBuyers",
+          "top"
+        ],
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "buyers": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newBuyers": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "returningBuyers": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "top": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuyerDto"
+            }
           }
         }
       },
@@ -5978,6 +6320,73 @@
           }
         }
       },
+      "ProductReportDto": {
+        "required": [
+          "from",
+          "to",
+          "currency",
+          "totalCount",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductSalesDto"
+            }
+          }
+        }
+      },
+      "ProductSalesDto": {
+        "required": [
+          "productId",
+          "name",
+          "units",
+          "revenue",
+          "estimatedProfit"
+        ],
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "units": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "revenue": {
+            "type": "number",
+            "format": "double"
+          },
+          "estimatedProfit": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          }
+        }
+      },
       "ProductStatus": {
         "enum": [
           "draft",
@@ -6284,6 +6693,22 @@
           }
         }
       },
+      "ReportFormat": {
+        "enum": [
+          "csv",
+          "xlsx"
+        ],
+        "type": "string"
+      },
+      "ReportKind": {
+        "enum": [
+          "sales",
+          "products",
+          "customers",
+          "stock"
+        ],
+        "type": "string"
+      },
       "RequestRefundRequest": {
         "required": [
           "amount",
@@ -6317,6 +6742,106 @@
           },
           "newPassword": {
             "type": "string"
+          }
+        }
+      },
+      "SalesDayDto": {
+        "required": [
+          "date",
+          "orders",
+          "revenue"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "orders": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "revenue": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "SalesFiguresDto": {
+        "required": [
+          "orders",
+          "units",
+          "revenue",
+          "averageOrderValue",
+          "discounts",
+          "shipping"
+        ],
+        "type": "object",
+        "properties": {
+          "orders": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "units": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "revenue": {
+            "type": "number",
+            "format": "double"
+          },
+          "averageOrderValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "discounts": {
+            "type": "number",
+            "format": "double"
+          },
+          "shipping": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "SalesReportDto": {
+        "required": [
+          "from",
+          "to",
+          "currency",
+          "figures",
+          "previous",
+          "refunded",
+          "days"
+        ],
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "figures": {
+            "$ref": "#/components/schemas/SalesFiguresDto"
+          },
+          "previous": {
+            "$ref": "#/components/schemas/SalesFiguresDto"
+          },
+          "refunded": {
+            "type": "number",
+            "format": "double"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SalesDayDto"
+            }
           }
         }
       },
@@ -7062,6 +7587,50 @@
         ],
         "type": "string"
       },
+      "StockReportDto": {
+        "required": [
+          "variants",
+          "onHand",
+          "reserved",
+          "lowStock",
+          "outOfStock",
+          "stockValue",
+          "currency"
+        ],
+        "type": "object",
+        "properties": {
+          "variants": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "onHand": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "reserved": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "lowStock": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "outOfStock": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stockValue": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "currency": {
+            "type": "string"
+          }
+        }
+      },
       "StoreAttributeDto": {
         "required": [
           "code",
@@ -7078,6 +7647,48 @@
           },
           "value": {
             "type": "string"
+          }
+        }
+      },
+      "StoreAttributeFilterDto": {
+        "required": [
+          "code",
+          "name",
+          "dataType",
+          "values"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "dataType": {
+            "$ref": "#/components/schemas/AttributeDataType"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StoreAttributeFilterValueDto"
+            }
+          }
+        }
+      },
+      "StoreAttributeFilterValueDto": {
+        "required": [
+          "value",
+          "count"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -8035,6 +8646,9 @@
     },
     {
       "name": "AdminMedia"
+    },
+    {
+      "name": "Reports"
     },
     {
       "name": "Cart"

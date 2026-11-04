@@ -67,6 +67,7 @@
   <data name="catalog.product_limit_reached" xml:space="preserve"><value>Your plan's product limit has been reached.</value></data>
   <data name="catalog.not_ready_to_publish" xml:space="preserve"><value>A product needs a name and an active variant to be published.</value></data>
   <data name="catalog.invalid_attribute_value" xml:space="preserve"><value>An attribute value is not valid.</value></data>
+  <data name="catalog.invalid_attribute_filter" xml:space="preserve"><value>This attribute filter is not valid.</value></data>
   <data name="catalog.required_attribute_missing" xml:space="preserve"><value>A required attribute is missing.</value></data>
   <data name="inventory.warehouse_not_found" xml:space="preserve"><value>Warehouse not found.</value></data>
   <data name="inventory.warehouse_code_taken" xml:space="preserve"><value>This warehouse code is already in use.</value></data>
@@ -108,4 +109,5 @@
   <data name="media.in_use" xml:space="preserve"><value>This image is still used by a product.</value></data>
   <data name="media.invalid_state" xml:space="preserve"><value>This file cannot do that in its current state.</value></data>
   <data name="media.storage_unavailable" xml:space="preserve"><value>File storage is not available.</value></data>
+  <data name="report.invalid_period" xml:space="preserve"><value>The period is not valid: it must start before it ends and be at most a year long.</value></data>
 </root>

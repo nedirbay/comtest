@@ -24,14 +24,6 @@ export type StatusKind =
 
 type TagType = 'primary' | 'success' | 'info' | 'warning' | 'danger'
 
-/**
- * The API writes a value as `Pending` in responses and `pending` in requests. This brings responses
- * to the request form, so the code has a single spelling to compare with and to translate.
- */
-export function normalizeStatus(value: string | null | undefined): string {
-  return value ? value.charAt(0).toLowerCase() + value.slice(1) : ''
-}
-
 const TAG_TYPES: Partial<Record<string, TagType>> = {
   pending: 'warning',
   confirmed: 'primary',
@@ -56,5 +48,5 @@ const TAG_TYPES: Partial<Record<string, TagType>> = {
 }
 
 export function statusTagType(value: string): TagType {
-  return TAG_TYPES[normalizeStatus(value)] ?? 'info'
+  return TAG_TYPES[value] ?? 'info'
 }

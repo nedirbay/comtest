@@ -23,13 +23,7 @@ const global = {
 }
 
 describe('StatusTag', () => {
-  it('translates the API spelling of a status', () => {
-    const tag = mount(StatusTag, { props: { kind: 'orderStatus', value: 'Pending' }, global })
-
-    expect(tag.text()).toBe('Garaşylýar')
-  })
-
-  it('accepts the request spelling too', () => {
+  it('translates a status', () => {
     const tag = mount(StatusTag, { props: { kind: 'orderStatus', value: 'pending' }, global })
 
     expect(tag.text()).toBe('Garaşylýar')

@@ -3,6 +3,9 @@ const DAY_MS = 86_400_000
 /** Asia/Ashgabat has one offset all year, the same zone the panel's dates are shown in. */
 const STORE_OFFSET_MS = 5 * 3_600_000
 
+/** The same zone as the API's `utcOffsetMinutes` takes it, so both count a day alike. */
+export const STORE_OFFSET_MINUTES = STORE_OFFSET_MS / 60_000
+
 export interface DayRange {
   /** `dd.mm` in the store's time zone. */
   label: string
@@ -14,6 +17,11 @@ export interface DayRange {
 /** The start of the store's day holding this moment, as a UTC time. */
 function storeDayStart(moment: number): number {
   return Math.floor((moment + STORE_OFFSET_MS) / DAY_MS) * DAY_MS - STORE_OFFSET_MS
+}
+
+/** Today in the store's time zone, as `YYYY-MM-DD`. */
+export function storeDate(now: Date = new Date()): string {
+  return new Date(now.getTime() + STORE_OFFSET_MS).toISOString().slice(0, 10)
 }
 
 /** The last `count` days, oldest first, ending with today. */

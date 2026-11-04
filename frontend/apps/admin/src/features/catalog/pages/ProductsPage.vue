@@ -2,9 +2,9 @@
 import { unwrap, type Schema } from '@comtest/api-client'
 import { useApi, useAuthStore } from '@comtest/auth'
 import { AppButton, PageHeader, StatusTag, useApiErrorMessage } from '@comtest/ui'
-import { Plus } from '@element-plus/icons-vue'
+import { Plus, Search } from '@element-plus/icons-vue'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 import { Permission } from '@/app/permissions'
@@ -29,7 +29,16 @@ const confirm = useConfirm()
 const queryClient = useQueryClient()
 const describeError = useApiErrorMessage()
 
-const table = useTableQuery({ filters: { status: '' }, defaultSort: '-createdAt' })
+const table = useTableQuery({ filters: { status: '', q: '' }, defaultSort: '-createdAt' })
+const search = ref(table.filters.q)
+
+watch(
+  () => table.filters.q,
+  (value) => {
+    search.value = value
+  },
+)
+
 const canWrite = computed(() => auth.can(Permission.CatalogWrite))
 const tableRef = ref<{ clearSelection: () => void } | null>(null)
 const selected = ref<Row[]>([])
@@ -43,6 +52,7 @@ const products = useQuery({
       pageSize: table.pageSize,
       sort: table.sort,
       status: table.filters.status,
+      q: table.filters.q,
     })),
   ],
   placeholderData: keepPreviousData,
@@ -55,6 +65,7 @@ const products = useQuery({
             pageSize: table.pageSize,
             sort: table.sort || undefined,
             status: (table.filters.status || undefined) as ProductStatus | undefined,
+            q: table.filters.q || undefined,
           },
         },
       }),
@@ -184,12 +195,24 @@ function deleteSelected(): void {
     :error="products.error.value"
     :selectable="canWrite"
     :has-filters="table.hasFilters"
-    :empty-title="t('admin.products.empty')"
+    :empty-title="t(table.hasFilters ? 'admin.products.noMatches' : 'admin.products.empty')"
     @retry="products.refetch()"
     @clear-filters="table.clearFilters()"
     @selection-change="selected = $event"
   >
     <template #filters>
+      <el-input
+        v-model="search"
+        class="!w-full sm:!w-64"
+        clearable
+        :prefix-icon="Search"
+        :placeholder="t('admin.products.searchHint')"
+        :aria-label="t('admin.products.searchHint')"
+        data-testid="filter-search"
+        @keyup.enter="table.filters.q = search.trim()"
+        @clear="table.filters.q = ''"
+        @blur="table.filters.q = search.trim()"
+      />
       <el-select
         v-model="table.filters.status"
         class="!w-full sm:!w-44"

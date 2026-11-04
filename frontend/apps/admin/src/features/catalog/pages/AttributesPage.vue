@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from '@comtest/auth'
-import { AppTable, PageHeader, normalizeStatus, type TableColumn } from '@comtest/ui'
+import { AppTable, PageHeader, type TableColumn } from '@comtest/ui'
 import { Plus } from '@element-plus/icons-vue'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -54,7 +54,7 @@ const columns = computed<TableColumn[]>(() => [
       </span>
     </template>
     <template #cell-dataType="{ row }">
-      {{ t(`admin.attributes.type_${normalizeStatus(row.dataType)}`) }}
+      {{ t(`admin.attributes.type_${row.dataType}`) }}
     </template>
     <template #cell-options="{ row }">{{ row.options.join(', ') }}</template>
   </AppTable>

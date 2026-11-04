@@ -18,6 +18,7 @@ const NO_INDEX_PAGES = [
   'forgot-password',
   'reset-password',
   'confirm-email',
+  'confirm-email-change',
   'compare',
 ]
 

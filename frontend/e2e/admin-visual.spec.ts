@@ -128,7 +128,7 @@ test('every page fits the screen, in both themes', async ({ page }, testInfo) =>
     [
       'settings-payment',
       'settings?tab=payment',
-      () => expect(page.getByTestId('payment-no-read')).toBeVisible(),
+      () => expect(page.getByTestId('settings-payment-save')).toBeVisible(),
     ],
     [
       'settings-shipping',

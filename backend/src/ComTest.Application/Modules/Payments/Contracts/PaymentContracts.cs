@@ -61,4 +61,7 @@ public interface IOrderPayments
 
     /// <summary>Stops expecting money for a cancelled order. Money already received stays until refunded.</summary>
     Task CancelIfUnpaidAsync(Guid orderId, CancellationToken cancellationToken);
+
+    /// <summary>Money actually given back during a period, whichever period the sale itself belongs to.</summary>
+    Task<decimal> GetRefundedAsync(DateTimeOffset from, DateTimeOffset to, string currency, CancellationToken cancellationToken);
 }

@@ -67,6 +67,7 @@
   <data name="catalog.product_limit_reached" xml:space="preserve"><value>Достигнут лимит товаров вашего тарифа.</value></data>
   <data name="catalog.not_ready_to_publish" xml:space="preserve"><value>Для публикации у товара должны быть название и активный вариант.</value></data>
   <data name="catalog.invalid_attribute_value" xml:space="preserve"><value>Недопустимое значение характеристики.</value></data>
+  <data name="catalog.invalid_attribute_filter" xml:space="preserve"><value>Этот фильтр по характеристике недействителен.</value></data>
   <data name="catalog.required_attribute_missing" xml:space="preserve"><value>Отсутствует обязательная характеристика.</value></data>
   <data name="inventory.warehouse_not_found" xml:space="preserve"><value>Склад не найден.</value></data>
   <data name="inventory.warehouse_code_taken" xml:space="preserve"><value>Этот код склада уже используется.</value></data>
@@ -108,4 +109,5 @@
   <data name="media.in_use" xml:space="preserve"><value>Это изображение ещё используется в товаре.</value></data>
   <data name="media.invalid_state" xml:space="preserve"><value>В текущем состоянии файла это невозможно.</value></data>
   <data name="media.storage_unavailable" xml:space="preserve"><value>Файловое хранилище недоступно.</value></data>
+  <data name="report.invalid_period" xml:space="preserve"><value>Неверный период: начало должно быть раньше конца, а длина не больше года.</value></data>
 </root>

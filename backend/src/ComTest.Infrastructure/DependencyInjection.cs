@@ -31,6 +31,7 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(environment);
 
         services.AddSingleton(TimeProvider.System);
+        services.AddSingleton<ComTest.Application.Modules.Reporting.Contracts.IReportFileWriter, Reporting.ReportFileWriter>();
 
         AddPersistence(services, configuration, environment);
         AddDataProtectionKeys(services, configuration, environment);

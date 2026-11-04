@@ -24,6 +24,16 @@ export const registerSchema = z.object({
 
 export const emailSchema = z.object({ email })
 
+export const profileSchema = z.object({
+  fullName: required.max(200, 'validation.tooLong'),
+  locale: z.string(),
+})
+
+export const changeEmailSchema = z.object({
+  newEmail: email,
+  password: z.string().min(1, 'validation.required'),
+})
+
 export const resetPasswordSchema = z
   .object({ password, confirm: z.string() })
   .refine((value) => value.password === value.confirm, {

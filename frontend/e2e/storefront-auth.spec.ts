@@ -72,7 +72,7 @@ test.describe('opening the store directly', () => {
 
     await page.goto(`${STOREFRONT_URL}/login`)
     await fillLogin(page, email, PASSWORD)
-    await expect(page.getByTestId('profile-name')).toHaveText('Merdan Ataýew')
+    await expect(page.getByTestId('profile-name')).toHaveValue('Merdan Ataýew')
 
     await page.goto(STOREFRONT_URL)
     await expect(page.getByTestId('account-link')).toContainText('Merdan Ataýew')
@@ -107,12 +107,12 @@ test('a new customer registers, confirms their email and stays signed in', async
 
   await page.getByRole('link', { name: 'Girmek' }).last().click()
   await fillLogin(page, email, PASSWORD)
-  await expect(page.getByTestId('profile-name')).toHaveText('Aýna Täze')
+  await expect(page.getByTestId('profile-name')).toHaveValue('Aýna Täze')
   await expectNoTokensInBrowserStorage(page)
 
   // The token lives in memory, so a reload has to restore the session from the cookie.
   await page.reload()
-  await expect(page.getByTestId('profile-name')).toHaveText('Aýna Täze')
+  await expect(page.getByTestId('profile-name')).toHaveValue('Aýna Täze')
   await expectNoTokensInBrowserStorage(page)
 
   await page.getByTestId('logout').click()

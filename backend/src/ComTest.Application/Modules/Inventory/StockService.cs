@@ -10,6 +10,24 @@ public sealed class StockService(IApplicationDbContext db, TimeProvider timeProv
 {
     private const int MaxAttemptsPerWarehouse = 3;
 
+    public async Task<IReadOnlyList<StockLevel>> GetLevelsAsync(CancellationToken cancellationToken)
+    {
+        var levels = await db.StockItems
+            .AsNoTracking()
+            .GroupBy(item => item.ProductVariantId)
+            .Select(group => new
+            {
+                VariantId = group.Key,
+                OnHand = group.Sum(item => item.OnHand),
+                Reserved = group.Sum(item => item.Reserved),
+                IsLow = group.Any(item => item.OnHand - item.Reserved <= item.LowStockThreshold),
+            })
+            .OrderBy(item => item.VariantId)
+            .ToListAsync(cancellationToken);
+
+        return levels.Select(item => new StockLevel(item.VariantId, item.OnHand, item.Reserved, item.IsLow)).ToList();
+    }
+
     public async Task<Result> ReserveAsync(Guid referenceId, IReadOnlyList<StockRequest> lines, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(lines);

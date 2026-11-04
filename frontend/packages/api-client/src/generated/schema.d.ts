@@ -993,6 +993,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/catalog/attribute-filters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    categoryId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StoreAttributeFilterDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/catalog/products": {
         parameters: {
             query?: never;
@@ -1011,6 +1048,7 @@ export interface paths {
                     minPrice?: number;
                     maxPrice?: number;
                     q?: string;
+                    attr?: string[];
                 };
                 header?: never;
                 path?: never;
@@ -2099,6 +2137,202 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/reports/sales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                    utcOffsetMinutes?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SalesReportDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/reports/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                    sort?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProductReportDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/reports/customers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CustomerReportDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/reports/stock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StockReportDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/reports/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    kind?: components["schemas"]["ReportKind"];
+                    format?: components["schemas"]["ReportFormat"];
+                    from?: string;
+                    to?: string;
+                    utcOffsetMinutes?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/csv": string;
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -3931,6 +4165,15 @@ export interface components {
             /** Format: uint32 */
             version: number;
         };
+        BuyerDto: {
+            name: string;
+            phone: string;
+            /** Format: int32 */
+            orders: number;
+            /** Format: double */
+            revenue: number;
+            isGuest: boolean;
+        };
         CartDto: {
             lines: components["schemas"]["CartLineDto"][];
             /** Format: double */
@@ -4047,6 +4290,20 @@ export interface components {
             defaultCurrency: string;
             /** @default tk */
             defaultLanguage: string;
+        };
+        CustomerReportDto: {
+            /** Format: date-time */
+            from: string;
+            /** Format: date-time */
+            to: string;
+            currency: string;
+            /** Format: int32 */
+            buyers: number;
+            /** Format: int32 */
+            newBuyers: number;
+            /** Format: int32 */
+            returningBuyers: number;
+            top: components["schemas"]["BuyerDto"][];
         };
         CustomerSummaryDto: {
             /** Format: uuid */
@@ -4439,6 +4696,27 @@ export interface components {
             mediaAssetId: string;
             altText?: null | string;
         };
+        ProductReportDto: {
+            /** Format: date-time */
+            from: string;
+            /** Format: date-time */
+            to: string;
+            currency: string;
+            /** Format: int64 */
+            totalCount: number;
+            items: components["schemas"]["ProductSalesDto"][];
+        };
+        ProductSalesDto: {
+            /** Format: uuid */
+            productId: string;
+            name: string;
+            /** Format: int64 */
+            units: number;
+            /** Format: double */
+            revenue: number;
+            /** Format: double */
+            estimatedProfit: null | number;
+        };
         /** @enum {string} */
         ProductStatus: "draft" | "published" | "archived";
         ProductTranslationDto: {
@@ -4509,6 +4787,10 @@ export interface components {
         RejectRefundRequest: {
             note?: null | string;
         };
+        /** @enum {string} */
+        ReportFormat: "csv" | "xlsx";
+        /** @enum {string} */
+        ReportKind: "sales" | "products" | "customers" | "stock";
         RequestRefundRequest: {
             /** Format: double */
             amount: number;
@@ -4519,6 +4801,40 @@ export interface components {
             userId: string;
             token: string;
             newPassword: string;
+        };
+        SalesDayDto: {
+            /** Format: date */
+            date: string;
+            /** Format: int32 */
+            orders: number;
+            /** Format: double */
+            revenue: number;
+        };
+        SalesFiguresDto: {
+            /** Format: int32 */
+            orders: number;
+            /** Format: int64 */
+            units: number;
+            /** Format: double */
+            revenue: number;
+            /** Format: double */
+            averageOrderValue: number;
+            /** Format: double */
+            discounts: number;
+            /** Format: double */
+            shipping: number;
+        };
+        SalesReportDto: {
+            /** Format: date-time */
+            from: string;
+            /** Format: date-time */
+            to: string;
+            currency: string;
+            figures: components["schemas"]["SalesFiguresDto"];
+            previous: components["schemas"]["SalesFiguresDto"];
+            /** Format: double */
+            refunded: number;
+            days: components["schemas"]["SalesDayDto"][];
         };
         SaveAddressRequest: {
             address: components["schemas"]["AddressData"];
@@ -4735,10 +5051,36 @@ export interface components {
         };
         /** @enum {string} */
         StockMovementType: "receipt" | "adjustment" | "reservation" | "reservationRelease" | "sale" | "return";
+        StockReportDto: {
+            /** Format: int32 */
+            variants: number;
+            /** Format: int64 */
+            onHand: number;
+            /** Format: int64 */
+            reserved: number;
+            /** Format: int32 */
+            lowStock: number;
+            /** Format: int32 */
+            outOfStock: number;
+            /** Format: double */
+            stockValue: null | number;
+            currency: string;
+        };
         StoreAttributeDto: {
             code: string;
             name: string;
             value: string;
+        };
+        StoreAttributeFilterDto: {
+            code: string;
+            name: string;
+            dataType: components["schemas"]["AttributeDataType"];
+            values: components["schemas"]["StoreAttributeFilterValueDto"][];
+        };
+        StoreAttributeFilterValueDto: {
+            value: string;
+            /** Format: int32 */
+            count: number;
         };
         StoreBrandDto: {
             /** Format: uuid */

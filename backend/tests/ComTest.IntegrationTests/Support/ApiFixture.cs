@@ -111,6 +111,7 @@ public sealed partial class ApiFixture : IAsyncLifetime
         Set("RateLimiting__TenantPerMinute", "1000000");
         Set("RateLimiting__CheckoutPerMinute", "1000000");
         Set("RateLimiting__TrackingPerMinute", "1000000");
+        Set("RateLimiting__ReportExportPerMinute", "1000000");
         Set("Cors__AllowedOrigins__0", AllowedOrigin);
         Set("RateLimiting__GlobalPerMinute", "1000000");
         Set("RateLimiting__LoginPerMinute", "1000000");

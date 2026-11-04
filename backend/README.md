@@ -110,7 +110,7 @@ Docker suraty üçin ICU gerek: türkmen dili (`tk`) `InvariantGlobalization` bi
 | `/health/live`, `/health/ready` | Programma we baza ýagdaýy |
 | `/scalar`, `/openapi/v1.json` | API dokumentasiýasy (diňe Development) |
 | `/api/v1/auth/*` | Hasaba alyş, giriş, refresh, açar sözüni dikeltmek |
-| `/api/v1/account/*` | Profil, sessiýalar, 2FA, telefon |
+| `/api/v1/account/*` | Profil (at, dil), e-poçtany çalyşmak, sessiýalar, 2FA, telefon |
 | `/api/v1/tenants`, `/api/v1/store` | Dükan döretmek, dükanyň açyk maglumatlary |
 | `/api/v1/catalog/*` | Storefront katalogy (açyk) |
 | `/api/v1/cart`, `/api/v1/checkout` | Sebet we sargyt (myhman üçin hem) |

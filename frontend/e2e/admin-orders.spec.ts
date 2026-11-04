@@ -373,6 +373,45 @@ test('without customers.read, customer details are hidden on every page that has
   await api.dispose()
 })
 
+test('the order page copes with what the API really sends without customers.read', async ({
+  page,
+}) => {
+  const { api, place } = await storeWithOrder(page, 'Maskaly Jogap Dükany')
+  const order = await place({ phone: '+99361999777', name: 'Ogulgerek Hojaýewa' })
+
+  await hidePermissionFromPage(page, 'customers.read')
+  // No role lacks this permission today, so the server's masked answer is written out here.
+  await page.route(`**/api/v1/admin/orders/${order.id}`, async (route) => {
+    const body = await ok<{
+      customerUserId: string | null
+      order: { contact: object; shipTo: object; customerNote: string | null }
+    }>(await api.get(`/api/v1/admin/orders/${order.id}`))
+
+    body.customerUserId = null
+    body.order.customerNote = null
+    body.order.contact = { name: 'O***', phone: '***77', email: null }
+    body.order.shipTo = {
+      ...body.order.shipTo,
+      recipient: 'O***',
+      phone: '***77',
+      line1: null,
+      line2: null,
+      postalCode: null,
+    }
+    await route.fulfill({ json: body })
+  })
+
+  await page.goto(`${ADMIN_URL}/tk/orders/${order.id}`)
+  await expect(page.getByRole('heading', { name: `Sargyt ${order.number}` })).toBeVisible()
+
+  const contact = page.getByTestId('order-contact')
+
+  await expect(contact).toContainText('O•••')
+  await expect(page.getByTestId('contact-phone')).toHaveText('••• 77')
+  await expect(page.locator('main')).not.toContainText('null')
+  await api.dispose()
+})
+
 test('the dashboard shows real counts and a chart from the API', async ({ page }) => {
   const { api, place } = await storeWithOrder(page, 'Görkeziji Dükany')
 
@@ -384,6 +423,8 @@ test('the dashboard shows real counts and a chart from the API', async ({ page }
   await expect(page.getByTestId('tile-unpaid').getByTestId('tile-value')).toHaveText('2')
   await expect(page.getByTestId('tile-products').getByTestId('tile-value')).toHaveText('1')
   await expect(page.getByTestId('tile-customers').getByTestId('tile-value')).toHaveText('2')
+  await expect(page.getByTestId('tile-revenue').getByTestId('tile-value')).not.toHaveText('…')
+  await expect(page.getByTestId('top-products')).toBeVisible()
   await expect(page.getByTestId('orders-chart').locator('canvas')).toBeVisible()
   // The same numbers in text form: 14 days, and today's two orders in the last one.
   await expect(page.locator('table.sr-only tr')).toHaveCount(14)

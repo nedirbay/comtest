@@ -14,6 +14,7 @@ export interface ProductQuery {
   minPrice?: number
   maxPrice?: number
   q?: string
+  attr?: string[]
 }
 
 const CATALOG_STALE_MS = 5 * 60_000
@@ -32,6 +33,40 @@ export function useCategories() {
   const query = useQuery({
     queryKey: ['catalog', 'categories', locale],
     queryFn: () => unwrap(api.client.GET('/api/v1/catalog/categories')),
+    staleTime: CATALOG_STALE_MS,
+  })
+
+  prefetchOnServer(query)
+
+  return query
+}
+
+export function useBrands() {
+  const api = useApi()
+
+  const query = useQuery({
+    queryKey: ['catalog', 'brands'],
+    queryFn: () => unwrap(api.client.GET('/api/v1/catalog/brands')),
+    staleTime: CATALOG_STALE_MS,
+  })
+
+  prefetchOnServer(query)
+
+  return query
+}
+
+export function useAttributeFilters(categoryId: MaybeRefOrGetter<string | undefined>) {
+  const api = useApi()
+  const { locale } = useI18n()
+
+  const query = useQuery({
+    queryKey: ['catalog', 'attribute-filters', categoryId, locale],
+    queryFn: () =>
+      unwrap(
+        api.client.GET('/api/v1/catalog/attribute-filters', {
+          params: { query: { categoryId: toValue(categoryId) } },
+        }),
+      ),
     staleTime: CATALOG_STALE_MS,
   })
 

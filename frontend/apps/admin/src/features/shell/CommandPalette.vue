@@ -13,7 +13,6 @@ import { useCustomerPrivacy } from '@/shared/composables/useCustomerPrivacy'
 const SEARCH_DELAY_MS = 250
 const MIN_TERM_LENGTH = 2
 const MAX_PER_GROUP = 5
-const API_PAGE_SIZE = 100
 
 const open = defineModel<boolean>({ required: true })
 
@@ -52,27 +51,14 @@ function focusInput(): void {
 
 const searching = computed(() => open.value && debounced.value.length >= MIN_TERM_LENGTH)
 
-// The admin list has no text search, and the public one sees only published products. Together
-// they cover every published product, and every recent draft by reading the newest hundred.
-const publishedProducts = useQuery({
-  queryKey: ['palette', 'published', debounced],
+const products = useQuery({
+  queryKey: ['palette', 'products', debounced],
   enabled: computed(() => searching.value && auth.can(Permission.CatalogRead)),
   placeholderData: keepPreviousData,
   queryFn: () =>
     unwrap(
-      api.client.GET('/api/v1/catalog/products', {
-        params: { query: { q: debounced.value, pageSize: MAX_PER_GROUP } },
-      }),
-    ),
-})
-
-const recentProducts = useQuery({
-  queryKey: ['palette', 'recent-products'],
-  enabled: computed(() => open.value && auth.can(Permission.CatalogRead)),
-  queryFn: () =>
-    unwrap(
       api.client.GET('/api/v1/admin/catalog/products', {
-        params: { query: { pageSize: API_PAGE_SIZE, sort: '-createdAt' } },
+        params: { query: { q: debounced.value, pageSize: MAX_PER_GROUP } },
       }),
     ),
 })
@@ -132,27 +118,13 @@ const results = computed<Result[]>(() => {
     return found
   }
 
-  const products = new Map<string, { name: string; slug: string }>()
-
-  for (const product of recentProducts.data.value?.items ?? []) {
-    const name = product.name ?? product.slug
-
-    if (`${name} ${product.slug}`.toLocaleLowerCase().includes(needle)) {
-      products.set(product.id, { name, slug: product.slug })
-    }
-  }
-
-  for (const product of publishedProducts.data.value?.items ?? []) {
-    products.set(product.id, { name: product.name, slug: product.slug })
-  }
-
-  for (const [id, product] of [...products].slice(0, MAX_PER_GROUP)) {
+  for (const product of products.data.value?.items ?? []) {
     found.push({
-      id: `product-${id}`,
+      id: `product-${product.id}`,
       group: t('admin.palette.products'),
-      label: product.name,
+      label: product.name ?? product.slug,
       hint: product.slug,
-      to: { name: 'product-edit', params: { id } },
+      to: { name: 'product-edit', params: { id: product.id } },
     })
   }
 
@@ -205,7 +177,7 @@ const groups = computed(() => {
 const loading = computed(
   () =>
     searching.value &&
-    (publishedProducts.isFetching.value || orders.isFetching.value || customers.isFetching.value),
+    (products.isFetching.value || orders.isFetching.value || customers.isFetching.value),
 )
 
 async function choose(result: Result | undefined): Promise<void> {

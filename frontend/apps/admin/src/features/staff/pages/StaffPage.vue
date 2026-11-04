@@ -17,6 +17,7 @@ type Member = Schema<'StaffMemberDto'>
 type Invitation = Schema<'StaffInvitationDto'>
 
 const STAFF_KEY = ['admin', 'staff', 'members']
+const INVITATIONS_KEY = ['admin', 'staff', 'invitations']
 
 const { t } = useI18n({ useScope: 'global' })
 const api = useApi()
@@ -46,9 +47,10 @@ const roleLabel = (role: string) => t(`admin.roles.${role}`)
 
 const inviting = useDrawerItem<never>()
 
-// The API can create and revoke an invitation, but it cannot list them. Only those sent from this
-// page since it opened can be shown, and anything older has to wait out its seven days.
-const sentInvitations = ref<Invitation[]>([])
+const invitations = useQuery({
+  queryKey: INVITATIONS_KEY,
+  queryFn: () => unwrap(api.client.GET('/api/v1/admin/staff/invitations')),
+})
 
 const invitationColumns = computed<TableColumn[]>(() => [
   { key: 'email', label: t('admin.customers.email'), minWidth: 290 },
@@ -69,7 +71,7 @@ function revoke(invitation: Invitation): void {
           params: { path: { id: invitation.id } },
         }),
       )
-      sentInvitations.value = sentInvitations.value.filter((item) => item.id !== invitation.id)
+      await queryClient.invalidateQueries({ queryKey: INVITATIONS_KEY })
       toastSuccess(t('admin.staff.revoked'))
     },
   })
@@ -196,10 +198,13 @@ const has = (role: keyof typeof ROLE_PERMISSIONS, permission: string) =>
     <h2 class="font-bold text-ink">{{ t('admin.staff.invitations') }}</h2>
     <p class="mb-3 text-sm text-ink-muted">{{ t('admin.staff.invitationsHint') }}</p>
     <AppTable
-      v-if="sentInvitations.length"
       :columns="invitationColumns"
-      :rows="sentInvitations"
+      :rows="invitations.data.value ?? []"
+      :loading="invitations.isPending.value"
+      :error="invitations.error.value"
+      :empty-title="t('admin.staff.noInvitations')"
       data-testid="invitations"
+      @retry="invitations.refetch()"
     >
       <template #cell-email="{ row }">
         <span data-testid="invitation-row">{{ row.email }}</span>
@@ -264,7 +269,7 @@ const has = (role: keyof typeof ROLE_PERMISSIONS, permission: string) =>
     v-if="inviting.mounted.value"
     :key="inviting.session.value"
     v-model="inviting.open.value"
-    @invited="sentInvitations = [$event, ...sentInvitations]"
+    @invited="queryClient.invalidateQueries({ queryKey: INVITATIONS_KEY })"
     @closed="inviting.closed()"
   />
 

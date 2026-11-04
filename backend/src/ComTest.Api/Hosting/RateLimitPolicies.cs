@@ -15,6 +15,7 @@ public static class RateLimitPolicies
     public const string Sms = "sms";
     public const string Checkout = "checkout";
     public const string Tracking = "tracking";
+    public const string ReportExport = "report-export";
 
     private const int WindowSegments = 6;
 
@@ -67,6 +68,8 @@ public static class RateLimitPolicies
                     SlidingWindow(CallerKey(context), settings.CheckoutPerMinute, TimeSpan.FromMinutes(1)));
                 options.AddPolicy(Tracking, context =>
                     SlidingWindow(IpKey(context), settings.TrackingPerMinute, TimeSpan.FromMinutes(1)));
+                options.AddPolicy(ReportExport, context =>
+                    SlidingWindow(CallerKey(context), settings.ReportExportPerMinute, TimeSpan.FromMinutes(1)));
             });
 
         return services;

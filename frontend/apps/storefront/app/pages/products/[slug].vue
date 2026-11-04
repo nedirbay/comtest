@@ -123,7 +123,7 @@ useJsonLd('product', () => {
           :to="
             localePath({
               path: '/catalog',
-              query: { brandId: product.brandId, brandName: product.brandName },
+              query: { brandId: product.brandId },
             })
           "
           class="mt-1 inline-block text-sm font-medium text-ink-muted hover:text-primary"

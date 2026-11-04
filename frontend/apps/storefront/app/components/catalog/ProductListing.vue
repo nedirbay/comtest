@@ -19,6 +19,7 @@ const products = useProducts(() => ({
   minPrice: filters.value.minPrice,
   maxPrice: filters.value.maxPrice,
   q: filters.value.q,
+  attr: filters.value.attr,
 }))
 
 const result = computed(() => products.data.value)
@@ -60,7 +61,7 @@ function goToPage(page: number): void {
     <div class="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-8">
       <aside class="hidden lg:block">
         <div class="sticky top-24 rounded-card border border-line bg-surface p-4">
-          <ProductFilters />
+          <ProductFilters :category-id="categoryId" />
         </div>
       </aside>
 
@@ -109,7 +110,7 @@ function goToPage(page: number): void {
       :title="t('store.filters.title')"
       data-testid="filter-panel"
     >
-      <ProductFilters @applied="panelOpen = false" />
+      <ProductFilters :category-id="categoryId" @applied="panelOpen = false" />
     </el-drawer>
   </div>
 </template>

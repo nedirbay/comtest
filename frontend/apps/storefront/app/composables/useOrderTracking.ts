@@ -1,6 +1,5 @@
 import { unwrap } from '@comtest/api-client'
 import { useApi } from '@comtest/auth'
-import { normalizeStatus } from '@comtest/ui'
 import { useQuery } from '@tanstack/vue-query'
 
 const REFRESH_MS = 60_000
@@ -13,7 +12,7 @@ const FINAL_STATUSES = ['delivered', 'cancelled', 'returned']
 export function orderRefreshInterval(query: {
   state: { data?: { status: string } }
 }): number | false {
-  const status = normalizeStatus(query.state.data?.status)
+  const status = query.state.data?.status
 
   return status && !FINAL_STATUSES.includes(status) ? REFRESH_MS : false
 }

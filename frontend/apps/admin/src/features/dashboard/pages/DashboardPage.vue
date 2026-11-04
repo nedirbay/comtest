@@ -17,12 +17,13 @@ import { RouterLink, type RouteLocationRaw } from 'vue-router'
 import { Permission } from '@/app/permissions'
 import { useCustomerPrivacy } from '@/shared/composables/useCustomerPrivacy'
 import { useFormat } from '@/shared/composables/useFormat'
-import { lastDays } from '../days'
+import { STORE_OFFSET_MINUTES, lastDays } from '../days'
 
 const OrdersChart = defineAsyncComponent(() => import('../components/OrdersChart.vue'))
 
 const CHART_DAYS = 14
 const RECENT_ORDERS = 5
+const TOP_PRODUCTS = 5
 
 const { t } = useI18n({ useScope: 'global' })
 const api = useApi()
@@ -34,9 +35,10 @@ const canOrders = computed(() => auth.hasActiveTenant && auth.can(Permission.Ord
 const canProducts = computed(() => auth.hasActiveTenant && auth.can(Permission.CatalogRead))
 const canStock = computed(() => auth.hasActiveTenant && auth.can(Permission.InventoryRead))
 const canCustomers = computed(() => auth.hasActiveTenant && auth.can(Permission.CustomersRead))
+const canReports = computed(() => auth.hasActiveTenant && auth.can(Permission.ReportsRead))
 const canTenants = computed(() => auth.can(Permission.TenantsManage))
 
-// There is no metrics API yet. Each figure is a list's `totalCount`, and nothing is calculated here.
+// Counts are a list's `totalCount`, and money comes from the report API: nothing is calculated here.
 const statusCounts = useQuery({
   queryKey: ['admin', 'orders', 'dashboard', 'by-status'],
   enabled: canOrders,
@@ -114,23 +116,49 @@ const tenantCount = useQuery({
     ).totalCount,
 })
 
-const ordersPerDay = useQuery({
-  queryKey: ['admin', 'orders', 'dashboard', 'per-day'],
-  enabled: canOrders,
+const salesPeriod = lastDays(CHART_DAYS)
+
+const sales = useQuery({
+  queryKey: ['admin', 'reports', 'sales', 'dashboard'],
+  enabled: canReports,
   queryFn: () =>
-    Promise.all(
-      lastDays(CHART_DAYS).map(async (day) => ({
-        label: day.label,
-        count: (
-          await unwrap(
-            api.client.GET('/api/v1/admin/orders', {
-              params: { query: { from: day.from, to: day.to, pageSize: 1 } },
-            }),
-          )
-        ).totalCount,
-      })),
+    unwrap(
+      api.client.GET('/api/v1/admin/reports/sales', {
+        params: {
+          query: {
+            from: salesPeriod[0]?.from,
+            to: salesPeriod.at(-1)?.to,
+            utcOffsetMinutes: STORE_OFFSET_MINUTES,
+          },
+        },
+      }),
     ),
 })
+
+const topProducts = useQuery({
+  queryKey: ['admin', 'reports', 'products', 'dashboard'],
+  enabled: canReports,
+  queryFn: () =>
+    unwrap(
+      api.client.GET('/api/v1/admin/reports/products', {
+        params: {
+          query: {
+            from: salesPeriod[0]?.from,
+            to: salesPeriod.at(-1)?.to,
+            sort: 'units',
+            limit: TOP_PRODUCTS,
+          },
+        },
+      }),
+    ),
+})
+
+const chartDays = computed(() =>
+  (sales.data.value?.days ?? []).map((day) => ({
+    label: `${day.date.slice(8, 10)}.${day.date.slice(5, 7)}`,
+    count: day.orders,
+  })),
+)
 
 const recentOrders = useQuery({
   queryKey: ['admin', 'orders', 'dashboard', 'recent'],
@@ -154,7 +182,7 @@ const recentColumns = computed<TableColumn[]>(() => [
 interface Tile {
   key: string
   label: string
-  value: number | undefined
+  value: number | string | undefined
   pending: boolean
   to: RouteLocationRaw
   attention?: boolean
@@ -162,6 +190,25 @@ interface Tile {
 
 const tiles = computed<Tile[]>(() => {
   const list: Tile[] = []
+
+  if (canReports.value) {
+    const report = sales.data.value
+
+    list.push({
+      key: 'revenue',
+      label: t('admin.dashboard.revenue'),
+      value: report && format.money(report.figures.revenue, report.currency),
+      pending: sales.isPending.value,
+      to: { name: 'reports' },
+    })
+    list.push({
+      key: 'average',
+      label: t('admin.dashboard.average'),
+      value: report && format.money(report.figures.averageOrderValue, report.currency),
+      pending: sales.isPending.value,
+      to: { name: 'reports' },
+    })
+  }
 
   if (canOrders.value) {
     const pending = statusCounts.data.value?.find((item) => item.status === 'pending')?.count
@@ -249,8 +296,11 @@ const tiles = computed<Tile[]>(() => {
           {{ tile.label }}
         </span>
         <span
-          class="mt-1 block text-3xl font-bold tracking-tight tabular-nums"
-          :class="tile.attention ? 'text-warning' : 'text-ink'"
+          class="mt-1 block font-bold tracking-tight tabular-nums"
+          :class="[
+            tile.attention ? 'text-warning' : 'text-ink',
+            typeof tile.value === 'string' ? 'text-xl leading-9' : 'text-3xl',
+          ]"
           data-testid="tile-value"
         >
           {{ tile.pending ? '…' : (tile.value ?? '—') }}
@@ -260,23 +310,26 @@ const tiles = computed<Tile[]>(() => {
   </ul>
 
   <div v-if="canOrders" class="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-    <section class="min-w-0 rounded-card border border-line bg-surface p-4 sm:p-5">
+    <section
+      v-if="canReports"
+      class="min-w-0 rounded-card border border-line bg-surface p-4 sm:p-5"
+    >
       <h2 class="font-bold text-ink">{{ t('admin.dashboard.chartTitle') }}</h2>
       <p class="mb-3 text-sm text-ink-muted">{{ t('admin.dashboard.chartHint') }}</p>
       <ErrorState
-        v-if="ordersPerDay.isError.value"
-        :error="ordersPerDay.error.value"
+        v-if="sales.isError.value"
+        :error="sales.error.value"
         retryable
-        @retry="ordersPerDay.refetch()"
+        @retry="sales.refetch()"
       />
-      <SkeletonBlock v-else-if="ordersPerDay.isPending.value" :lines="6" />
+      <SkeletonBlock v-else-if="sales.isPending.value" :lines="6" />
       <template v-else>
-        <OrdersChart :days="ordersPerDay.data.value ?? []" />
+        <OrdersChart :days="chartDays" />
         <!-- The same numbers for screen readers, which cannot read a canvas. -->
         <table class="sr-only">
           <caption>{{ t('admin.dashboard.chartTitle') }}</caption>
           <tbody>
-            <tr v-for="day in ordersPerDay.data.value" :key="day.label">
+            <tr v-for="day in chartDays" :key="day.label">
               <th scope="row">{{ day.label }}</th>
               <td>{{ day.count }}</td>
             </tr>
@@ -307,6 +360,25 @@ const tiles = computed<Tile[]>(() => {
       </ul>
     </section>
   </div>
+
+  <section
+    v-if="canReports && topProducts.data.value?.items.length"
+    class="mt-6 rounded-card border border-line bg-surface p-4 sm:p-5"
+  >
+    <h2 class="mb-3 font-bold text-ink">{{ t('admin.dashboard.topProducts') }}</h2>
+    <ol class="divide-y divide-line" data-testid="top-products">
+      <li
+        v-for="item in topProducts.data.value.items"
+        :key="item.productId"
+        class="flex items-center justify-between gap-3 py-2"
+      >
+        <span class="min-w-0 truncate text-ink">{{ item.name }}</span>
+        <span class="shrink-0 font-semibold tabular-nums text-ink">
+          {{ t('admin.dashboard.topProductUnits', { units: item.units }) }}
+        </span>
+      </li>
+    </ol>
+  </section>
 
   <section v-if="canOrders" class="mt-6">
     <div class="mb-3 flex items-center justify-between">

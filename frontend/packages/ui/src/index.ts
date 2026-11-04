@@ -21,7 +21,6 @@ export { FORM_CONTEXT, useForm, type FormContext, type UseFormOptions } from './
 export { readPreference, usePreference, writePreference } from './composables/usePreference'
 export { applyTheme, preferredTheme, useTheme, type Theme } from './composables/useTheme'
 export {
-  normalizeStatus,
   ORDER_STATUSES,
   PAYMENT_STATES,
   statusTagType,

@@ -15,6 +15,7 @@
 
   <ItemGroup Label="Media">
     <PackageVersion Include="AWSSDK.S3" Version="4.0.104.8" />
+    <PackageVersion Include="ClosedXML" Version="0.105.0" />
     <PackageVersion Include="SkiaSharp" Version="4.154.0" />
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.154.0" />
   </ItemGroup>

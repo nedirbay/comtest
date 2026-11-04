@@ -1,6 +1,11 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from './support/fixtures'
-import { createProduct, type CreatedProduct } from './support/demo-store'
+import {
+  createAttribute,
+  createBrand,
+  createProduct,
+  type CreatedProduct,
+} from './support/demo-store'
 import { STOREFRONT_URL } from './support/stack'
 
 const url = (path: string) => `${STOREFRONT_URL}${path}`
@@ -77,6 +82,99 @@ test.describe('filters live in the address', () => {
     await page.goBack()
     await expect(page).not.toHaveURL(/maxPrice/)
     await expect(page.getByTestId('product-card').filter({ hasText: 'Galaxy S25' })).toBeVisible()
+  })
+
+  test('the brand filter offers the brands on sale and narrows the list', async ({
+    page,
+  }, testInfo) => {
+    const isPhone = testInfo.project.name === 'phone'
+    const brand = await createBrand(`E2E Marka ${testInfo.project.name} ${Date.now()}`)
+    const product = await createProduct({ brandId: brand.id })
+
+    const openPanel = async () => {
+      if (isPhone) {
+        await page.getByTestId('open-filters').click()
+      }
+
+      return isPhone ? page.getByRole('dialog') : page.locator('aside')
+    }
+
+    // The product page leads to the same list, through the address alone.
+    await open(page, `/products/${product.slug}`)
+    await page.getByRole('link', { name: brand.name }).click()
+    await expect(page).toHaveURL(new RegExp(`brandId=${brand.id}`))
+    await expect(page).not.toHaveURL(/brandName/)
+    await expect(page.getByTestId('product-card')).toHaveCount(1)
+    await expect(page.getByTestId('product-card')).toContainText(product.name)
+
+    await page.reload({ waitUntil: 'networkidle' })
+
+    const shown = await openPanel()
+
+    await expect(shown.getByTestId('brand-filter')).toHaveValue(brand.id)
+
+    await shown.getByTestId('brand-filter').selectOption('')
+    await shown.getByRole('button', { name: 'Ulan' }).click()
+    await expect(page).not.toHaveURL(/brandId/)
+    await expect(
+      page.getByTestId('product-card').filter({ hasText: 'Galaxy' }).first(),
+    ).toBeVisible()
+
+    const panel = await openPanel()
+
+    await panel.getByTestId('brand-filter').selectOption({ label: brand.name })
+    await panel.getByRole('button', { name: 'Ulan' }).click()
+    await expect(page).toHaveURL(new RegExp(`brandId=${brand.id}`))
+    await expect(page.getByTestId('product-card')).toHaveCount(1)
+  })
+
+  test('attribute filters narrow the list and stay in the address', async ({ page }, testInfo) => {
+    const color = await createAttribute(`Reňk ${testInfo.project.name}`, ['Gara', 'Ak'])
+    const black = await createProduct({
+      name: `Filter gara ${Date.now()}`,
+      attributes: [{ attributeId: color.id, value: 'Gara' }],
+    })
+    const white = await createProduct({
+      name: `Filter ak ${Date.now()}`,
+      attributes: [{ attributeId: color.id, value: 'Ak' }],
+    })
+    const isPhone = testInfo.project.name === 'phone'
+
+    await open(page, '/catalog')
+
+    const openPanel = async () => {
+      if (isPhone) {
+        await page.getByTestId('open-filters').click()
+
+        return page.getByRole('dialog')
+      }
+
+      return page.locator('aside')
+    }
+
+    const panel = await openPanel()
+    const filter = panel.getByTestId(`attribute-filter-${color.code}`)
+
+    await expect(filter.getByRole('group', { name: color.name }).or(filter)).toBeVisible()
+    await filter.getByRole('checkbox', { name: 'Gara' }).check()
+    await panel.getByRole('button', { name: 'Ulan' }).click()
+
+    await expect(page).toHaveURL(new RegExp(`attr=${color.code}`))
+    await expect(page.getByTestId('product-card')).toHaveCount(1)
+    await expect(page.getByTestId('product-card')).toContainText(black.name)
+
+    // A reload reads the filter back from the address, ticked box included.
+    await page.reload({ waitUntil: 'networkidle' })
+    await expect(page.getByTestId('product-card')).toContainText(black.name)
+
+    const shown = await openPanel()
+    const box = shown.getByTestId(`attribute-filter-${color.code}`)
+
+    await expect(box.getByRole('checkbox', { name: 'Gara' })).toBeChecked()
+    await box.getByRole('checkbox', { name: 'Ak' }).check()
+    await shown.getByRole('button', { name: 'Ulan' }).click()
+    await expect(page.getByTestId('product-card')).toHaveCount(2)
+    await expect(page.getByTestId('product-card').filter({ hasText: white.name })).toBeVisible()
   })
 
   test('sorting changes the order and the address', async ({ page }) => {

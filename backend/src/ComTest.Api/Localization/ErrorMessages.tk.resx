@@ -67,6 +67,7 @@
   <data name="catalog.product_limit_reached" xml:space="preserve"><value>Tarifiňiziň haryt çägine ýetildi.</value></data>
   <data name="catalog.not_ready_to_publish" xml:space="preserve"><value>Çap etmek üçin harydyň ady we işjeň warianty bolmaly.</value></data>
   <data name="catalog.invalid_attribute_value" xml:space="preserve"><value>Häsiýetiň bahasy nädogry.</value></data>
+  <data name="catalog.invalid_attribute_filter" xml:space="preserve"><value>Bu häsiýet süzgüji nädogry.</value></data>
   <data name="catalog.required_attribute_missing" xml:space="preserve"><value>Hökmany häsiýet ýok.</value></data>
   <data name="inventory.warehouse_not_found" xml:space="preserve"><value>Ammar tapylmady.</value></data>
   <data name="inventory.warehouse_code_taken" xml:space="preserve"><value>Bu ammar kody eýýäm ulanylýar.</value></data>
@@ -108,4 +109,5 @@
   <data name="media.in_use" xml:space="preserve"><value>Bu surat heniz harytda ulanylýar.</value></data>
   <data name="media.invalid_state" xml:space="preserve"><value>Faýlyň häzirki ýagdaýynda muny edip bolmaýar.</value></data>
   <data name="media.storage_unavailable" xml:space="preserve"><value>Faýl saklaýyşy elýeterli däl.</value></data>
+  <data name="report.invalid_period" xml:space="preserve"><value>Döwür nädogry: başlangyjy soňundan öň bolmaly, uzynlygy bir ýyldan köp bolmaly däl.</value></data>
 </root>

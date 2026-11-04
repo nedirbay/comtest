@@ -22,8 +22,9 @@ export function maskEmail(value: string): string {
 }
 
 /**
- * Personal data is shown in full only with `customers.read`. The order endpoints answer anyone with
- * `orders.read`, so this is about what appears on a screen, and the API remains the real gate.
+ * Personal data is shown in full only with `customers.read`. The API is the real gate: without the
+ * permission it sends `A***`, `***33` and no email or street. This puts those in the panel's own
+ * form of the mask, and hides the region and city too rather than show an address with a hole in it.
  */
 export function useCustomerPrivacy() {
   const auth = useAuthStore()

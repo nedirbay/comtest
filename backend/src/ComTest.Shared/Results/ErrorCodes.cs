@@ -61,6 +61,11 @@ public static class ErrorCodes
         public const string InvitationNotFound = "tenant.invitation_not_found";
     }
 
+    public static class Report
+    {
+        public const string InvalidPeriod = "report.invalid_period";
+    }
+
     public static class Catalog
     {
         public const string CategoryNotFound = "catalog.category_not_found";
@@ -75,6 +80,7 @@ public static class ErrorCodes
         public const string ProductLimitReached = "catalog.product_limit_reached";
         public const string NotReadyToPublish = "catalog.not_ready_to_publish";
         public const string InvalidAttributeValue = "catalog.invalid_attribute_value";
+        public const string InvalidAttributeFilter = "catalog.invalid_attribute_filter";
         public const string RequiredAttributeMissing = "catalog.required_attribute_missing";
     }
 

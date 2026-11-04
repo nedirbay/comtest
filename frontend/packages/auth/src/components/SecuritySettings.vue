@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import ChangeEmailForm from './ChangeEmailForm.vue'
 import ChangePasswordForm from './ChangePasswordForm.vue'
 import PhoneVerificationForm from './PhoneVerificationForm.vue'
 import SessionsList from './SessionsList.vue'
@@ -17,6 +18,10 @@ const { t } = useI18n({ useScope: 'global' })
     <section class="rounded-card border border-line bg-surface p-5">
       <h2 class="mb-4 text-base font-bold text-ink">{{ t('auth.password.title') }}</h2>
       <ChangePasswordForm />
+    </section>
+    <section class="rounded-card border border-line bg-surface p-5">
+      <h2 class="mb-4 text-base font-bold text-ink">{{ t('auth.emailChange.title') }}</h2>
+      <ChangeEmailForm />
     </section>
     <section class="rounded-card border border-line bg-surface p-5">
       <h2 class="mb-4 text-base font-bold text-ink">{{ t('auth.phone.title') }}</h2>

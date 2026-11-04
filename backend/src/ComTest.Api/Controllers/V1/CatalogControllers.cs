@@ -31,6 +31,14 @@ public sealed class CatalogController : TenantControllerBase
         CancellationToken cancellationToken) =>
         FromResult(await handler.HandleAsync(new GetStoreBrandsQuery(), cancellationToken));
 
+    [HttpGet("attribute-filters")]
+    [ProducesResponseType<IReadOnlyList<StoreAttributeFilterDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> AttributeFilters(
+        [FromQuery] Guid? categoryId,
+        [FromServices] IQueryHandler<GetStoreAttributeFiltersQuery, IReadOnlyList<StoreAttributeFilterDto>> handler,
+        CancellationToken cancellationToken) =>
+        FromResult(await handler.HandleAsync(new GetStoreAttributeFiltersQuery(categoryId), cancellationToken));
+
     [HttpGet("products")]
     [ProducesResponseType<PagedResult<StoreProductListItemDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Products(
@@ -42,10 +50,11 @@ public sealed class CatalogController : TenantControllerBase
         [FromQuery] decimal? minPrice,
         [FromQuery] decimal? maxPrice,
         [FromQuery] string? q,
+        [FromQuery] string[]? attr,
         [FromServices] IQueryHandler<ListStoreProductsQuery, PagedResult<StoreProductListItemDto>> handler,
         CancellationToken cancellationToken) =>
         FromResult(await handler.HandleAsync(
-            new ListStoreProductsQuery(PageRequests.From(page, pageSize), sort, categoryId, brandId, minPrice, maxPrice, q),
+            new ListStoreProductsQuery(PageRequests.From(page, pageSize), sort, categoryId, brandId, minPrice, maxPrice, q, attr),
             cancellationToken));
 
     [HttpGet("products/{slug}")]

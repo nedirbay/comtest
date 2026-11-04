@@ -25,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<Modules.Payments.Contracts.IPaymentProvider, Modules.Payments.BankTransferProvider>();
         services.AddScoped<Modules.Payments.Contracts.IOrderPayments, Modules.Payments.OrderPayments>();
         services.AddScoped<Modules.Ordering.Contracts.IOrderPaymentSync, Modules.Ordering.OrderPaymentSync>();
+        services.AddScoped<Modules.Ordering.Contracts.ISalesReader, Modules.Ordering.SalesReader>();
         services.AddScoped<Modules.Ordering.CartStore>();
         services.AddScoped<Modules.Ordering.CartPricing>();
         services.AddScoped<Modules.Ordering.OrderWorkflow>();

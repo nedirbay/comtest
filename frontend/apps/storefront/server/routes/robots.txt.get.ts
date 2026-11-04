@@ -10,6 +10,7 @@ const PRIVATE_PATHS = [
   '/forgot-password',
   '/reset-password',
   '/confirm-email',
+  '/confirm-email-change',
   '/search',
   '/compare',
 ]

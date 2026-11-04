@@ -52,7 +52,7 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 - [x] `[MVP]` Haryt sahypasy: suratlar galereýasy, düşündiriş, häsiýetnamalar, galyndy ýagdaýy
 - [x] `[MVP]` Haryt wariantlary (reňk, ölçeg, göwrüm)
 - [x] `[MVP]` Tekst boýunça gözleg (ýönekeý `LIKE`; FTS B15-de)
-- [ ] `[MVP]` Süzgüçler (baha, marka, häsiýet) we tertipleşdirme — ✅ baha, tertipleşdirme; marka diňe haryt sahypasyndan (açyk marka sanawy API-de ýok); häsiýet boýunça süzgüç ýok
+- [ ] `[MVP]` Süzgüçler (baha, marka, häsiýet) we tertipleşdirme — ✅ baha, marka, tertipleşdirme; häsiýet boýunça süzgüç ýok
 - [ ] `[V1]` Gözlegde awtomatik doldurma we ýalňyş ýazuwa çydamlylyk — ✅ awtomatik doldurma; ýalňyş ýazuwa çydamlylyk ýok (B15)
 - [x] `[V1]` Harytlary deňeşdirmek
 - [ ] `[V1]` Soňky görlen harytlar, meňzeş harytlar, „bilelikde satyn alynýar“ — ✅ soňky görlenler, meňzeş harytlar (şol bir kategoriýa boýunça); „bilelikde satyn alynýar“ ýok
@@ -76,7 +76,7 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 **Şahsy otag**
 
 - [x] `[MVP]` Hasaba alynmak, ulgama girmek (e-poçta/telefon) (hasaba alyş e-poçta bilen, telefon soň tassyklanýar; girmek ikisi bilen hem)
-- [ ] `[MVP]` Profil we salgylar kitaby — ✅ salgylar, profili görmek; profili üýtgetmek üçin API ýok
+- [x] `[MVP]` Profil we salgylar kitaby
 - [x] `[MVP]` Sargytlaryň taryhy
 - [ ] `[V1]` Halanlarym sanawy
 - [ ] `[V1]` Haryt barada syn we baha (suratly)
@@ -132,7 +132,7 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 **Dolandyryş we hasabatlar**
 
 - [ ] `[MVP]` Dolandyryş paneli (dashboard): satuw, sargyt, galyndy — ✅ sargyt we galyndy görkezijileri, grafik; satuw mukdary üçin API ýok (B16)
-- [ ] `[MVP]` Dükan sazlamalary: logotip, aragatnaşyk, eltip bermek, töleg — ✅ umumy, logotip, eltip bermek, dil; töleg sazlamalaryny ýazmak bar, okamak üçin API ýok
+- [x] `[MVP]` Dükan sazlamalary: logotip, aragatnaşyk, eltip bermek, töleg
 - [x] `[MVP]` Işgärler we rollar
 - [ ] `[V1]` Satuw, haryt, müşderi hasabatlary we Excel eksporty
 - [ ] `[V1]` Audit žurnaly (kim, haçan, näme üýtgetdi)
@@ -256,7 +256,7 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 - [x] Aktiw sessiýalar sanawy we sessiýany ýatyrmak
 - [x] Rollar: `PlatformAdmin`, `StoreOwner`, `Manager`, `Staff`, `Customer`
 - [x] Permission esasly policy ulgamy
-- [ ] Profili üýtgetmek: at, dil, e-poçtany täzeden tassyklama bilen çalyşmak (häzir diňe `GET /account/me`)
+- [x] Profili üýtgetmek: at, dil, e-poçtany täzeden tassyklama bilen çalyşmak
 - [ ] `[V1]` Google bilen girmek (OIDC)
 - [x] 🔒 Access token ömri ≤ 15 minut; `iss`, `aud`, `exp` we algoritm berk barlanýar
 - [x] 🔒 JWT asimmetrik açar bilen (ES256/RS256) gollanýar, `kid` bilen açar rotasiýasy
@@ -611,13 +611,13 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 
 ## F6. Storefront: şahsy otag
 
-- [ ] Profil we salgylar — ✅ profili görmek, salgylar; profili üýtgetmek üçin API ýok (B3)
+- [x] Profil we salgylar
 - [x] Sargytlar we yzarlaýyş
 - [ ] Hakyky wagtda ýagdaý täzelenmesi (SignalR) — ✅ açyk sahypa 60 sekuntda täzelenýär (polling); SignalR üçin backend ýok (B13)
 - [ ] `[V1]` Halanlarym, synlar, bonus ballary, yzyna gaýtarma — API ýok (B12, B14)
 - [ ] `[V1]` Bildiriş sazlamalary
 - [ ] `[V1]` Maglumatlary göçürip almak we hasaby pozmak — API ýok
-- [ ] 🔒 Telefon, e-poçta ýa-da açar sözi üýtgedilende täzeden tassyklamak — ✅ açar sözi häzirkisi bilen, telefon SMS bilen; e-poçtany çalyşmak üçin API ýok
+- [x] 🔒 Telefon, e-poçta ýa-da açar sözi üýtgedilende täzeden tassyklamak (açar sözi häzirkisi bilen, telefon SMS bilen, e-poçta açar sözi we täze salga iberilen hat bilen)
 
 ## F7. Admin: esas
 
@@ -651,11 +651,11 @@ Bu kararlar meýilnamanyň esasyny düzýär. Işe başlamazdan öň tassyklamal
 - [x] Sargyt sanawy: ýagdaý boýunça süzgüç
 - [x] Sargyt jikme-jikligi: ýagdaý üýtgetmek, taryh, bellikler
 - [x] Müşderiler sanawy we profil (profil sargytlardan ýygnalýar, aýratyn API ýok)
-- [ ] Dükan sazlamalary: umumy, töleg, eltip bermek, dil — ✅ umumy, eltip bermek, dil we pul; töleg sazlamalaryny okamak üçin API ýok
-- [x] Işgärler we rollar: çakylyk, permission matrisasy (çakylyklaryň sanawy API-de ýok, diňe şu sahypada iberilenler görünýär)
+- [x] Dükan sazlamalary: umumy, töleg, eltip bermek, dil
+- [x] Işgärler we rollar: çakylyk, açyk çakylyklaryň sanawy, permission matrisasy
 - [ ] `[V1]` Faktura çap etmek, yzyna gaýtarma, pul gaýtarma — ✅ pul gaýtarma, yzyna gaýtarma ýagdaýy; faktura (PDF) we RMA ýok
 - [x] 🔒 Howply hereketler (pozmak, pul gaýtarma) tassyklama talap edýär
-- [ ] 🔒 Müşderiniň şahsy maglumatlary diňe ygtyýary bar işgärlere doly görkezilýär — ✅ interfeýsde gizlenýär; `/admin/orders` bolsa `orders.read` bilen hem şahsy maglumat berýär, backend-de düzetmeli
+- [x] 🔒 Müşderiniň şahsy maglumatlary diňe ygtyýary bar işgärlere doly görkezilýär (`customers.read` ýok bolsa, API-niň özi maskeleýär)
 
 ## F10. Admin: marketing we mazmun
 

@@ -78,6 +78,7 @@ up() {
   export RateLimiting__RefreshPerMinute=100000
   export RateLimiting__CheckoutPerMinute=100000
   export RateLimiting__TrackingPerMinute=100000
+  export RateLimiting__ReportExportPerMinute=100000
 
   cd "$backend"
   dotnet tool restore >/dev/null

@@ -6,7 +6,6 @@ import {
   AppTable,
   ErrorState,
   formatPhone,
-  normalizeStatus,
   PageHeader,
   safeUrl,
   SkeletonBlock,
@@ -45,7 +44,7 @@ const detail = useQuery({
 })
 
 const order = computed(() => detail.data.value?.order)
-const status = computed(() => normalizeStatus(order.value?.status))
+const status = computed(() => order.value?.status ?? '')
 
 usePageTitle(() => order.value?.number)
 

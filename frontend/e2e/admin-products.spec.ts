@@ -509,7 +509,7 @@ test('bulk actions work on the chosen products, and deleting asks first', async 
     await api.get(`/api/v1/admin/catalog/products/${first.id}`),
   )
 
-  expect(published.status).toBe('Published')
+  expect(published.status).toBe('published')
 
   await rowOf('Birinji haryt').locator('.el-checkbox').click()
   await page.getByTestId('bulk-archive').click()
@@ -556,6 +556,22 @@ test('the list keeps its filter in the address and remembers the chosen columns'
   // A copied link or a reload gives the same list.
   await page.reload()
   await expect(page.getByTestId('product-link')).toHaveText('Garalama haryt')
+
+  await page.getByRole('button', { name: 'Süzgüçleri arassala' }).click()
+  await expect(page.getByTestId('product-link')).toHaveCount(2)
+
+  // The search covers drafts as well, ignores case, and keeps its term in the address too.
+  await page.getByTestId('filter-search').fill('GARALAMA')
+  await page.getByTestId('filter-search').press('Enter')
+  await expect(page).toHaveURL(/q=GARALAMA/)
+  await expect(page.getByTestId('product-link')).toHaveText('Garalama haryt')
+  await page.reload()
+  await expect(page.getByTestId('filter-search')).toHaveValue('GARALAMA')
+  await expect(page.getByTestId('product-link')).toHaveText('Garalama haryt')
+
+  await page.getByTestId('filter-search').fill('hiç-ýerde-ýok')
+  await page.getByTestId('filter-search').press('Enter')
+  await expect(page.getByText('Bu süzgüçlere laýyk haryt ýok')).toBeVisible()
 
   await page.getByRole('button', { name: 'Süzgüçleri arassala' }).click()
   await expect(page).not.toHaveURL(/status=/)

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { unwrap, type Schema } from '@comtest/api-client'
 import { useApi, useAuthStore } from '@comtest/auth'
-import { ErrorState, normalizeStatus, PageHeader, SkeletonBlock, EmptyState } from '@comtest/ui'
+import { ErrorState, PageHeader, SkeletonBlock, EmptyState } from '@comtest/ui'
 import { useInfiniteQuery, useQuery, type InfiniteData, type QueryKey } from '@tanstack/vue-query'
 import { computed, h } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -103,7 +103,7 @@ function signed(value: number): string {
 }
 
 const typeLabel = (type: string) => {
-  const key = `admin.movements.type_${normalizeStatus(type)}`
+  const key = `admin.movements.type_${type}`
 
   return t(key)
 }

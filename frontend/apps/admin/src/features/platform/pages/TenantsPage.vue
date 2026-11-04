@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { unwrap, type Schema } from '@comtest/api-client'
 import { useApi } from '@comtest/auth'
-import { normalizeStatus, PageHeader, StatusTag } from '@comtest/ui'
+import { PageHeader, StatusTag } from '@comtest/ui'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -123,7 +123,7 @@ function setStatus(tenant: Tenant, status: Schema<'TenantStatus'>): void {
     </template>
     <template #cell-actions="{ row }">
       <el-button
-        v-if="normalizeStatus(row.status) === 'active'"
+        v-if="row.status === 'active'"
         size="small"
         type="danger"
         plain

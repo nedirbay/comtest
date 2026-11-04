@@ -33,6 +33,7 @@ const STORE_PAGES = [
   '/login',
   '/register',
   '/forgot-password',
+  '/confirm-email-change',
   '/track',
   '/compare',
   '/no/such/page',

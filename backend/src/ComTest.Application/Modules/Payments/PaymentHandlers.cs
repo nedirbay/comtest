@@ -35,6 +35,15 @@ public sealed class BankTransferProvider(ITenantSettings settings) : IPaymentPro
 
 public sealed class OrderPayments(IApplicationDbContext db, IEnumerable<IPaymentProvider> providers) : IOrderPayments
 {
+    public async Task<decimal> GetRefundedAsync(DateTimeOffset from, DateTimeOffset to, string currency, CancellationToken cancellationToken) =>
+        await db.Refunds
+            .AsNoTracking()
+            .Where(refund => refund.Status == RefundStatus.Completed
+                && refund.DecidedAt >= from
+                && refund.DecidedAt < to
+                && refund.Amount.Currency == currency)
+            .SumAsync(refund => refund.Amount.Amount, cancellationToken);
+
     public async Task<IReadOnlyList<PaymentMethodOption>> GetAvailableMethodsAsync(CancellationToken cancellationToken)
     {
         var options = new List<PaymentMethodOption>();
