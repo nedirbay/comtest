@@ -79,7 +79,7 @@ importers:
         version: link:packages/config
       '@lhci/cli':
         specifier: ^0.15.1
-        version: 0.15.1
+        version: 0.15.1(supports-color@10.2.2)
       '@playwright/test':
         specifier: ^1.60.0
         version: 1.64.1
@@ -426,8 +426,8 @@ importers:
         specifier: workspace:*
         version: link:../config
       '@storybook/vue3-vite':
-        specifier: ^10.0.0
-        version: 10.6.4(storybook@10.6.4(prettier@3.9.10)(react@19.3.1))(typescript@5.9.3)(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))(vue@3.5.44(typescript@5.9.3))
+        specifier: ^10.6.5
+        version: 10.6.5(storybook@10.6.4(prettier@3.9.10)(react@19.3.1))(typescript@5.9.3)(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))(vue@3.5.44(typescript@5.9.3))
       '@tailwindcss/vite':
         specifier: ^4.0.0
         version: 4.3.3(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
@@ -2514,10 +2514,10 @@ packages:
   '@speed-highlight/core@1.2.24':
     resolution: {integrity: sha512-qeW2e1l78afw8VhRPfPQ1Gjj+KU5XFQ/OFV5ti6eTa9bruO7mJyZtA4vw0ofqmA3tKCkROE9xLk3VZoeRc98nw==}
 
-  '@storybook/builder-vite@10.6.4':
-    resolution: {integrity: sha512-trRRLMLlVesA6ELghA1pRQK2xdCtXSW8KKx7thyCUjWuhsRmnuLnctKEaPO7BCQj57Ct7E+dCWsU7KyHriNlPQ==}
+  '@storybook/builder-vite@10.6.5':
+    resolution: {integrity: sha512-udrGjg3yt38pz4FxplypXxw1creIGS7N6QS8xfvTFM8MQNtPyojT/gZdd4fhX0dFrQx5MMuJEYJA5gUBiPsLtg==}
     peerDependencies:
-      storybook: ^10.6.4
+      storybook: ^10.6.5
       vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
 
   '@storybook/global@5.0.0':
@@ -2528,20 +2528,20 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  '@storybook/vue3-vite@10.6.4':
-    resolution: {integrity: sha512-HNbwZq6ZDgkf1H0O5vw6u/ShH/LJAuzWfNcwv+gEsDQs0HzoMU2OBBfPCEmP/sgxqX8hJNiptOebbohIsxaIyA==}
+  '@storybook/vue3-vite@10.6.5':
+    resolution: {integrity: sha512-tpyhI56cgKGgxxYkT+CKwChMKLdtz+fLeaBs0l1RKOYLjbjvZ8FrzaVz/z8JZgMUbSJSD/tIDACgz6rAQVUbrg==}
     peerDependencies:
-      storybook: ^10.6.4
+      storybook: ^10.6.5
       typescript: '>= 4.9.x'
       vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
     peerDependenciesMeta:
       typescript:
         optional: true
 
-  '@storybook/vue3@10.6.4':
-    resolution: {integrity: sha512-cLrVgQXbKPZ3nQRGc72csHU43Ap7gVxaCccnZC0acLS0wBJ3KNaxBSR/KycXoeED7a6IKW1lc+LErMwntr7ctQ==}
+  '@storybook/vue3@10.6.5':
+    resolution: {integrity: sha512-Tb8AManjGkO0fwgzu0v40ooiY5HH6ePS9UGYGyav1mI9cwtI06TWA7BJbmpOGjdFSpdU9ATtAxEkDvyrtQ99xw==}
     peerDependencies:
-      storybook: ^10.6.4
+      storybook: ^10.6.5
       typescript: '>= 4.9.x'
       vue: ^3.0.0
     peerDependenciesMeta:
@@ -4139,6 +4139,9 @@ packages:
 
   exsolve@1.1.3:
     resolution: {integrity: sha512-kuzL9zherLQoqDeQaS55AiiIg1kb4KYXaSusTtgZTPlvKP2gGCI82LNmBNh5RjDVUXIcmgx+/Mx7vPwRzBbhJA==}
+
+  exsolve@1.2.0:
+    resolution: {integrity: sha512-h1pQPR9XoeSMdntRNCjyTznaume4UpfXrULBnlkZ2CUM/G5eSa+pBByGldO5uR8dxbPC+OuJXsPPNf+JZ81ADg==}
 
   external-editor@3.1.0:
     resolution: {integrity: sha512-hMQ4CX1p1izmuLYyZqLMO/qGNw10wSv9QDCPfzXfyFrOaCSSoRfqE1Kf1s5an66J5JZC62NewG+mK49jOCtQew==}
@@ -7950,16 +7953,16 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@lhci/cli@0.15.1':
+  '@lhci/cli@0.15.1(supports-color@10.2.2)':
     dependencies:
-      '@lhci/utils': 0.15.1
+      '@lhci/utils': 0.15.1(supports-color@10.2.2)
       chrome-launcher: 0.13.4
       compression: 1.8.2
       debug: 4.4.3(supports-color@10.2.2)
       express: 4.22.3
       inquirer: 6.5.2
       isomorphic-fetch: 3.0.0
-      lighthouse: 12.6.1
+      lighthouse: 12.6.1(supports-color@10.2.2)
       lighthouse-logger: 1.2.0
       open: 7.4.2
       proxy-agent: 6.5.0
@@ -7976,12 +7979,12 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@lhci/utils@0.15.1':
+  '@lhci/utils@0.15.1(supports-color@10.2.2)':
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
       isomorphic-fetch: 3.0.0
       js-yaml: 3.15.2
-      lighthouse: 12.6.1
+      lighthouse: 12.6.1(supports-color@10.2.2)
       tree-kill: 1.2.2
     transitivePeerDependencies:
       - bare-abort-controller
@@ -8199,7 +8202,7 @@ snapshots:
       defu: 6.1.7
       destr: 2.0.5
       errx: 0.2.2
-      exsolve: 1.1.3
+      exsolve: 1.2.0
       ignore: 7.0.14
       klona: 2.0.6
       microdiff: 1.6.0
@@ -8232,7 +8235,7 @@ snapshots:
       defu: 6.1.7
       destr: 2.0.5
       errx: 0.2.2
-      exsolve: 1.1.3
+      exsolve: 1.2.0
       ignore: 7.0.14
       klona: 2.0.6
       microdiff: 1.6.0
@@ -8265,7 +8268,7 @@ snapshots:
       defu: 6.1.7
       destr: 2.0.5
       errx: 0.2.2
-      exsolve: 1.1.3
+      exsolve: 1.2.0
       ignore: 7.0.14
       klona: 2.0.6
       microdiff: 1.6.0
@@ -8880,10 +8883,10 @@ snapshots:
 
   '@poppinss/exception@1.2.3': {}
 
-  '@puppeteer/browsers@2.13.2':
+  '@puppeteer/browsers@2.13.2(supports-color@10.2.2)':
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
-      extract-zip: 2.0.1
+      extract-zip: 2.0.1(supports-color@10.2.2)
       progress: 2.0.3
       proxy-agent: 6.5.0
       semver: 7.8.5
@@ -9199,7 +9202,7 @@ snapshots:
 
   '@speed-highlight/core@1.2.24': {}
 
-  '@storybook/builder-vite@10.6.4(storybook@10.6.4(prettier@3.9.10)(react@19.3.1))(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))':
+  '@storybook/builder-vite@10.6.5(storybook@10.6.4(prettier@3.9.10)(react@19.3.1))(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))':
     dependencies:
       storybook: 10.6.4(prettier@3.9.10)(react@19.3.1)
       ts-dedent: 2.3.0
@@ -9211,10 +9214,10 @@ snapshots:
     dependencies:
       react: 19.3.1
 
-  '@storybook/vue3-vite@10.6.4(storybook@10.6.4(prettier@3.9.10)(react@19.3.1))(typescript@5.9.3)(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))(vue@3.5.44(typescript@5.9.3))':
+  '@storybook/vue3-vite@10.6.5(storybook@10.6.4(prettier@3.9.10)(react@19.3.1))(typescript@5.9.3)(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))(vue@3.5.44(typescript@5.9.3))':
     dependencies:
-      '@storybook/builder-vite': 10.6.4(storybook@10.6.4(prettier@3.9.10)(react@19.3.1))(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
-      '@storybook/vue3': 10.6.4(storybook@10.6.4(prettier@3.9.10)(react@19.3.1))(typescript@5.9.3)(vue@3.5.44(typescript@5.9.3))
+      '@storybook/builder-vite': 10.6.5(storybook@10.6.4(prettier@3.9.10)(react@19.3.1))(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      '@storybook/vue3': 10.6.5(storybook@10.6.4(prettier@3.9.10)(react@19.3.1))(typescript@5.9.3)(vue@3.5.44(typescript@5.9.3))
       magic-string: 1.4.5
       storybook: 10.6.4(prettier@3.9.10)(react@19.3.1)
       vite: 8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
@@ -9223,7 +9226,7 @@ snapshots:
     transitivePeerDependencies:
       - vue
 
-  '@storybook/vue3@10.6.4(storybook@10.6.4(prettier@3.9.10)(react@19.3.1))(typescript@5.9.3)(vue@3.5.44(typescript@5.9.3))':
+  '@storybook/vue3@10.6.5(storybook@10.6.4(prettier@3.9.10)(react@19.3.1))(typescript@5.9.3)(vue@3.5.44(typescript@5.9.3))':
     dependencies:
       '@storybook/global': 5.0.0
       '@vue/compiler-dom': 3.5.44
@@ -10996,13 +10999,15 @@ snapshots:
 
   exsolve@1.1.3: {}
 
+  exsolve@1.2.0: {}
+
   external-editor@3.1.0:
     dependencies:
       chardet: 0.7.0
       iconv-lite: 0.4.24
       tmp: 0.0.33
 
-  extract-zip@2.0.1:
+  extract-zip@2.0.1(supports-color@10.2.2):
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
       get-stream: 5.2.0
@@ -11645,7 +11650,7 @@ snapshots:
 
   lighthouse-stack-packs@1.12.2: {}
 
-  lighthouse@12.6.1:
+  lighthouse@12.6.1(supports-color@10.2.2):
     dependencies:
       '@paulirish/trace_engine': 0.0.53
       '@sentry/node': 7.120.4
@@ -11666,7 +11671,7 @@ snapshots:
       metaviewport-parser: 0.3.0
       open: 8.4.2
       parse-cache-control: 1.0.1
-      puppeteer-core: 24.43.1
+      puppeteer-core: 24.43.1(supports-color@10.2.2)
       robots-parser: 3.0.1
       semver: 5.7.2
       speedline-core: 1.4.3
@@ -12666,7 +12671,7 @@ snapshots:
   pkg-types@2.4.0:
     dependencies:
       confbox: 0.3.1
-      exsolve: 1.1.3
+      exsolve: 1.2.0
       pathe: 2.0.3
 
   playwright-core@1.64.1: {}
@@ -12897,9 +12902,9 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  puppeteer-core@24.43.1:
+  puppeteer-core@24.43.1(supports-color@10.2.2):
     dependencies:
-      '@puppeteer/browsers': 2.13.2
+      '@puppeteer/browsers': 2.13.2(supports-color@10.2.2)
       chromium-bidi: 14.0.0(devtools-protocol@0.0.1608973)
       debug: 4.4.3(supports-color@10.2.2)
       devtools-protocol: 0.0.1608973

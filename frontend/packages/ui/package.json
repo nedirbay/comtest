@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@comtest/config": "workspace:*",
-    "@storybook/vue3-vite": "^10.0.0",
+    "@storybook/vue3-vite": "^10.6.5",
     "@tailwindcss/vite": "^4.0.0",
     "@vitejs/plugin-vue": "catalog:",
     "@vue/test-utils": "catalog:",
