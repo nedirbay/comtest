@@ -44,7 +44,7 @@
     "@vue/test-utils": "catalog:",
     "element-plus": "catalog:",
     "jsdom": "^30.0.0",
-    "storybook": "^10.0.0",
+    "storybook": "^10.6.5",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "unplugin-vue-components": "^32.0.0",
