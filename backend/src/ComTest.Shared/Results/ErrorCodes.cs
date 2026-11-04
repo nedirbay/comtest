@@ -61,6 +61,15 @@ public static class ErrorCodes
         public const string InvitationNotFound = "tenant.invitation_not_found";
     }
 
+    public static class Promotion
+    {
+        public const string NotFound = "promotion.not_found";
+        public const string CodeTaken = "promotion.code_taken";
+        public const string CodeNotValid = "promotion.code_not_valid";
+        public const string MinSubtotalNotMet = "promotion.min_subtotal_not_met";
+        public const string NotApplicable = "promotion.not_applicable";
+    }
+
     public static class Report
     {
         public const string InvalidPeriod = "report.invalid_period";

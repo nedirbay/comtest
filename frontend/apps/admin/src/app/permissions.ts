@@ -12,6 +12,7 @@ export const Permission = {
   PaymentsRefund: 'payments.refund',
   PaymentsRefundApprove: 'payments.refund.approve',
   CustomersRead: 'customers.read',
+  PromotionsManage: 'promotions.manage',
   ReportsRead: 'reports.read',
   ReportsFinancial: 'reports.financial',
   SettingsManage: 'settings.manage',
@@ -34,6 +35,7 @@ const MANAGER = [
   P.PaymentsConfirm,
   P.PaymentsRefundApprove,
   P.CustomersRead,
+  P.PromotionsManage,
   P.ReportsRead,
 ] as const
 

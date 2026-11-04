@@ -60,7 +60,9 @@ export function useAttributeFilters(categoryId: MaybeRefOrGetter<string | undefi
   const { locale } = useI18n()
 
   const query = useQuery({
-    queryKey: ['catalog', 'attribute-filters', categoryId, locale],
+    // Not the value itself: a getter that returns undefined stays a function in the key, which
+    // the server cannot send to the browser, and the whole page answers 500.
+    queryKey: ['catalog', 'attribute-filters', () => toValue(categoryId) ?? null, locale],
     queryFn: () =>
       unwrap(
         api.client.GET('/api/v1/catalog/attribute-filters', {

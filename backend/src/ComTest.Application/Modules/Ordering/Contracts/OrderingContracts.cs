@@ -64,11 +64,16 @@ public sealed record ShippingOptionDto(Guid MethodId, string Type, string Name, 
 
 public sealed record PaymentOptionDto(string Code, string? Instructions);
 
+public sealed record AppliedPromotionDto(string Name, string? Code, decimal Amount);
+
+/// <summary>PromoCodeIgnored means the code works, but a better offer took its place.</summary>
 public sealed record CheckoutQuoteDto(
     CartDto Cart,
     IReadOnlyList<ShippingOptionDto> ShippingOptions,
     IReadOnlyList<PaymentOptionDto> PaymentOptions,
-    TotalsDto Totals);
+    TotalsDto Totals,
+    IReadOnlyList<AppliedPromotionDto> Promotions,
+    bool PromoCodeIgnored);
 
 public sealed record OrderItemDto(Guid VariantId, Guid ProductId, string Sku, string ProductName, IReadOnlyDictionary<string, string> Options, decimal UnitPrice, int Quantity, decimal LineTotal);
 

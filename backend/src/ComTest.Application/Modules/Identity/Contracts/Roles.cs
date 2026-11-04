@@ -35,6 +35,7 @@ public static class Permissions
     /// <summary>Second approval of large refunds. Deliberately separate from requesting one.</summary>
     public const string PaymentsRefundApprove = "payments.refund.approve";
     public const string CustomersRead = "customers.read";
+    public const string PromotionsManage = "promotions.manage";
     public const string ReportsRead = "reports.read";
     public const string ReportsFinancial = "reports.financial";
     public const string SettingsManage = "settings.manage";
@@ -43,7 +44,7 @@ public static class Permissions
 
     private static readonly string[] ManagerPermissions =
     [
-        CatalogRead, CatalogWrite, InventoryRead, InventoryWrite, OrdersRead, OrdersWrite, OrdersManage, PaymentsConfirm, PaymentsRefundApprove, CustomersRead, ReportsRead,
+        CatalogRead, CatalogWrite, InventoryRead, InventoryWrite, OrdersRead, OrdersWrite, OrdersManage, PaymentsConfirm, PaymentsRefundApprove, CustomersRead, PromotionsManage, ReportsRead,
     ];
 
     private static readonly string[] StaffPermissions =

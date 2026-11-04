@@ -133,17 +133,71 @@ const region = computed(() => {
 const shippingMethodId = ref<string>()
 const paymentCode = ref<string>()
 
+// --- Promo code: only a code the server has just accepted is sent along with later quotes.
+const promoInput = ref('')
+const appliedPromo = ref<string>()
+const promoError = ref('')
+const promoChecking = ref(false)
+
+function requestQuote(promoCode: string | undefined) {
+  return unwrap(
+    api.client.POST('/api/v1/checkout/quote', {
+      params: { query: { promoCode } },
+      body: { region: region.value, shippingMethodId: shippingMethodId.value ?? null },
+    }),
+  )
+}
+
+async function applyPromo(): Promise<void> {
+  const code = promoInput.value.trim()
+
+  if (!code) {
+    return
+  }
+
+  promoChecking.value = true
+  promoError.value = ''
+
+  try {
+    await requestQuote(code)
+    appliedPromo.value = code
+    promoInput.value = ''
+  } catch (error) {
+    promoError.value = describeError(error)
+  } finally {
+    promoChecking.value = false
+  }
+}
+
+function removePromo(): void {
+  appliedPromo.value = undefined
+  promoError.value = ''
+}
+
 const quote = useQuery({
-  queryKey: ['checkout', 'quote', region, shippingMethodId, locale],
-  queryFn: () =>
-    unwrap(
-      api.client.POST('/api/v1/checkout/quote', {
-        body: { region: region.value, shippingMethodId: shippingMethodId.value ?? null },
-      }),
-    ),
+  queryKey: [
+    'checkout',
+    'quote',
+    region,
+    shippingMethodId,
+    () => appliedPromo.value ?? null,
+    locale,
+  ],
+  queryFn: () => requestQuote(appliedPromo.value),
   placeholderData: (previous) => previous,
   staleTime: 0,
 })
+
+// A code can stop working while the page is open, such as when its last use goes to someone else.
+watch(
+  () => quote.error.value,
+  (error) => {
+    if (error && appliedPromo.value) {
+      promoError.value = describeError(error)
+      appliedPromo.value = undefined
+    }
+  },
+)
 
 const shippingOptions = computed(() =>
   (quote.data.value?.shippingOptions ?? []).filter(
@@ -244,6 +298,7 @@ async function placeOrder(): Promise<void> {
           address: newAddress,
           customerNote: note.value.trim() || null,
           expectedTotal: quote.data.value.totals.total,
+          promoCode: appliedPromo.value ?? null,
         },
       }),
     )
@@ -585,6 +640,60 @@ const isEmpty = computed(() => !cartLoading.value && !cart.value?.lines.length)
             >
               {{ money(line.lineTotal, line.currency) }}
             </span>
+          </li>
+        </ul>
+        <form class="mb-4" data-testid="promo-form" @submit.prevent="applyPromo">
+          <label for="promo-code" class="mb-1 block text-sm font-medium text-ink">
+            {{ t('store.checkout.promo.label') }}
+          </label>
+          <div class="flex gap-2">
+            <el-input
+              id="promo-code"
+              v-model="promoInput"
+              maxlength="32"
+              autocomplete="off"
+              data-testid="promo-input"
+            />
+            <AppButton type="submit" :loading="promoChecking" data-testid="promo-apply">
+              {{ t('store.checkout.promo.apply') }}
+            </AppButton>
+          </div>
+          <p
+            v-if="promoError"
+            role="alert"
+            class="mt-1 text-sm text-danger"
+            data-testid="promo-error"
+          >
+            {{ promoError }}
+          </p>
+          <p
+            v-if="quote.data.value?.promoCodeIgnored"
+            class="mt-1 text-sm text-ink-muted"
+            data-testid="promo-ignored"
+          >
+            {{ t('store.checkout.promo.ignored') }}
+          </p>
+        </form>
+        <ul
+          v-if="quote.data.value?.promotions.length"
+          class="mb-4 space-y-1 text-sm"
+          data-testid="promo-applied"
+        >
+          <li
+            v-for="promotion in quote.data.value.promotions"
+            :key="promotion.name"
+            class="flex items-center justify-between gap-2"
+          >
+            <span class="min-w-0 font-medium text-success">{{ promotion.name }}</span>
+            <AppButton
+              v-if="promotion.code"
+              size="small"
+              variant="ghost"
+              data-testid="promo-remove"
+              @click="removePromo"
+            >
+              {{ t('store.checkout.promo.remove') }}
+            </AppButton>
           </li>
         </ul>
         <OrderTotals

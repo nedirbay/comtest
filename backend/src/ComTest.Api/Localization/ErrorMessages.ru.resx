@@ -110,4 +110,9 @@
   <data name="media.invalid_state" xml:space="preserve"><value>В текущем состоянии файла это невозможно.</value></data>
   <data name="media.storage_unavailable" xml:space="preserve"><value>Файловое хранилище недоступно.</value></data>
   <data name="report.invalid_period" xml:space="preserve"><value>Неверный период: начало должно быть раньше конца, а длина не больше года.</value></data>
+  <data name="promotion.not_found" xml:space="preserve"><value>Акция не найдена.</value></data>
+  <data name="promotion.code_taken" xml:space="preserve"><value>Этот код уже занят другой акцией.</value></data>
+  <data name="promotion.code_not_valid" xml:space="preserve"><value>Этот промокод недействителен.</value></data>
+  <data name="promotion.min_subtotal_not_met" xml:space="preserve"><value>Сумма заказа меньше минимальной для этого промокода.</value></data>
+  <data name="promotion.not_applicable" xml:space="preserve"><value>Этот промокод не подходит к товарам в корзине.</value></data>
 </root>

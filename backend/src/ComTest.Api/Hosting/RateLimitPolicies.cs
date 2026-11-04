@@ -16,6 +16,10 @@ public static class RateLimitPolicies
     public const string Checkout = "checkout";
     public const string Tracking = "tracking";
     public const string ReportExport = "report-export";
+    public const string PromoCode = "promo-code";
+
+    /// <summary>A quote is limited only while it tests a code, as that is what someone guessing codes would repeat.</summary>
+    public const string PromoCodeQuery = "promoCode";
 
     private const int WindowSegments = 6;
 
@@ -68,6 +72,10 @@ public static class RateLimitPolicies
                     SlidingWindow(CallerKey(context), settings.CheckoutPerMinute, TimeSpan.FromMinutes(1)));
                 options.AddPolicy(Tracking, context =>
                     SlidingWindow(IpKey(context), settings.TrackingPerMinute, TimeSpan.FromMinutes(1)));
+                options.AddPolicy(PromoCode, context =>
+                    context.Request.Query.ContainsKey(PromoCodeQuery)
+                        ? SlidingWindow(CallerKey(context), settings.PromoCodePerMinute, TimeSpan.FromMinutes(1))
+                        : RateLimitPartition.GetNoLimiter("no-promo-code"));
                 options.AddPolicy(ReportExport, context =>
                     SlidingWindow(CallerKey(context), settings.ReportExportPerMinute, TimeSpan.FromMinutes(1)));
             });

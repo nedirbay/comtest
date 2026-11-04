@@ -85,6 +85,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/features/orders/pages/OrderDetailPage.vue'),
       },
       {
+        path: 'promotions',
+        name: 'promotions',
+        meta: { layout: 'admin', title: 'admin.nav.promotions', permission: P.PromotionsManage },
+        component: () => import('@/features/promotions/pages/PromotionsPage.vue'),
+      },
+      {
         path: 'reports',
         name: 'reports',
         meta: { layout: 'admin', title: 'admin.nav.reports', permission: P.ReportsRead },

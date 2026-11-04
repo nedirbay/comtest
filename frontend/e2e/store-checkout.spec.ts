@@ -4,6 +4,7 @@ import {
   archiveProduct,
   changePrice,
   createProduct,
+  createPromotion,
   type CreatedProduct,
 } from './support/demo-store'
 import { createConfirmedUser, PASSWORD, STOREFRONT_URL } from './support/stack'
@@ -84,6 +85,47 @@ test('a guest buys a product from start to finish', async ({ page }) => {
   // The cart is empty afterwards.
   await open(page, '/cart')
   await expect(page.getByText('Sebediňiz boş')).toBeVisible()
+})
+
+test('a promo code lowers the total on screen and on the order', async ({ page }, testInfo) => {
+  const code = `E2E-${testInfo.project.name}-${Date.now()}`.toUpperCase().slice(0, 32)
+  const promotion = await createPromotion({ code, value: 10 })
+  const product = await createProduct({ variants: [{ price: 200, stock: 10 }] })
+
+  await addToCart(page, product)
+  await open(page, '/checkout')
+  await fillContact(page)
+  await fillAddress(page, 'Mary')
+
+  const input = page.getByTestId('promo-input')
+
+  // A wrong code changes nothing and says why.
+  await input.fill('HIC-BOLMADYK')
+  await page.getByTestId('promo-apply').click()
+  await expect(page.getByTestId('promo-error')).toHaveText('Bu promokod nädogry.')
+  await expect(page.getByTestId('promo-applied')).toHaveCount(0)
+
+  await input.fill(code.toLowerCase())
+  await page.getByTestId('promo-apply').click()
+  await expect(page.getByTestId('promo-applied')).toContainText(`E2E ${code}`)
+  await expect(page.getByTestId('promo-error')).toHaveCount(0)
+  await expect(page.getByTestId('checkout-summary')).toContainText('20,00')
+
+  // Removing it brings the full price back, and a code can go on again after that.
+  await page.getByTestId('promo-remove').click()
+  await expect(page.getByTestId('promo-applied')).toHaveCount(0)
+  await input.fill(code)
+  await page.getByTestId('promo-apply').click()
+  await expect(page.getByTestId('promo-applied')).toBeVisible()
+
+  await chooseDeliveryAndPayment(page, /Welaýat kurýeri/)
+  await expect(page.getByTestId('total')).toContainText('230,00')
+  await page.getByTestId('place-order').click()
+
+  await expect(page).toHaveURL(/\/order-confirmed/)
+  await expect(page.getByTestId('total')).toContainText('230,00')
+
+  await promotion.remove()
 })
 
 test('picking up in the store needs no address', async ({ page }) => {

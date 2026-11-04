@@ -2060,6 +2060,205 @@
         }
       }
     },
+    "/api/v1/admin/promotions": {
+      "get": {
+        "tags": [
+          "AdminPromotions"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResultOfPromotionDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "AdminPromotions"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePromotionRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePromotionRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePromotionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromotionDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/promotions/new-code": {
+      "get": {
+        "tags": [
+          "AdminPromotions"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewPromotionCodeDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/promotions/{id}": {
+      "get": {
+        "tags": [
+          "AdminPromotions"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromotionDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "AdminPromotions"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePromotionRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePromotionRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePromotionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromotionDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AdminPromotions"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
     "/api/v1/admin/reports/sales": {
       "get": {
         "tags": [
@@ -2445,6 +2644,15 @@
       "post": {
         "tags": [
           "Checkout"
+        ],
+        "parameters": [
+          {
+            "name": "promoCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -4224,6 +4432,29 @@
           }
         }
       },
+      "AppliedPromotionDto": {
+        "required": [
+          "name",
+          "code",
+          "amount"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "code": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
       "AssignCategoryAttributeRequest": {
         "required": [
           "attributeId",
@@ -4660,7 +4891,9 @@
           "cart",
           "shippingOptions",
           "paymentOptions",
-          "totals"
+          "totals",
+          "promotions",
+          "promoCodeIgnored"
         ],
         "type": "object",
         "properties": {
@@ -4681,6 +4914,15 @@
           },
           "totals": {
             "$ref": "#/components/schemas/TotalsDto"
+          },
+          "promotions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppliedPromotionDto"
+            }
+          },
+          "promoCodeIgnored": {
+            "type": "boolean"
           }
         }
       },
@@ -4699,6 +4941,12 @@
               "string"
             ],
             "format": "uuid"
+          },
+          "promoCode": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -5116,6 +5364,17 @@
           "rejected"
         ],
         "type": "string"
+      },
+      "NewPromotionCodeDto": {
+        "required": [
+          "code"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        }
       },
       "OrderAddressDto": {
         "required": [
@@ -5685,6 +5944,42 @@
           }
         }
       },
+      "PagedResultOfPromotionDto": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PromotionDto"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasNext": {
+            "type": "boolean"
+          }
+        }
+      },
       "PagedResultOfStockItemDto": {
         "required": [
           "items",
@@ -6104,6 +6399,12 @@
               "number"
             ],
             "format": "double"
+          },
+          "promoCode": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -6526,6 +6827,111 @@
             }
           }
         }
+      },
+      "PromotionDto": {
+        "required": [
+          "id",
+          "code",
+          "name",
+          "type",
+          "value",
+          "currency",
+          "startsAt",
+          "endsAt",
+          "minSubtotal",
+          "categoryId",
+          "usageLimit",
+          "usageCount",
+          "perCustomerLimit",
+          "combinesWithOthers",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PromotionType"
+          },
+          "value": {
+            "type": "number",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "startsAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "minSubtotal": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "categoryId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "usageLimit": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "usageCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "perCustomerLimit": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "combinesWithOthers": {
+            "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PromotionType": {
+        "enum": [
+          "percentage",
+          "fixedAmount",
+          "freeShipping"
+        ],
+        "type": "string"
       },
       "PublicStoreDto": {
         "required": [
@@ -7003,6 +7409,83 @@
             "items": {
               "$ref": "#/components/schemas/ProductImageRequest"
             }
+          }
+        }
+      },
+      "SavePromotionRequest": {
+        "required": [
+          "code",
+          "name",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PromotionType"
+          },
+          "value": {
+            "type": "number",
+            "format": "double",
+            "default": 0
+          },
+          "startsAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "minSubtotal": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "categoryId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "usageLimit": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "perCustomerLimit": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "combinesWithOthers": {
+            "type": "boolean",
+            "default": false
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
           }
         }
       },
@@ -8646,6 +9129,9 @@
     },
     {
       "name": "AdminMedia"
+    },
+    {
+      "name": "AdminPromotions"
     },
     {
       "name": "Reports"

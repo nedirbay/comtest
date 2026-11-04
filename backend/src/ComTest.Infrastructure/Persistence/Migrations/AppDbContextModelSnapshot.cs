@@ -2322,6 +2322,194 @@ namespace ComTest.Infrastructure.Persistence.Migrations
                     b.ToTable("refunds", (string)null);
                 });
 
+            modelBuilder.Entity("ComTest.Domain.Modules.Promotions.Promotion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("category_id");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("code");
+
+                    b.Property<bool>("CombinesWithOthers")
+                        .HasColumnType("boolean")
+                        .HasColumnName("combines_with_others");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("currency");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<DateTimeOffset?>("EndsAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("ends_at");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<decimal?>("MinSubtotal")
+                        .HasColumnType("numeric")
+                        .HasColumnName("min_subtotal");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<int?>("PerCustomerLimit")
+                        .HasColumnType("integer")
+                        .HasColumnName("per_customer_limit");
+
+                    b.Property<DateTimeOffset?>("StartsAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("starts_at");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("type");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.Property<int>("UsageCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("usage_count");
+
+                    b.Property<int?>("UsageLimit")
+                        .HasColumnType("integer")
+                        .HasColumnName("usage_limit");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("numeric")
+                        .HasColumnName("value");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id")
+                        .HasName("pk_promotions");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_promotions_tenant_id_code")
+                        .HasFilter("code IS NOT NULL AND NOT is_deleted");
+
+                    b.ToTable("promotions", (string)null);
+                });
+
+            modelBuilder.Entity("ComTest.Domain.Modules.Promotions.PromotionRedemption", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric")
+                        .HasColumnName("amount");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("CustomerKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("customer_key");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("order_id");
+
+                    b.Property<Guid>("PromotionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("promotion_id");
+
+                    b.Property<int?>("Sequence")
+                        .HasColumnType("integer")
+                        .HasColumnName("sequence");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id")
+                        .HasName("pk_promotion_redemptions");
+
+                    b.HasIndex("PromotionId")
+                        .HasDatabaseName("ix_promotion_redemptions_promotion_id");
+
+                    b.HasIndex("TenantId", "OrderId")
+                        .HasDatabaseName("ix_promotion_redemptions_tenant_id_order_id");
+
+                    b.HasIndex("TenantId", "PromotionId", "CustomerKey", "Sequence")
+                        .IsUnique()
+                        .HasDatabaseName("ix_promotion_redemptions_tenant_id_promotion_id_customer_key_s");
+
+                    b.ToTable("promotion_redemptions", (string)null);
+                });
+
             modelBuilder.Entity("ComTest.Domain.Modules.Shipping.ShippingMethod", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3388,173 +3576,187 @@ namespace ComTest.Infrastructure.Persistence.Migrations
                         {
                             Id = 11,
                             ClaimType = "permission",
-                            ClaimValue = "reports.read",
+                            ClaimValue = "promotions.manage",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000003")
                         },
                         new
                         {
                             Id = 12,
                             ClaimType = "permission",
-                            ClaimValue = "platform.tenants.manage",
-                            RoleId = new Guid("0195b2a0-0000-7000-8000-000000000001")
+                            ClaimValue = "reports.read",
+                            RoleId = new Guid("0195b2a0-0000-7000-8000-000000000003")
                         },
                         new
                         {
                             Id = 13,
                             ClaimType = "permission",
-                            ClaimValue = "audit.read",
+                            ClaimValue = "platform.tenants.manage",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000001")
                         },
                         new
                         {
                             Id = 14,
                             ClaimType = "permission",
-                            ClaimValue = "catalog.read",
-                            RoleId = new Guid("0195b2a0-0000-7000-8000-000000000004")
+                            ClaimValue = "audit.read",
+                            RoleId = new Guid("0195b2a0-0000-7000-8000-000000000001")
                         },
                         new
                         {
                             Id = 15,
                             ClaimType = "permission",
-                            ClaimValue = "inventory.read",
+                            ClaimValue = "catalog.read",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000004")
                         },
                         new
                         {
                             Id = 16,
                             ClaimType = "permission",
-                            ClaimValue = "inventory.write",
+                            ClaimValue = "inventory.read",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000004")
                         },
                         new
                         {
                             Id = 17,
                             ClaimType = "permission",
-                            ClaimValue = "orders.read",
+                            ClaimValue = "inventory.write",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000004")
                         },
                         new
                         {
                             Id = 18,
                             ClaimType = "permission",
-                            ClaimValue = "orders.write",
+                            ClaimValue = "orders.read",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000004")
                         },
                         new
                         {
                             Id = 19,
                             ClaimType = "permission",
-                            ClaimValue = "customers.read",
+                            ClaimValue = "orders.write",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000004")
                         },
                         new
                         {
                             Id = 20,
                             ClaimType = "permission",
-                            ClaimValue = "catalog.read",
-                            RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
+                            ClaimValue = "customers.read",
+                            RoleId = new Guid("0195b2a0-0000-7000-8000-000000000004")
                         },
                         new
                         {
                             Id = 21,
                             ClaimType = "permission",
-                            ClaimValue = "catalog.write",
+                            ClaimValue = "catalog.read",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 22,
                             ClaimType = "permission",
-                            ClaimValue = "inventory.read",
+                            ClaimValue = "catalog.write",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 23,
                             ClaimType = "permission",
-                            ClaimValue = "inventory.write",
+                            ClaimValue = "inventory.read",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 24,
                             ClaimType = "permission",
-                            ClaimValue = "orders.read",
+                            ClaimValue = "inventory.write",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 25,
                             ClaimType = "permission",
-                            ClaimValue = "orders.write",
+                            ClaimValue = "orders.read",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 26,
                             ClaimType = "permission",
-                            ClaimValue = "orders.manage",
+                            ClaimValue = "orders.write",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 27,
                             ClaimType = "permission",
-                            ClaimValue = "payments.confirm",
+                            ClaimValue = "orders.manage",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 28,
                             ClaimType = "permission",
-                            ClaimValue = "payments.refund.approve",
+                            ClaimValue = "payments.confirm",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 29,
                             ClaimType = "permission",
-                            ClaimValue = "customers.read",
+                            ClaimValue = "payments.refund.approve",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 30,
                             ClaimType = "permission",
-                            ClaimValue = "reports.read",
+                            ClaimValue = "customers.read",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 31,
                             ClaimType = "permission",
-                            ClaimValue = "payments.refund",
+                            ClaimValue = "promotions.manage",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 32,
                             ClaimType = "permission",
-                            ClaimValue = "reports.financial",
+                            ClaimValue = "reports.read",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 33,
                             ClaimType = "permission",
-                            ClaimValue = "settings.manage",
+                            ClaimValue = "payments.refund",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 34,
                             ClaimType = "permission",
-                            ClaimValue = "staff.manage",
+                            ClaimValue = "reports.financial",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
                         },
                         new
                         {
                             Id = 35,
+                            ClaimType = "permission",
+                            ClaimValue = "settings.manage",
+                            RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
+                        },
+                        new
+                        {
+                            Id = 36,
+                            ClaimType = "permission",
+                            ClaimValue = "staff.manage",
+                            RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
+                        },
+                        new
+                        {
+                            Id = 37,
                             ClaimType = "permission",
                             ClaimValue = "audit.read",
                             RoleId = new Guid("0195b2a0-0000-7000-8000-000000000002")
@@ -3909,6 +4111,16 @@ namespace ComTest.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_refunds_payments_payment_id");
+                });
+
+            modelBuilder.Entity("ComTest.Domain.Modules.Promotions.PromotionRedemption", b =>
+                {
+                    b.HasOne("ComTest.Domain.Modules.Promotions.Promotion", null)
+                        .WithMany()
+                        .HasForeignKey("PromotionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_promotion_redemptions_promotions_promotion_id");
                 });
 
             modelBuilder.Entity("ComTest.Domain.Modules.Shipping.ShippingMethod", b =>

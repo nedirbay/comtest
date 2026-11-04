@@ -6,6 +6,7 @@ using ComTest.Domain.Modules.Inventory;
 using ComTest.Domain.Modules.Media;
 using ComTest.Domain.Modules.Ordering;
 using ComTest.Domain.Modules.Payments;
+using ComTest.Domain.Modules.Promotions;
 using ComTest.Domain.Modules.Shipping;
 using ComTest.Domain.Modules.Tenancy;
 using ComTest.Infrastructure.Identity;
@@ -50,6 +51,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ITenant
     public DbSet<StockReservation> StockReservations => Set<StockReservation>();
 
     public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
+
+    public DbSet<Promotion> Promotions => Set<Promotion>();
+
+    public DbSet<PromotionRedemption> PromotionRedemptions => Set<PromotionRedemption>();
 
     public DbSet<CustomerAddress> CustomerAddresses => Set<CustomerAddress>();
 

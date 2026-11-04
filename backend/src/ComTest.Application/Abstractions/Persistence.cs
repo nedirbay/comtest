@@ -4,6 +4,7 @@ using ComTest.Domain.Modules.Inventory;
 using ComTest.Domain.Modules.Media;
 using ComTest.Domain.Modules.Ordering;
 using ComTest.Domain.Modules.Payments;
+using ComTest.Domain.Modules.Promotions;
 using ComTest.Domain.Modules.Shipping;
 using ComTest.Domain.Modules.Tenancy;
 using Microsoft.EntityFrameworkCore;
@@ -57,6 +58,10 @@ public interface IApplicationDbContext
     DbSet<Order> Orders { get; }
 
     DbSet<MediaAsset> MediaAssets { get; }
+
+    DbSet<Promotion> Promotions { get; }
+
+    DbSet<PromotionRedemption> PromotionRedemptions { get; }
 
     DatabaseFacade Database { get; }
 

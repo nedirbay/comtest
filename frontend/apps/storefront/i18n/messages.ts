@@ -96,6 +96,12 @@ const tk = {
     },
     checkout: {
       title: 'Sargydy resmileşdirmek',
+      promo: {
+        label: 'Promokod',
+        apply: 'Ulan',
+        remove: 'Aýyr',
+        ignored: 'Promokod işleýär, ýöne has gowy teklip eýýäm ulanyldy.',
+      },
       steps: {
         contact: 'Aragatnaşyk',
         address: 'Salgy',
@@ -302,6 +308,12 @@ const ru: typeof tk = {
     },
     checkout: {
       title: 'Оформление заказа',
+      promo: {
+        label: 'Промокод',
+        apply: 'Применить',
+        remove: 'Убрать',
+        ignored: 'Промокод действует, но уже применено предложение выгоднее.',
+      },
       steps: {
         contact: 'Контакты',
         address: 'Адрес',
@@ -508,6 +520,12 @@ const en: typeof tk = {
     },
     checkout: {
       title: 'Checkout',
+      promo: {
+        label: 'Promo code',
+        apply: 'Apply',
+        remove: 'Remove',
+        ignored: 'Your code works, but a better offer is already applied.',
+      },
       steps: {
         contact: 'Contact',
         address: 'Address',

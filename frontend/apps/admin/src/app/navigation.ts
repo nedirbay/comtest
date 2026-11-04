@@ -9,6 +9,7 @@ import {
   OfficeBuilding,
   PriceTag,
   School,
+  Sell,
   Setting,
   Sort,
   Tickets,
@@ -45,6 +46,12 @@ export const NAV_SECTIONS: NavSection[] = [
         labelKey: 'admin.nav.customers',
         icon: User,
         permission: P.CustomersRead,
+      },
+      {
+        name: 'promotions',
+        labelKey: 'admin.nav.promotions',
+        icon: Sell,
+        permission: P.PromotionsManage,
       },
       {
         name: 'reports',

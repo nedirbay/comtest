@@ -292,7 +292,7 @@ export async function createAttribute(
   options: string[],
 ): Promise<{ id: string; code: string; name: string }> {
   const { context } = await ownerApi()
-  const code = `e2e_${randomBytes(5).toString('hex')}`
+  const code = `e2e-${randomBytes(5).toString('hex')}`
   const attribute = await json<{ id: string }>(
     await context.post('/api/v1/admin/catalog/attributes', {
       data: {
@@ -451,4 +451,36 @@ export async function inviteStaffToNewStore(email: string): Promise<void> {
     }),
   )
   await context.dispose()
+}
+
+/** A promotion in the demo store, gone again once the test calls `remove`. */
+export async function createPromotion(terms: {
+  code: string | null
+  type?: 'percentage' | 'fixedAmount' | 'freeShipping'
+  value?: number
+  usageLimit?: number
+}): Promise<{ id: string; remove: () => Promise<void> }> {
+  const { context } = await ownerApi()
+  const promotion = await json<{ id: string }>(
+    await context.post('/api/v1/admin/promotions', {
+      data: {
+        name: `E2E ${terms.code ?? 'awtomatik'}`,
+        type: 'percentage',
+        value: 10,
+        combinesWithOthers: false,
+        isActive: true,
+        ...terms,
+      },
+    }),
+  )
+
+  return {
+    id: promotion.id,
+    remove: async () => {
+      const response = await context.delete(`/api/v1/admin/promotions/${promotion.id}`)
+
+      expect(response.ok()).toBe(true)
+      await context.dispose()
+    },
+  }
 }

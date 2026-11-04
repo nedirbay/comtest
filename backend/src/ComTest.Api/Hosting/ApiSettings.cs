@@ -58,6 +58,8 @@ public sealed class RateLimitSettings
     public int TrackingPerMinute { get; set; } = 30;
 
     public int ReportExportPerMinute { get; set; } = 10;
+
+    public int PromoCodePerMinute { get; set; } = 15;
 }
 
 /// <summary>Reverse proxies whose X-Forwarded-* headers may be believed. Empty means none.</summary>

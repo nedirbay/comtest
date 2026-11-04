@@ -3,6 +3,7 @@ using ComTest.Application.Modules.Identity.Contracts;
 using ComTest.Application.Modules.Inventory.Contracts;
 using ComTest.Application.Modules.Ordering.Contracts;
 using ComTest.Application.Modules.Payments.Contracts;
+using ComTest.Application.Modules.Promotions.Contracts;
 using ComTest.Domain.Modules.Ordering;
 using ComTest.Shared.Messaging;
 using ComTest.Shared.Querying;
@@ -113,7 +114,7 @@ internal static class OrderPrivacy
 }
 
 /// <summary>Applies a status change with its effects on stock and payment, all or nothing.</summary>
-public sealed class OrderWorkflow(IApplicationDbContext db, IStockService stock, IOrderPayments payments, TimeProvider timeProvider)
+public sealed class OrderWorkflow(IApplicationDbContext db, IStockService stock, IOrderPayments payments, IPromotionEngine promotions, TimeProvider timeProvider)
 {
     public async Task<Result> ChangeStatusAsync(Order order, OrderStatus to, string? note, CancellationToken cancellationToken)
     {
@@ -136,6 +137,7 @@ public sealed class OrderWorkflow(IApplicationDbContext db, IStockService stock,
             case OrderStatus.Cancelled:
                 await stock.ReleaseAsync(order.Id, cancellationToken);
                 await payments.CancelIfUnpaidAsync(order.Id, cancellationToken);
+                await promotions.ReleaseAsync(order.Id, cancellationToken);
                 break;
             case OrderStatus.Returned:
                 await stock.RestockAsync(order.Id, cancellationToken);

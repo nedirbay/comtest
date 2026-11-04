@@ -110,4 +110,9 @@
   <data name="media.invalid_state" xml:space="preserve"><value>Faýlyň häzirki ýagdaýynda muny edip bolmaýar.</value></data>
   <data name="media.storage_unavailable" xml:space="preserve"><value>Faýl saklaýyşy elýeterli däl.</value></data>
   <data name="report.invalid_period" xml:space="preserve"><value>Döwür nädogry: başlangyjy soňundan öň bolmaly, uzynlygy bir ýyldan köp bolmaly däl.</value></data>
+  <data name="promotion.not_found" xml:space="preserve"><value>Aksiýa tapylmady.</value></data>
+  <data name="promotion.code_taken" xml:space="preserve"><value>Bu kod başga aksiýada ulanylýar.</value></data>
+  <data name="promotion.code_not_valid" xml:space="preserve"><value>Bu promokod nädogry.</value></data>
+  <data name="promotion.min_subtotal_not_met" xml:space="preserve"><value>Sargydyňyz bu promokod üçin iň az mukdardan pes.</value></data>
+  <data name="promotion.not_applicable" xml:space="preserve"><value>Bu promokod sebetdäki harytlara degişli däl.</value></data>
 </root>

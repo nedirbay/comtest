@@ -110,4 +110,9 @@
   <data name="media.invalid_state" xml:space="preserve"><value>This file cannot do that in its current state.</value></data>
   <data name="media.storage_unavailable" xml:space="preserve"><value>File storage is not available.</value></data>
   <data name="report.invalid_period" xml:space="preserve"><value>The period is not valid: it must start before it ends and be at most a year long.</value></data>
+  <data name="promotion.not_found" xml:space="preserve"><value>Promotion not found.</value></data>
+  <data name="promotion.code_taken" xml:space="preserve"><value>This code is already used by another promotion.</value></data>
+  <data name="promotion.code_not_valid" xml:space="preserve"><value>This promo code is not valid.</value></data>
+  <data name="promotion.min_subtotal_not_met" xml:space="preserve"><value>Your order is below the minimum for this promo code.</value></data>
+  <data name="promotion.not_applicable" xml:space="preserve"><value>This promo code does not apply to anything in your cart.</value></data>
 </root>

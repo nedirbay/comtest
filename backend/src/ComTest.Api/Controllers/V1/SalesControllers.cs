@@ -107,14 +107,17 @@ public sealed partial class CheckoutController(GuestCartCookie guestCookie) : Ca
 {
     private const string IdempotencyHeader = "Idempotency-Key";
 
+    /// <summary>What the cart costs now. A promo code goes in the address, where the rate limiter can see it.</summary>
     [HttpPost("quote")]
     [RequireCsrfHeader]
+    [EnableRateLimiting(RateLimitPolicies.PromoCode)]
     [ProducesResponseType<CheckoutQuoteDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Quote(
         CheckoutQuoteRequest request,
+        [FromQuery(Name = RateLimitPolicies.PromoCodeQuery)] string? promoCode,
         [FromServices] IQueryHandler<CheckoutQuoteQuery, CheckoutQuoteDto> handler,
         CancellationToken cancellationToken) =>
-        FromResult(await handler.HandleAsync(new CheckoutQuoteQuery(Owner, request), cancellationToken));
+        FromResult(await handler.HandleAsync(new CheckoutQuoteQuery(Owner, request with { PromoCode = promoCode }), cancellationToken));
 
     /// <summary>Places the order. The client names what it wants; every amount is worked out here.</summary>
     [HttpPost]

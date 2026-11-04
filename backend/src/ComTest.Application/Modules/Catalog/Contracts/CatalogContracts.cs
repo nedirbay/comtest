@@ -98,4 +98,9 @@ public interface ICatalogReader
 
     /// <summary>Today's cost of each variant that has one. Never pass this on to anything a visitor can see.</summary>
     Task<IReadOnlyDictionary<Guid, decimal>> GetCostsAsync(IReadOnlyCollection<Guid> variantIds, CancellationToken cancellationToken);
+
+    Task<bool> CategoryExistsAsync(Guid categoryId, CancellationToken cancellationToken);
+
+    /// <summary>Each variant's category with all of its parents, so that a rule for "Electronics" covers "Phones" too.</summary>
+    Task<IReadOnlyDictionary<Guid, IReadOnlySet<Guid>>> GetCategoryPathsAsync(IReadOnlyCollection<Guid> variantIds, CancellationToken cancellationToken);
 }

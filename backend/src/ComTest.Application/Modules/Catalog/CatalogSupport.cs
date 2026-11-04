@@ -105,6 +105,39 @@ public sealed class CatalogReader(IApplicationDbContext db, ITenantSettings tena
     public Task<bool> IsMediaInUseAsync(Guid mediaAssetId, CancellationToken cancellationToken) =>
         db.Products.AnyAsync(product => product.Images.Any(image => image.MediaAssetId == mediaAssetId), cancellationToken);
 
+    public Task<bool> CategoryExistsAsync(Guid categoryId, CancellationToken cancellationToken) =>
+        db.Categories.AnyAsync(category => category.Id == categoryId, cancellationToken);
+
+    public async Task<IReadOnlyDictionary<Guid, IReadOnlySet<Guid>>> GetCategoryPathsAsync(IReadOnlyCollection<Guid> variantIds, CancellationToken cancellationToken)
+    {
+        var owners = await (
+            from variant in db.ProductVariants.AsNoTracking()
+            join product in db.Products.AsNoTracking() on variant.ProductId equals product.Id
+            where variantIds.Contains(variant.Id)
+            select new { VariantId = variant.Id, product.CategoryId })
+            .ToListAsync(cancellationToken);
+
+        var parents = await db.Categories.AsNoTracking()
+            .Select(category => new { category.Id, category.ParentId })
+            .ToDictionaryAsync(category => category.Id, category => category.ParentId, cancellationToken);
+
+        return owners.ToDictionary(
+            owner => owner.VariantId,
+            owner =>
+            {
+                var path = new HashSet<Guid>();
+                var current = owner.CategoryId;
+
+                // The Add stops the walk on a loop, should bad data ever contain one.
+                while (current is { } id && path.Add(id))
+                {
+                    current = parents.GetValueOrDefault(id);
+                }
+
+                return (IReadOnlySet<Guid>)path;
+            });
+    }
+
     public async Task<IReadOnlyDictionary<Guid, decimal>> GetCostsAsync(IReadOnlyCollection<Guid> variantIds, CancellationToken cancellationToken)
     {
         var costs = await db.ProductVariants

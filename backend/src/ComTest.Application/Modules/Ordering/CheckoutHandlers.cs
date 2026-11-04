@@ -5,6 +5,7 @@ using ComTest.Application.Modules.Customers.Contracts;
 using ComTest.Application.Modules.Inventory.Contracts;
 using ComTest.Application.Modules.Ordering.Contracts;
 using ComTest.Application.Modules.Payments.Contracts;
+using ComTest.Application.Modules.Promotions.Contracts;
 using ComTest.Application.Modules.Shipping.Contracts;
 using ComTest.Application.Modules.Tenancy.Contracts;
 using ComTest.Domain.Modules.Ordering;
@@ -17,13 +18,14 @@ using Microsoft.Extensions.Options;
 
 namespace ComTest.Application.Modules.Ordering;
 
-public sealed record CheckoutQuoteRequest(string? Region = null, Guid? ShippingMethodId = null);
+public sealed record CheckoutQuoteRequest(string? Region = null, Guid? ShippingMethodId = null, string? PromoCode = null);
 
 internal sealed class CheckoutQuoteRequestValidator : AbstractValidator<CheckoutQuoteRequest>
 {
     public CheckoutQuoteRequestValidator()
     {
         RuleFor(x => x.Region).MaximumLength(100);
+        RuleFor(x => x.PromoCode).MaximumLength(64);
     }
 }
 
@@ -56,7 +58,8 @@ public sealed record PlaceOrderRequest(
     Guid? AddressId = null,
     AddressData? Address = null,
     string? CustomerNote = null,
-    decimal? ExpectedTotal = null);
+    decimal? ExpectedTotal = null,
+    string? PromoCode = null);
 
 internal sealed class PlaceOrderRequestValidator : AbstractValidator<PlaceOrderRequest>
 {
@@ -67,6 +70,7 @@ internal sealed class PlaceOrderRequestValidator : AbstractValidator<PlaceOrderR
         RuleFor(x => x.Contact!).SetValidator(new ContactRequestValidator()).When(x => x.Contact is not null);
         RuleFor(x => x.Address!).SetValidator(new AddressDataValidator()).When(x => x.Address is not null);
         RuleFor(x => x.CustomerNote).MaximumLength(1000);
+        RuleFor(x => x.PromoCode).MaximumLength(64);
     }
 }
 
@@ -82,6 +86,7 @@ public sealed class CheckoutHandlers(
     CartPricing pricing,
     IShippingRates shipping,
     IOrderPayments payments,
+    IPromotionEngine promotions,
     IStockService stock,
     IAddressBook addressBook,
     IUserDirectory users,
@@ -120,11 +125,25 @@ public sealed class CheckoutHandlers(
 
         var shippingCost = chosen?.Price ?? 0m;
 
+        var discount = await promotions.QuoteAsync(
+            new PromotionRequest(query.Request.PromoCode, ToPromotionLines(cart), shippingCost, settings.DefaultCurrency, query.Owner.UserId, null),
+            cancellationToken);
+
+        if (discount.IsFailure)
+        {
+            return discount.Error;
+        }
+
+        var quote = discount.Value;
+        var shippingDue = shippingCost - quote.ShippingDiscount;
+
         return new CheckoutQuoteDto(
             cart,
             shippingOptions.Select(option => new ShippingOptionDto(option.MethodId, CheckoutRules.ApiName(option.Type), option.Name, option.Price, option.Currency, option.MinDays, option.MaxDays, option.PickupAddress)).ToList(),
             methods.Select(method => new PaymentOptionDto(method.Code, method.Instructions)).ToList(),
-            new TotalsDto(cart.Subtotal, 0m, 0m, shippingCost, cart.Subtotal + shippingCost, settings.DefaultCurrency));
+            new TotalsDto(cart.Subtotal, quote.GoodsDiscount, 0m, shippingDue, cart.Subtotal - quote.GoodsDiscount + shippingDue, settings.DefaultCurrency),
+            quote.Applied.Select(item => new AppliedPromotionDto(item.Name, item.Code, item.Amount)).ToList(),
+            quote.CodeIgnored);
     }
 
     public async Task<Result<PlacedOrderDto>> HandleAsync(PlaceOrderCommand command, CancellationToken cancellationToken)
@@ -198,6 +217,15 @@ public sealed class CheckoutHandlers(
         var now = timeProvider.GetUtcNow();
         var currency = settings.DefaultCurrency;
 
+        var discount = await promotions.QuoteAsync(
+            new PromotionRequest(request.PromoCode, ToPromotionLines(cart), method.Price, currency, command.Owner.UserId, contact.Value.Phone),
+            cancellationToken);
+
+        if (discount.IsFailure)
+        {
+            return discount.Error;
+        }
+
         var order = Order.Place(
             new OrderDraft(
                 command.Owner.UserId,
@@ -209,9 +237,9 @@ public sealed class CheckoutHandlers(
                 request.PaymentMethod,
                 request.CustomerNote,
                 keyHash,
+                Money.Of(discount.Value.GoodsDiscount, currency),
                 Money.Zero(currency),
-                Money.Zero(currency),
-                Money.Of(method.Price, currency),
+                Money.Of(method.Price - discount.Value.ShippingDiscount, currency),
                 now.AddHours(checkoutOptions.Value.PendingOrderHours),
                 ToOrderItems(cart, currency)),
             now);
@@ -224,6 +252,13 @@ public sealed class CheckoutHandlers(
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
 
         db.Orders.Add(order);
+
+        var redeemed = await promotions.RedeemAsync(discount.Value, order.Id, command.Owner.UserId, contact.Value.Phone, cancellationToken);
+
+        if (redeemed.IsFailure)
+        {
+            return redeemed.Error;
+        }
 
         var payment = await payments.CreateAsync(order.Id, request.PaymentMethod, order.GrandTotal, cancellationToken);
 
@@ -268,6 +303,12 @@ public sealed class CheckoutHandlers(
             payment.Value.Initiation.RedirectUrl,
             payment.Value.Initiation.Instructions);
     }
+
+    private static List<PromotionCartLine> ToPromotionLines(CartDto cart) =>
+        cart.Lines
+            .Where(line => line.LineTotal is not null)
+            .Select(line => new PromotionCartLine(line.VariantId, line.LineTotal!.Value))
+            .ToList();
 
     private static string HashKey(CartOwner owner, string key)
     {
