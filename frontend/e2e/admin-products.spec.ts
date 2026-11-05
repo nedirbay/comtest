@@ -564,6 +564,8 @@ test('the list keeps its filter in the address and remembers the chosen columns'
   await page.getByTestId('filter-search').fill('GARALAMA')
   await page.getByTestId('filter-search').press('Enter')
   await expect(page).toHaveURL(/q=GARALAMA/)
+  // The old rows stay on screen until the answer arrives, and toHaveText refuses two rows outright.
+  await expect(page.getByTestId('product-link')).toHaveCount(1)
   await expect(page.getByTestId('product-link')).toHaveText('Garalama haryt')
   await page.reload()
   await expect(page.getByTestId('filter-search')).toHaveValue('GARALAMA')

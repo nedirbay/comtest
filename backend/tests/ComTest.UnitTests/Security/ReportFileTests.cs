@@ -1,6 +1,6 @@
+using System.Text;
 using ComTest.Application.Modules.Reporting.Contracts;
 using ComTest.Infrastructure.Reporting;
-using System.Text;
 
 namespace ComTest.UnitTests.Security;
 

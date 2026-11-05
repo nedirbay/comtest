@@ -2,6 +2,11 @@ using ComTest.Api.Hosting;
 using ComTest.Application;
 using ComTest.Infrastructure;
 
+if (args.Contains(HealthProbeCommand.Command))
+{
+    return await HealthProbeCommand.RunAsync();
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddObservability();
@@ -17,10 +22,12 @@ if (args.Contains(DevDataSeeder.Command))
 {
     await DevDataSeeder.RunAsync(app);
 
-    return;
+    return 0;
 }
 
 app.UseApiPipeline();
 app.MapApiEndpoints();
 
 await app.RunAsync();
+
+return 0;

@@ -1,0 +1,10 @@
+**/node_modules
+**/dist
+**/.nuxt
+**/.output
+**/storybook-static
+**/.env
+**/.env.local
+.e2e
+.lighthouseci
+.git

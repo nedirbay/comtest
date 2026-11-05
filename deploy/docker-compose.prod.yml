@@ -1,0 +1,97 @@
+# The application in production. PostgreSQL, object storage and the reverse proxy with TLS live
+# outside this file. Values come from deploy/.env.prod (copy deploy/.env.prod.example).
+#
+#   docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.prod --profile migrate run --rm migrate
+#   docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.prod up -d
+#
+# Ports listen on 127.0.0.1 only: the reverse proxy on this machine is the way in.
+
+x-hardening: &hardening
+  restart: unless-stopped
+  read_only: true
+  tmpfs: ["/tmp"]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  # A little more than the API's own shutdown timeout, so that nothing is killed mid-request.
+  stop_grace_period: 35s
+
+services:
+  migrate:
+    profiles: ["migrate"]
+    image: ${IMAGE_PREFIX:-comtest}-migrate:${IMAGE_TAG:?set in deploy/.env.prod}
+    build:
+      context: ../backend
+      target: migrate
+    read_only: true
+    tmpfs: ["/tmp"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Migrations: ${MIGRATIONS_CONNECTION:?set in deploy/.env.prod}
+
+  api:
+    <<: *hardening
+    image: ${IMAGE_PREFIX:-comtest}-api:${IMAGE_TAG:?set in deploy/.env.prod}
+    build:
+      context: ../backend
+      target: api
+    env_file: [.env.prod]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    ports:
+      - "127.0.0.1:${API_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "dotnet", "ComTest.Api.dll", "healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  storefront:
+    <<: *hardening
+    image: ${IMAGE_PREFIX:-comtest}-storefront:${IMAGE_TAG:?set in deploy/.env.prod}
+    build:
+      context: ../frontend
+      target: storefront
+    environment:
+      NUXT_PUBLIC_API_URL: ${PUBLIC_API_URL:?set in deploy/.env.prod}
+      NUXT_API_INTERNAL_URL: http://api:8080
+      NUXT_PUBLIC_ADMIN_URL: ${PUBLIC_ADMIN_URL:?set in deploy/.env.prod}
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${STOREFRONT_PORT:-3000}:3000"
+    healthcheck:
+      test: ["CMD", "/nodejs/bin/node", "-e", "fetch('http://localhost:3000/healthz').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  admin:
+    <<: *hardening
+    image: ${IMAGE_PREFIX:-comtest}-admin:${IMAGE_TAG:?set in deploy/.env.prod}
+    build:
+      context: ../frontend
+      target: admin
+      args:
+        VITE_API_URL: ${PUBLIC_API_URL:?set in deploy/.env.prod}
+        VITE_CSP_EXTRA_ORIGINS: ${STORAGE_PUBLIC_ORIGIN:-}
+    # Nginx writes its pid and temporary files, which is all it may write.
+    tmpfs: ["/tmp", "/var/cache/nginx"]
+    ports:
+      - "127.0.0.1:${ADMIN_PORT:-8081}:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+networks:
+  default:
+    ipam:
+      # Fixed, as the API trusts forwarded headers from exactly this network. See .env.prod.example.
+      config:
+        - subnet: 172.30.0.0/24

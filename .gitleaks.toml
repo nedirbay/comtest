@@ -1,0 +1,10 @@
+# Runs from the pre-commit hook and in CI. Each exception here names one file and says why.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Not secrets: a test password for the throwaway e2e stack, and a list of passwords we refuse"
+paths = [
+  '''^frontend/e2e/support/stack\.ts$''',
+  '''^backend/src/ComTest\.Infrastructure/Identity/Passwords/PasswordChecks\.cs$''',
+]

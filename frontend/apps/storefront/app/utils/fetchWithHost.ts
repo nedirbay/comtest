@@ -4,6 +4,23 @@ import { request as httpsRequest } from 'node:https'
 const TIMEOUT_MS = 10_000
 const NO_BODY_STATUSES = new Set([101, 204, 205, 304])
 
+export interface VisitorAddress {
+  ip?: string
+}
+
+/**
+ * Only the last entry of X-Forwarded-For is the reverse proxy's own. Anything before it came from
+ * the visitor, who can write what they like there.
+ */
+export function visitorAddress(
+  forwardedFor: string | null | undefined,
+  peer: string | undefined,
+): VisitorAddress {
+  const ip = forwardedFor?.split(',').at(-1)?.trim() || peer
+
+  return ip ? { ip } : {}
+}
+
 function toHeaders(incoming: IncomingMessage): Headers {
   const headers = new Headers()
 
@@ -23,8 +40,15 @@ function toHeaders(incoming: IncomingMessage): Headers {
  * visitor used. `fetch` silently replaces a Host header, and building the URL from that host would
  * let a forged header point the server at any address. So the connection always goes to the
  * configured API, and only this one header changes.
+ *
+ * Over the internal address this server also stands in for the reverse proxy, so `visitor` is set
+ * there: the API would otherwise redirect plain HTTP, and count every visitor as this one machine.
+ * The API believes these headers only from the network named in ForwardedHeaders__KnownNetworks.
  */
-export function createFetchWithHost(host: string): typeof globalThis.fetch {
+export function createFetchWithHost(
+  host: string,
+  visitor?: VisitorAddress,
+): typeof globalThis.fetch {
   return (async (input: Request) => {
     const url = new URL(input.url)
     const body = input.body ? Buffer.from(await input.arrayBuffer()) : undefined
@@ -35,7 +59,16 @@ export function createFetchWithHost(host: string): typeof globalThis.fetch {
         url,
         {
           method: input.method,
-          headers: { ...Object.fromEntries(input.headers), host },
+          headers: {
+            ...Object.fromEntries(input.headers),
+            host,
+            ...(visitor
+              ? {
+                  'x-forwarded-proto': 'https',
+                  ...(visitor.ip ? { 'x-forwarded-for': visitor.ip } : {}),
+                }
+              : {}),
+          },
           timeout: TIMEOUT_MS,
         },
         (incoming) => {

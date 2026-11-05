@@ -12,11 +12,19 @@ export default defineNuxtPlugin({
     const config = useRuntimeConfig()
     const { devTenant, apiUrl } = config.public
     const requestHost = import.meta.server ? useRequestHeader('host') : undefined
+    // Read before the first await, which ends the context these two depend on.
+    const forwardedFor = import.meta.server ? useRequestHeader('x-forwarded-for') : undefined
+    const peer = import.meta.server ? useRequestEvent()?.node.req.socket.remoteAddress : undefined
 
     // In the browser the Host header is the address bar's, which is already right.
     const fetchForServer =
       import.meta.server && !devTenant && requestHost
-        ? (await import('~/utils/fetchWithHost')).createFetchWithHost(requestHost)
+        ? await import('~/utils/fetchWithHost').then(({ createFetchWithHost, visitorAddress }) =>
+            createFetchWithHost(
+              requestHost,
+              config.apiInternalUrl ? visitorAddress(forwardedFor, peer) : undefined,
+            ),
+          )
         : undefined
 
     const api = createApi({

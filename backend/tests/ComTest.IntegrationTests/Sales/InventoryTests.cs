@@ -258,10 +258,20 @@ public sealed class InventoryTests(ApiFixture api)
 
         Assert.True(detail.GetProperty("variants")[0].GetProperty("inStock").GetBoolean());
         Assert.False(empty.GetProperty("variants")[0].GetProperty("inStock").GetBoolean());
-        Assert.DoesNotContain("1234", detail.GetRawText(), StringComparison.Ordinal);
-        Assert.DoesNotContain("1234", listing, StringComparison.Ordinal);
+
+        // Numbers only: a slug is random hex, and now and then it contains these digits.
+        Assert.False(HasNumber(detail, 1234));
+        Assert.False(HasNumber(JsonDocument.Parse(listing).RootElement, 1234));
         Assert.DoesNotContain("onHand", detail.GetRawText(), StringComparison.OrdinalIgnoreCase);
     }
+
+    private static bool HasNumber(JsonElement element, decimal number) => element.ValueKind switch
+    {
+        JsonValueKind.Number => element.GetDecimal() == number,
+        JsonValueKind.Object => element.EnumerateObject().Any(property => HasNumber(property.Value, number)),
+        JsonValueKind.Array => element.EnumerateArray().Any(item => HasNumber(item, number)),
+        _ => false,
+    };
 
     [Fact]
     public async Task StockFlag_IsFresh_EvenWhenTheProductIsCached()

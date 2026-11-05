@@ -4,3 +4,8 @@ root="$(git rev-parse --show-toplevel)"
 if git diff --cached --name-only | grep -q '^frontend/'; then
   cd "$root/frontend" && pnpm exec lint-staged
 fi
+
+# A missing scanner is no reason to refuse a commit: the CI scans the whole history again.
+if command -v gitleaks >/dev/null 2>&1; then
+  cd "$root" && gitleaks git --staged --config "$root/.gitleaks.toml" --redact --no-banner
+fi

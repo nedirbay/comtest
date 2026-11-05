@@ -1,0 +1,41 @@
+name: Backend
+
+on:
+  pull_request:
+    paths: ["backend/**", ".github/workflows/backend.yml"]
+  push:
+    branches: [main]
+    paths: ["backend/**", ".github/workflows/backend.yml"]
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: backend/global.json
+      # CI=true turns on RestoreLockedMode, so a changed package without a new lock file fails here.
+      - run: dotnet restore ComTest.slnx
+      - run: dotnet format ComTest.slnx --verify-no-changes --no-restore
+      - run: dotnet build ComTest.slnx --no-restore
+      - name: Refuse packages with known vulnerabilities
+        run: |
+          dotnet list ComTest.slnx package --vulnerable --include-transitive | tee vulnerable.txt
+          ! grep -qE '\b(Moderate|High|Critical)\b' vulnerable.txt
+      - name: Test
+        run: >
+          dotnet test ComTest.slnx --no-build
+          --collect:"XPlat Code Coverage"
+          --results-directory coverage
+          --settings coverage.runsettings
+      - name: Check coverage of the business logic
+        run: python3 scripts/check_coverage.py coverage 80

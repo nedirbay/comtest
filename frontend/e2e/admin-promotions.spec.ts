@@ -17,7 +17,7 @@ test('promotions are made, changed and removed in the panel', async ({ page }) =
   // The form explains what it will not take before anything goes to the server.
   await page.getByTestId('promotion-code').fill('KISA')
   await page.getByTestId('promotion-value').fill('150')
-  await page.getByRole('button', { name: 'Ýatda sakla' }).click()
+  await page.getByRole('button', { name: 'Sakla', exact: true }).click()
   await expect(page.getByText('Kod 6–32 belgiden ybarat bolmaly')).toBeVisible()
   await expect(page.getByText('Göterim 100-den köp bolup bilmez.')).toBeVisible()
 
@@ -27,7 +27,7 @@ test('promotions are made, changed and removed in the panel', async ({ page }) =
   const code = await page.getByTestId('promotion-code').inputValue()
 
   await page.getByTestId('promotion-value').fill('15')
-  await page.getByRole('button', { name: 'Ýatda sakla' }).click()
+  await page.getByRole('button', { name: 'Sakla', exact: true }).click()
 
   await expect(page.getByTestId('promotion-row')).toHaveText('Baýram')
   await expect(page.locator('main')).toContainText(code)
@@ -37,7 +37,7 @@ test('promotions are made, changed and removed in the panel', async ({ page }) =
   await page.getByTestId('promotion-edit').click()
   await expect(page.getByTestId('promotion-code')).toHaveValue(code)
   await page.getByTestId('promotion-automatic').click()
-  await page.getByRole('button', { name: 'Ýatda sakla' }).click()
+  await page.getByRole('button', { name: 'Sakla', exact: true }).click()
   await expect(page.locator('main')).toContainText('Awtomatik')
 
   await page.getByTestId('promotion-delete').click()

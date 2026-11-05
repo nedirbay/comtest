@@ -485,3 +485,6 @@ $RECYCLE.BIN/
 .env
 *.env
 !*.env.example
+
+# Production settings.
+deploy/.env.prod

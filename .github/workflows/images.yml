@@ -1,0 +1,47 @@
+name: Images
+
+on:
+  pull_request:
+    paths: ["backend/**", "frontend/**", ".github/workflows/images.yml"]
+  push:
+    branches: [main]
+    paths: ["backend/**", "frontend/**", ".github/workflows/images.yml"]
+  # New vulnerabilities appear in images that have not changed.
+  schedule:
+    - cron: "41 3 * * 1"
+
+permissions:
+  contents: read
+
+env:
+  TRIVY: aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { image: api, context: backend, target: api, args: "" }
+          - { image: migrate, context: backend, target: migrate, args: "" }
+          - { image: storefront, context: frontend, target: storefront, args: "" }
+          - { image: admin, context: frontend, target: admin, args: "--build-arg VITE_API_URL=https://api.example.invalid" }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Build
+        run: docker build -t comtest-${{ matrix.image }} --target ${{ matrix.target }} ${{ matrix.args }} ${{ matrix.context }}
+      - name: Stop on fixable high and critical vulnerabilities
+        run: >
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock $TRIVY
+          image --quiet --scanners vuln --ignore-unfixed --severity HIGH,CRITICAL --exit-code 1
+          comtest-${{ matrix.image }}
+      - name: Software bill of materials
+        run: >
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock $TRIVY
+          image --quiet --format cyclonedx comtest-${{ matrix.image }} > sbom-${{ matrix.image }}.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: sbom-${{ matrix.image }}
+          path: sbom-${{ matrix.image }}.json

@@ -27,6 +27,18 @@ updates:
             "vite",
             "vitest",
           ]
+  - package-ecosystem: nuget
+    directory: /backend
+    schedule:
+      interval: weekly
+    groups:
+      # EF Core and ASP.NET Core ship together, and mixed versions do not restore.
+      microsoft:
+        patterns: ["Microsoft.*", "Npgsql*", "EFCore.*"]
+  - package-ecosystem: docker
+    directories: ["/backend", "/frontend"]
+    schedule:
+      interval: weekly
   - package-ecosystem: github-actions
     directory: /
     schedule:

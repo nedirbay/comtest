@@ -37,7 +37,10 @@ const { t } = useI18n({ useScope: 'global' })
   >
     <AppForm :error="error" @submit="$emit('submit')">
       <slot />
-      <div class="sticky bottom-0 -mx-1 mt-4 flex justify-end gap-2 bg-surface px-1 py-3">
+      <!-- Pulled down over the drawer's padding, or the fields would show through underneath it. -->
+      <div
+        class="sticky bottom-[calc(var(--el-drawer-padding-primary,20px)*-1)] -mx-1 mt-4 flex justify-end gap-2 bg-surface px-1 pt-3 pb-5"
+      >
         <AppButton @click="open = false">{{ t('common.cancel') }}</AppButton>
         <AppButton
           v-if="!readonly"

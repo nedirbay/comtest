@@ -22,6 +22,7 @@ public static class ApiServiceExtensions
 {
     private const int HstsMaxAgeDays = 365;
     private const int DefaultHttpsPort = 443;
+    private const int ShutdownSeconds = 32;
 
     public static IServiceCollection AddApi(
         this IServiceCollection services,
@@ -58,6 +59,8 @@ public static class ApiServiceExtensions
 
     private static void AddSettings(IServiceCollection services)
     {
+        // Longer than a request may take, so that a deploy lets the running ones finish.
+        services.Configure<HostOptions>(options => options.ShutdownTimeout = TimeSpan.FromSeconds(ShutdownSeconds));
         services.AddOptions<CorsSettings>().BindConfiguration(CorsSettings.SectionName).ValidateDataAnnotations().ValidateOnStart();
         services.AddOptions<RateLimitSettings>().BindConfiguration(RateLimitSettings.SectionName).ValidateDataAnnotations().ValidateOnStart();
         services.AddOptions<ForwardedHeadersSettings>().BindConfiguration(ForwardedHeadersSettings.SectionName);

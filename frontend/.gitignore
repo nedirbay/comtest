@@ -24,3 +24,6 @@ test-results/
 
 # The private backend for browser tests keeps its generated passwords and logs here.
 .e2e/
+
+# Reports from `pnpm test:lighthouse`.
+.lighthouseci/

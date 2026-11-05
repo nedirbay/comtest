@@ -316,6 +316,7 @@ public sealed class AuthorizationDefaultsTests(ApiFixture api)
         "POST api/v{version:apiVersion}/auth/forgot-password",
         "POST api/v{version:apiVersion}/auth/reset-password",
         "GET api/v{version:apiVersion}/store",
+        "GET api/v{version:apiVersion}/catalog/attribute-filters",
         "GET api/v{version:apiVersion}/catalog/brands",
         "GET api/v{version:apiVersion}/catalog/categories",
         "GET api/v{version:apiVersion}/catalog/products",
