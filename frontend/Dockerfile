@@ -2,7 +2,7 @@
 #   docker build -t comtest-storefront --target storefront frontend
 #   docker build -t comtest-admin --target admin --build-arg VITE_API_URL=https://api.example.tm frontend
 # The admin panel's settings are fixed at build time. The storefront's come from NUXT_* at start.
-FROM node:24-slim@sha256:c86ecead9e55a5210ac1727de38a4ca840bf03dcaf34dc9749addbf383b1920c AS base
+FROM node:25-slim@sha256:81db02c4b671288a03915da9534dbd54f96d0e7c24d80ccc54f5b36b2e684370 AS base
 WORKDIR /src
 RUN corepack enable
 COPY . .
