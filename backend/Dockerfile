@@ -21,7 +21,7 @@ RUN ConnectionStrings__Migrations="Host=unused" dotnet ef migrations bundle \
 # The application never migrates itself: it has no rights to. This runs first, with the owner role:
 #   docker run -e ConnectionStrings__Migrations="$MIGRATIONS_CONNECTION" comtest-migrate
 # "extra" brings ICU, as Turkmen does not work under InvariantGlobalization.
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra@sha256:9b755ea799ae649141a073e30d8b62d8095a5465af2b7694d17866e8c05131d8 AS migrate
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra@sha256:cae5b962bfb786606def03d250c6a645cc98839095c89e806e4bd8978a68115b AS migrate
 WORKDIR /app
 COPY --from=bundle /bundle ./
 # The bundle unpacks itself on start, and /tmp is the only place it may write.
@@ -29,7 +29,7 @@ ENV DOTNET_BUNDLE_EXTRACT_BASE_DIR=/tmp
 USER $APP_UID
 ENTRYPOINT ["./efbundle"]
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra@sha256:9b755ea799ae649141a073e30d8b62d8095a5465af2b7694d17866e8c05131d8 AS api
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra@sha256:cae5b962bfb786606def03d250c6a645cc98839095c89e806e4bd8978a68115b AS api
 WORKDIR /app
 COPY --from=build /publish ./
 USER $APP_UID
