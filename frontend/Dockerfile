@@ -18,7 +18,7 @@ ARG VITE_SENTRY_DSN=
 ARG VITE_CSP_EXTRA_ORIGINS=
 RUN test -n "$VITE_API_URL" && pnpm --filter @comtest/admin build
 
-FROM gcr.io/distroless/nodejs24-debian13:nonroot@sha256:b8cec4b2f2126ff7bd034ec9ac207ffb3272667dfdc48376e3b035d3270549ba AS storefront
+FROM gcr.io/distroless/nodejs24-debian13:nonroot@sha256:088a01637f22908632ba09018be2e0b516f2fa6f7869c191d29491139db43c78 AS storefront
 WORKDIR /app
 COPY --from=storefront-build /src/apps/storefront/.output ./
 ENV NODE_ENV=production PORT=3000 NUXT_CSP_MODE=enforce
